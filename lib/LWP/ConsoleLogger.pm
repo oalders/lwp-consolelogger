@@ -19,20 +19,22 @@ use URI::QueryParam;
 
 sub BUILD {
     my $self = shift;
-    $Text::SimpleTable::AutoWidth::WIDTH_LIMIT = $self->_term_width();
+    $Text::SimpleTable::AutoWidth::WIDTH_LIMIT = $self->term_width();
 }
+
+has content_regex => ( is => 'rw', );
 
 has dump_cookies => (
     is      => 'rw',
     default => sub {0},
 );
 
-has dump_text => (
+has dump_content => (
     is      => 'rw',
     default => sub {0},
 );
 
-has dump_content => (
+has dump_text => (
     is      => 'rw',
     default => sub {0},
 );
@@ -47,11 +49,11 @@ has logger => (
     },
 );
 
-has content_regex => ( is => 'rw', );
-
 has term_width => (
     is       => 'ro',
     required => 0,
+    lazy => 1,
+    builder => '_build_term_width',
 );
 
 sub request_callback {
@@ -87,13 +89,9 @@ sub response_callback {
 sub _log_headers {
     my ( $self, $type, $headers ) = @_;
 
-    my $name_width = 15;
-    foreach my $name ( $headers->header_field_names ) {
-        $name_width = length( $name ) if length( $name ) > $name_width;
-    }
+    my $t = Text::SimpleTable::AutoWidth->new();
+    $t->captions( [ 'Header Name', 'Value' ] );
 
-    my $t = Text::SimpleTable->new( [ $name_width, 'Header Name' ],
-        [ $self->_term_width - $name_width, 'Value' ] );
     foreach my $name ( sort $headers->header_field_names ) {
         next if $name eq 'Cookie' || $name eq 'Set-Cookie';
         $t->row( $name, $headers->header( $name ) );
@@ -108,10 +106,6 @@ sub _log_params {
     my $name_width = 1;
     my @params     = sort $uri->query_param;
     return unless @params;
-
-    foreach my $name ( @params ) {
-        $name_width = length( $name ) if length( $name ) > $name_width;
-    }
 
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( [ 'Key', 'Value' ] );
@@ -140,8 +134,9 @@ sub _log_cookies {
 
     foreach my $cookie ( @cookies ) {
 
-        my $t = Text::SimpleTable->new( [ $name_width, 'Key' ],
-            [ $self->_term_width - $name_width, 'Value' ] );
+        my $t = Text::SimpleTable::AutoWidth->new();
+        $t->captions( [ 'Key', 'Value' ] );
+
         foreach my $method ( @methods ) {
             my $val = $cookie->$method;
             if ( $val ) {
@@ -177,18 +172,15 @@ sub _log_text {
     $content = $hr->process( $content );
     $content =~ s{\s+}{ }g;
     $content =~ s{\n{2,}}{\n\n}g;
-    my $table = $self->_table;
-    $table = Text::SimpleTable::AutoWidth->new();
-    $table->captions( ['Wrapped Text'] );
+    my $t = Text::SimpleTable::AutoWidth->new();
+    $t->captions( ['Wrapped Text'] );
 
-    $table->row( $hr->process( $content ) );
-    $self->logger->debug( $table->draw );
+    $t->row( $hr->process( $content ) );
+    $self->logger->debug( $t->draw );
 }
 
-sub _term_width {
+sub _build_term_width {
     my ( $self ) = @_;
-
-    return $self->term_width if $self->term_width;
 
     my $width = eval '
                           my ($columns, $rows) = Term::Size::Any::chars;
@@ -203,11 +195,6 @@ sub _term_width {
 
     $width = 80 unless ( $width && $width >= 80 );
     return $width;
-}
-
-sub _table {
-    my $self = shift;
-    return Text::SimpleTable::AutoWidth->new( $self->term_width || $self->_term_width );
 }
 
 1;
