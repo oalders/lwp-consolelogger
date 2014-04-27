@@ -3,14 +3,13 @@ use warnings;
 
 package LWP::ConsoleLogger;
 
-use DDP;
 use DateTime;
 use HTML::Restrict;
 use HTTP::CookieMonster;
 use HTTP::Request;
 use Log::Dispatch;
 use Moose;
-use Safe::Isa;
+use MooseX::StrictConstructor;
 use Term::Size::Any qw( chars );
 use Test::Most;
 use Text::SimpleTable;
@@ -22,14 +21,17 @@ sub BUILD {
     $Text::SimpleTable::AutoWidth::WIDTH_LIMIT = $self->term_width();
 }
 
-has content_pre_filter => ( is => 'rw', );
+has content_pre_filter => (
+    is  => 'rw',
+    isa => 'CodeRef',
+);
 
-has dump_cookies => (
+has dump_content => (
     is      => 'rw',
     default => 0,
 );
 
-has dump_content => (
+has dump_cookies => (
     is      => 'rw',
     default => 0,
 );
@@ -62,6 +64,11 @@ has term_width => (
     builder  => '_build_term_width',
 );
 
+has text_pre_filter => (
+    is  => 'rw',
+    isa => 'CodeRef',
+);
+
 sub request_callback {
     my $self = shift;
     my $req  = shift;
@@ -88,7 +95,8 @@ sub response_callback {
     $self->_log_headers( 'response', $res->headers );
     $self->_log_cookies( 'response', $ua->cookie_jar );
 
-    $self->_log_text( $res, $res->header('Content-Type') );
+    $self->_log_content( $res, $res->header( 'Content-Type' ) );
+    $self->_log_text( $res, $res->header( 'Content-Type' ) );
     return;
 }
 
@@ -157,20 +165,49 @@ sub _log_cookies {
 
 }
 
-sub _log_text {
-    my $self = shift;
-    my $ua   = shift;
+sub _get_content {
+    my $self         = shift;
+    my $ua           = shift;
     my $content_type = shift;
 
-    return unless $self->dump_text;
     my $content = $ua->decoded_content;
     return unless $content;
 
-    my $title = 'Text';
-
     if ( $self->content_pre_filter ) {
-        $content = $self->content_pre_filter->( $content, $content_type);
-        $title   = 'Wrapped Text';
+        $content = $self->content_pre_filter->( $content, $content_type );
+    }
+    return $content;
+}
+
+sub _log_content {
+    my $self         = shift;
+    my $ua           = shift;
+    my $content_type = shift;
+
+    return unless $self->dump_content;
+
+    my $content = $self->_get_content( $ua, $content_type );
+
+    return unless $content;
+
+    my $t = Text::SimpleTable::AutoWidth->new();
+    $t->captions( ['Content'] );
+
+    $t->row( $content );
+    $self->logger->debug( $t->draw );
+}
+
+sub _log_text {
+    my $self         = shift;
+    my $ua           = shift;
+    my $content_type = shift;
+
+    return unless $self->dump_text;
+    my $content = $self->_get_content( $ua, $content_type );
+    return unless $content;
+
+    if ( $self->text_pre_filter ) {
+        $content = $self->content_pre_filter->( $content, $content_type );
     }
 
     return unless $content;
@@ -178,8 +215,9 @@ sub _log_text {
     $content = $self->html_restrict->process( $content );
     $content =~ s{\s+}{ }g;
     $content =~ s{\n{2,}}{\n\n}g;
+
     my $t = Text::SimpleTable::AutoWidth->new();
-    $t->captions( ['Wrapped Text'] );
+    $t->captions( ['Text'] );
 
     $t->row( $content );
     $self->logger->debug( $t->draw );
@@ -188,10 +226,11 @@ sub _log_text {
 sub _build_term_width {
     my ( $self ) = @_;
 
+    # cargo culted from Plack::Middleware::DebugLogging
     my $width = eval '
-                          my ($columns, $rows) = Term::Size::Any::chars;
-                                  return $columns;
-                                      ';
+        my ($columns, $rows) = Term::Size::Any::chars;
+        return $columns;
+    ';
 
     if ( $@ ) {
         $width = $ENV{COLUMNS}

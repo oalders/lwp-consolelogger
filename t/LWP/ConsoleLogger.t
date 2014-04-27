@@ -10,7 +10,7 @@ use Test::Most;
 use WWW::Mechanize;
 
 my @mech = ( LWP::UserAgent->new( cookie_jar => {} ), WWW::Mechanize->new );
-my $logger = LWP::ConsoleLogger->new( dump_text => 1 );
+my $logger = LWP::ConsoleLogger->new( dump_content => 1, dump_text => 1 );
 ok( $logger, 'logger compiles' );
 
 foreach my $mech ( @mech ) {
@@ -21,7 +21,7 @@ foreach my $mech ( @mech ) {
 
 $logger->content_pre_filter(
     sub {
-        my $content = shift;
+        my $content      = shift;
         my $content_type = shift;
         diag "Content-Type: $content_type";
 
