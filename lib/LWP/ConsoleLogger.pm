@@ -9,7 +9,7 @@ use HTML::Restrict;
 use HTTP::CookieMonster;
 use HTTP::Request;
 use Log::Dispatch;
-use Moo;
+use Moose;
 use Safe::Isa;
 use Term::Size::Any qw( chars );
 use Test::Most;
@@ -22,25 +22,31 @@ sub BUILD {
     $Text::SimpleTable::AutoWidth::WIDTH_LIMIT = $self->term_width();
 }
 
-has content_regex => ( is => 'rw', );
+has content_pre_filter => ( is => 'rw', );
 
 has dump_cookies => (
     is      => 'rw',
-    default => sub {0},
+    default => 0,
 );
 
 has dump_content => (
     is      => 'rw',
-    default => sub {0},
+    default => 0,
 );
 
 has dump_text => (
     is      => 'rw',
-    default => sub {0},
+    default => 0,
+);
+
+has html_restrict => (
+    is      => 'rw',
+    lazy    => 1,
+    default => sub { HTML::Restrict->new },
 );
 
 has logger => (
-    is      => 'ro',
+    is      => 'rw',
     lazy    => 1,
     default => sub {
         return Log::Dispatch->new(
@@ -50,10 +56,10 @@ has logger => (
 );
 
 has term_width => (
-    is       => 'ro',
+    is       => 'rw',
     required => 0,
-    lazy => 1,
-    builder => '_build_term_width',
+    lazy     => 1,
+    builder  => '_build_term_width',
 );
 
 sub request_callback {
@@ -82,7 +88,7 @@ sub response_callback {
     $self->_log_headers( 'response', $res->headers );
     $self->_log_cookies( 'response', $ua->cookie_jar );
 
-    $self->_log_text( $res );
+    $self->_log_text( $res, $res->header('Content-Type') );
     return;
 }
 
@@ -154,6 +160,7 @@ sub _log_cookies {
 sub _log_text {
     my $self = shift;
     my $ua   = shift;
+    my $content_type = shift;
 
     return unless $self->dump_text;
     my $content = $ua->decoded_content;
@@ -161,21 +168,20 @@ sub _log_text {
 
     my $title = 'Text';
 
-    if (   $self->content_regex
-        && $content =~ $self->content_regex )
-    {
-        $content = $1;
+    if ( $self->content_pre_filter ) {
+        $content = $self->content_pre_filter->( $content, $content_type);
         $title   = 'Wrapped Text';
     }
 
-    my $hr = HTML::Restrict->new;
-    $content = $hr->process( $content );
+    return unless $content;
+
+    $content = $self->html_restrict->process( $content );
     $content =~ s{\s+}{ }g;
     $content =~ s{\n{2,}}{\n\n}g;
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( ['Wrapped Text'] );
 
-    $t->row( $hr->process( $content ) );
+    $t->row( $content );
     $self->logger->debug( $t->draw );
 }
 

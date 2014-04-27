@@ -3,18 +3,15 @@
 use strict;
 use warnings;
 
+use HTTP::Request;
 use LWP::ConsoleLogger;
 use WWW::Mechanize;
-use HTTP::Request;
 
 my $mech = WWW::Mechanize->new;
 my $logger = LWP::ConsoleLogger->new( dump_text => 1 );
 
 $mech->default_header(
     'Accept-Encoding' => scalar HTTP::Message::decodable() );
-
-#$mech->add_handler( "request_send",  sub { shift->dump; return } );
-#$mech->add_handler( "response_done", sub { shift->dump; return } );
 
 $mech->add_handler( 'response_done',
     sub { $logger->response_callback( @_ ) } );
