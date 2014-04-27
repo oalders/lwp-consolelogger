@@ -36,9 +36,19 @@ has dump_cookies => (
     default => 0,
 );
 
+has dump_headers => (
+    is      => 'rw',
+    default => 1,
+);
+
+has dump_params => (
+    is      => 'rw',
+    default => 1,
+);
+
 has dump_text => (
     is      => 'rw',
-    default => 0,
+    default => 1,
 );
 
 has html_restrict => (
@@ -103,6 +113,8 @@ sub response_callback {
 sub _log_headers {
     my ( $self, $type, $headers ) = @_;
 
+    return if !$self->dump_headers;
+
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( [ 'Header Name', 'Value' ] );
 
@@ -117,8 +129,9 @@ sub _log_headers {
 sub _log_params {
     my ( $self, $uri ) = @_;
 
-    my $name_width = 1;
-    my @params     = sort $uri->query_param;
+    return if !$self->dump_params;
+
+    my @params = sort $uri->query_param;
     return unless @params;
 
     my $t = Text::SimpleTable::AutoWidth->new();
@@ -133,10 +146,10 @@ sub _log_params {
 
 sub _log_cookies {
     my $self = shift;
-    return unless $self->dump_cookies;
-
     my $type = shift;
     my $jar  = shift;
+
+    return if !$self->dump_cookies || !$jar;
 
     my $monster = HTTP::CookieMonster->new( $jar );
 
@@ -245,3 +258,24 @@ sub _build_term_width {
 1;
 
 # ABSTRACT: Easy LWP tracing and debugging
+
+=pod
+
+=head1 SYNOPSIS
+
+    my $ua = LWP::UserAgent->new( cookie_jar => {} );
+    my $logger = LWP::ConsoleLogger->new(
+        dump_content       => 1,
+        dump_text          => 1,
+        content_pre_filter => sub {
+            my $content      = shift;
+            my $content_type = shift;
+
+            # mangle content here
+            ...
+
+            return $content;
+        },
+    );
+
+=cut
