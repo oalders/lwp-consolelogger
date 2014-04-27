@@ -6,13 +6,10 @@ package LWP::ConsoleLogger;
 use DateTime;
 use HTML::Restrict;
 use HTTP::CookieMonster;
-use HTTP::Request;
 use Log::Dispatch;
 use Moose;
 use MooseX::StrictConstructor;
 use Term::Size::Any qw( chars );
-use Test::Most;
-use Text::SimpleTable;
 use Text::SimpleTable::AutoWidth;
 use URI::QueryParam;
 
