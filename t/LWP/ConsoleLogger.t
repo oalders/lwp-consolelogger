@@ -7,6 +7,7 @@ use LWP::UserAgent;
 use Path::Tiny qw( path );
 use Test::Fatal qw( exception );
 use Test::Most;
+use URI::file;
 use WWW::Mechanize;
 
 my @mech = ( LWP::UserAgent->new( cookie_jar => {} ), WWW::Mechanize->new );
@@ -44,8 +45,9 @@ sub get_local_file {
         sub { $logger->response_callback( @_ ) } );
     $mech->add_handler( 'request_send',
         sub { $logger->request_callback( @_ ) } );
+    my $uri = URI::file->new( path( 't/test-data/foo.html' )->absolute );
 
-    $mech->get( 'file://' . path( 't/test-data/foo.html' )->absolute );
+    $mech->get( $uri );
 }
 
 done_testing();
