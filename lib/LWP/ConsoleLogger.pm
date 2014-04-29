@@ -4,6 +4,8 @@ use warnings;
 package LWP::ConsoleLogger;
 
 use DateTime;
+use Email::MIME::ContentType qw( parse_content_type );
+use Email::MIME;
 use HTML::Restrict;
 use HTTP::CookieMonster;
 use Log::Dispatch;
@@ -11,6 +13,7 @@ use Moose;
 use MooseX::StrictConstructor;
 use Term::Size::Any qw( chars );
 use Text::SimpleTable::AutoWidth;
+use URI::Query;
 use URI::QueryParam;
 
 sub BUILD {
@@ -84,7 +87,7 @@ sub request_callback {
     my $uri_without_query = $req->uri->clone;
     $uri_without_query->query( undef );
     $self->logger->debug( $req->method . q{ } . $uri_without_query . "\n" );
-    $self->_log_params( $req->uri );
+    $self->_log_params( $req );
 
     $self->_log_headers( 'request', $req->headers );
 
@@ -124,17 +127,43 @@ sub _log_headers {
 }
 
 sub _log_params {
-    my ( $self, $uri ) = @_;
+    my ( $self, $req ) = @_;
 
     return if !$self->dump_params;
 
-    my @params = sort $uri->query_param;
-    return unless @params;
+    my %params;
+    my $uri = $req->uri;
+
+    if ( $req->method eq 'GET' ) {
+        my @params = $uri->query_param;
+        return unless @params;
+
+        $params{$_} = [ $uri->query_param( $_ ) ] for @params;
+    }
+
+    else {
+        # this block mostly cargo-culted from HTTP::Request::Params
+        my $mime = Email::MIME->new( $req->as_string );
+
+        foreach my $part ( $mime->parts ) {
+            $part->disposition_set( 'text/plain' );    # for easy parsing
+
+            my $disp    = $part->header( 'Content-Disposition' );
+            my $ct      = parse_content_type( $disp );
+            my $name    = $ct->{attributes}->{name};
+            my $content = $part->body;
+
+            $content =~ s/\r\n$//;
+            my $query = URI::Query->new( $content );
+            %params = %{$query->hash_arrayref};
+            last if keys %params;
+        }
+    }
 
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( [ 'Key', 'Value' ] );
-    foreach my $name ( @params ) {
-        my @values = $uri->query_param( $name );
+    foreach my $name ( sort keys %params ) {
+        my @values = @{ $params{$name} };
         $t->row( $name, $_ ) for sort @values;
     }
 
