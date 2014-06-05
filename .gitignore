@@ -1,2 +1,5 @@
 /LWP-ConsoleLogger*
 .build
+cpanfile.snapshot
+local
+*.sw*

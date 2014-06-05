@@ -29,6 +29,8 @@ sub debug_ua {
 
 1;
 
+__END__
+
 =pod
 
 =head1 DESCRIPTION

@@ -3,18 +3,18 @@ use warnings;
 
 package LWP::ConsoleLogger;
 
-use DateTime;
-use Email::MIME;
+use DateTime qw();
+use Email::MIME qw();
 use Email::MIME::ContentType qw( parse_content_type );
-use HTML::Restrict;
-use HTTP::CookieMonster;
-use Log::Dispatch;
+use HTML::Restrict qw();
+use HTTP::CookieMonster qw();
+use Log::Dispatch qw();
 use Moose;
 use MooseX::StrictConstructor;
 use Term::Size::Any qw( chars );
-use Text::SimpleTable::AutoWidth;
-use URI::Query;
-use URI::QueryParam;
+use Text::SimpleTable::AutoWidth qw();
+use URI::Query qw();
+use URI::QueryParam qw();
 
 sub BUILD {
     my $self = shift;
@@ -292,6 +292,8 @@ sub _build_term_width {
 
 1;
 
+__END__
+
 # ABSTRACT: Easy LWP tracing and debugging
 
 =pod
@@ -323,7 +325,7 @@ sub _build_term_width {
         sub { $logger->request_callback( @_ ) } );
 
     # now watch debugging output to your screen
-    $ua->get( $some_url );
+    $ua->get( 'http://nytimes.com/' );
 
     #################################################################
 
