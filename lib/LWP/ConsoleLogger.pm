@@ -162,7 +162,7 @@ sub _log_params {
 
             $content =~ s/\r\n$//;
             my $query = URI::Query->new( $content );
-            %params = %{$query->hash_arrayref};
+            %params = %{ $query->hash_arrayref };
             last if keys %params;
         }
     }
@@ -258,9 +258,11 @@ sub _log_text {
 
     return unless $content;
 
-    $content = $self->html_restrict->process( $content );
-    $content =~ s{\s+}{ }g;
-    $content =~ s{\n{2,}}{\n\n}g;
+    if ( $content_type =~ m{html}i ) {
+        $content = $self->html_restrict->process( $content );
+        $content =~ s{\s+}{ }g;
+        $content =~ s{\n{2,}}{\n\n}g;
+    }
 
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( ['Text'] );
