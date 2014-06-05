@@ -33,7 +33,7 @@ sub debug_ua {
 
 =head1 DESCRIPTION
 
-This module gives you the easiest possible (and the most verbose) introdution
+This module gives you the easiest possible (and the most verbose) introduction
 to L<LWP::ConsoleLogger>.  It turns on all logging by default.  I'd suggest
 going with the defaults to start with and then turning down the verbosity after
 that.
