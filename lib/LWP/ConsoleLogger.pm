@@ -4,8 +4,8 @@ use warnings;
 package LWP::ConsoleLogger;
 
 use DateTime;
-use Email::MIME::ContentType qw( parse_content_type );
 use Email::MIME;
+use Email::MIME::ContentType qw( parse_content_type );
 use HTML::Restrict;
 use HTTP::CookieMonster;
 use Log::Dispatch;
@@ -71,6 +71,7 @@ has term_width => (
     is       => 'rw',
     required => 0,
     lazy     => 1,
+    trigger  => \&_term_set,
     builder  => '_build_term_width',
 );
 
@@ -78,6 +79,12 @@ has text_pre_filter => (
     is  => 'rw',
     isa => 'CodeRef',
 );
+
+sub _term_set {
+    my $self  = shift;
+    my $width = shift;
+    $Text::SimpleTable::AutoWidth::WIDTH_LIMIT = $width;
+}
 
 sub request_callback {
     my $self = shift;
