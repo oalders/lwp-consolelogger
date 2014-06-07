@@ -6,6 +6,8 @@ requires 'HTTP::CookieMonster';
 requires 'Log::Dispatch';
 requires 'Moose';
 requires 'MooseX::StrictConstructor';
+requires 'MooseX::Types::Common::Numeric';
+requires 'MooseX::Types::Moose';
 requires 'Sub::Exporter';
 requires 'Term::Size::Any';
 requires 'Text::SimpleTable::AutoWidth';

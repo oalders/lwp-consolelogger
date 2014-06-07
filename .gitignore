@@ -3,3 +3,4 @@
 cpanfile.snapshot
 local
 *.sw*
+.tidyall.d/

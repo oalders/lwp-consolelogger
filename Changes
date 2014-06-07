@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Start using MooseX::Types
 
 0.000001  2014-06-05 00:28:50EDT-0400 America/Toronto
     - Initial release.

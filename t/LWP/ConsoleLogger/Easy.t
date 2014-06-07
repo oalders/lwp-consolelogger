@@ -22,7 +22,7 @@ foreach my $mech ( @mech ) {
 }
 
 {
-    my $mech = LWP::UserAgent->new;
+    my $mech   = LWP::UserAgent->new;
     my $logger = debug_ua( $mech );
     $logger->dump_content( 1 );
     $logger->dump_text( 1 );

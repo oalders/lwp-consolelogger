@@ -11,6 +11,8 @@ use HTTP::CookieMonster qw();
 use Log::Dispatch qw();
 use Moose;
 use MooseX::StrictConstructor;
+use MooseX::Types::Common::Numeric qw( PositiveInt );
+use MooseX::Types::Moose qw( Bool CodeRef );
 use Term::Size::Any qw( chars );
 use Text::SimpleTable::AutoWidth qw();
 use URI::Query qw();
@@ -23,42 +25,49 @@ sub BUILD {
 
 has content_pre_filter => (
     is  => 'rw',
-    isa => 'CodeRef',
+    isa => CodeRef,
 );
 
 has dump_content => (
     is      => 'rw',
+    isa     => Bool,
     default => 0,
 );
 
 has dump_cookies => (
     is      => 'rw',
+    isa     => Bool,
     default => 0,
 );
 
 has dump_headers => (
     is      => 'rw',
+    isa     => Bool,
     default => 1,
 );
 
 has dump_params => (
     is      => 'rw',
+    isa     => Bool,
     default => 1,
 );
 
 has dump_text => (
     is      => 'rw',
+    isa     => Bool,
     default => 1,
 );
 
 has html_restrict => (
     is      => 'rw',
+    isa     => 'HTML::Restrict',
     lazy    => 1,
     default => sub { HTML::Restrict->new },
 );
 
 has logger => (
     is      => 'rw',
+    isa     => 'Log::Dispatch',
     lazy    => 1,
     default => sub {
         return Log::Dispatch->new(
@@ -69,6 +78,7 @@ has logger => (
 
 has term_width => (
     is       => 'rw',
+    isa      => PositiveInt,
     required => 0,
     lazy     => 1,
     trigger  => \&_term_set,
@@ -77,7 +87,7 @@ has term_width => (
 
 has text_pre_filter => (
     is  => 'rw',
-    isa => 'CodeRef',
+    isa => CodeRef,
 );
 
 sub _term_set {
