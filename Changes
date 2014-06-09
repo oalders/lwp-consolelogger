@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+
+0.000003  2014-06-09 16:47:50EDT-0400 America/Toronto
     - Fixes call to wrong subref in text filtering (@sergeyromanov)
     - Changes copyright holder and license to MaxMind defaults
 
