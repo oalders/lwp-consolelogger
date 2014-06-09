@@ -263,7 +263,7 @@ sub _log_text {
     return unless $content;
 
     if ( $self->text_pre_filter ) {
-        $content = $self->content_pre_filter->( $content, $content_type );
+        $content = $self->text_pre_filter->( $content, $content_type );
     }
 
     return unless $content;
