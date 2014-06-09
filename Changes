@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Fixes call to wrong subref in text filtering (@sergeyromanov)
+    - Changes copyright holder and license to MaxMind defaults
 
 0.000002  2014-06-06 22:21:18EDT-0400 America/Toronto
     - Start using MooseX::Types
