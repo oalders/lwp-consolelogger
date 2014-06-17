@@ -2,6 +2,8 @@ Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
 
+0.000004  2014-06-16 22:39:09EDT-0400 America/Toronto
+
     - Updates Pod for content and text pre_filters
     - Also dump GET params (if available) for POST requests
 
