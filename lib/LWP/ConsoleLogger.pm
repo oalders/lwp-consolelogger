@@ -104,7 +104,13 @@ sub request_callback {
     my $uri_without_query = $req->uri->clone;
     $uri_without_query->query( undef );
     $self->logger->debug( $req->method . q{ } . $uri_without_query . "\n" );
-    $self->_log_params( $req );
+
+    if ( $req->method eq 'GET' ) {
+        $self->_log_params( $req, 'GET' );
+    }
+    else {
+       $self->_log_params( $req, $_ ) for ( 'GET', 'POST' );
+    }
 
     $self->_log_headers( 'request', $req->headers );
 
@@ -144,14 +150,14 @@ sub _log_headers {
 }
 
 sub _log_params {
-    my ( $self, $req ) = @_;
+    my ( $self, $req, $method ) = @_;
 
     return if !$self->dump_params;
 
     my %params;
     my $uri = $req->uri;
 
-    if ( $req->method eq 'GET' ) {
+    if ( $method eq 'GET' ) {
         my @params = $uri->query_param;
         return unless @params;
 
@@ -184,7 +190,7 @@ sub _log_params {
         $t->row( $name, $_ ) for sort @values;
     }
 
-    $self->logger->debug( " Params:\n" . $t->draw );
+    $self->logger->debug( "$method Params:\n" . $t->draw );
 }
 
 sub _log_cookies {
