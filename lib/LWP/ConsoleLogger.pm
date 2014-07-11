@@ -13,10 +13,13 @@ use Moose;
 use MooseX::StrictConstructor;
 use MooseX::Types::Common::Numeric qw( PositiveInt );
 use MooseX::Types::Moose qw( Bool CodeRef );
+use Parse::MIME qw( parse_mime_type );
 use Term::Size::Any qw( chars );
 use Text::SimpleTable::AutoWidth qw();
+use Try::Tiny;
 use URI::Query qw();
 use URI::QueryParam qw();
+use XML::Simple qw( XMLin );
 
 sub BUILD {
     my $self = shift;
@@ -109,7 +112,7 @@ sub request_callback {
         $self->_log_params( $req, 'GET' );
     }
     else {
-       $self->_log_params( $req, $_ ) for ( 'GET', 'POST' );
+        $self->_log_params( $req, $_ ) for ( 'GET', 'POST' );
     }
 
     $self->_log_headers( 'request', $req->headers );
@@ -274,10 +277,17 @@ sub _log_text {
 
     return unless $content;
 
-    if ( $content_type =~ m{html}i ) {
+    my ( $type, $subtype ) = parse_mime_type( $content_type );
+    if ( lc $subtype eq 'html' ) {
         $content = $self->html_restrict->process( $content );
         $content =~ s{\s+}{ }g;
         $content =~ s{\n{2,}}{\n\n}g;
+    }
+    elsif ( lc $subtype eq 'xml' ) {
+        try {
+            my $pretty = XMLin( $content );
+            $content = p $pretty;
+        };
     }
 
     my $t = Text::SimpleTable::AutoWidth->new();
