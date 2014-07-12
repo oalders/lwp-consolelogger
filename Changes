@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Adds XML parsing
 
 0.000004  2014-06-16 22:39:09EDT-0400 America/Toronto
 
