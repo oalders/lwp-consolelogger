@@ -3,6 +3,7 @@ use warnings;
 
 package LWP::ConsoleLogger;
 
+use Data::Printer;
 use DateTime qw();
 use Email::MIME qw();
 use Email::MIME::ContentType qw( parse_content_type );
@@ -285,9 +286,10 @@ sub _log_text {
     }
     elsif ( lc $subtype eq 'xml' ) {
         try {
-            my $pretty = XMLin( $content );
+            my $pretty = XMLin( $content, KeepRoot => 1 );
             $content = p $pretty;
-        };
+        }
+        catch { warn $_ };
     }
 
     my $t = Text::SimpleTable::AutoWidth->new();
