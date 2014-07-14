@@ -33,7 +33,9 @@ foreach my $mech ( $lwp, $mech ) {
     my $logger         = debug_ua( $ua );
     my $logging_output = [];
 
-    my $ld = Log::Dispatch->new;
+    my $ld = Log::Dispatch->new(
+        outputs => [ [ 'Screen', min_level => 'debug', newline => 1, ] ] );
+
     $ld->add(
         Log::Dispatch::Array->new(
             name      => 'test',
@@ -54,14 +56,20 @@ foreach my $mech ( $lwp, $mech ) {
         ua     => $ua,
     );
 
-    my $server_res = $server_agent->get( '/' );
-    ok $server_res->is_success, 'GET XML';
+    ok( $server_agent->get( '/' )->is_success, 'GET XML' );
+
+    my $xml;
+
+    foreach my $item ( reverse @{$logging_output} ) {
+        if ( $item->{message} =~ m{| Text} ) {
+            $xml = $item->{message};
+            last;
+        }
+    }
 
     # brittle and hackish, but it works
-    my $xml = $logging_output->[5]->{message};
     $xml =~ s{[ \s | + \- ' \. \\ ]}{}gxms;
     $xml =~ s{Text}{};
-
     my $ref = eval $xml;
     is_deeply( $ref, { foo => { bar => "baz", id => 1 } }, 'XML parsed' );
 }
