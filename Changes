@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+
+0.000008  2014-07-14 19:07:58EDT-0400 America/Toronto
     - Don't attempt to draw empty tables
 
 0.000007  2014-07-14 17:51:25EDT-0400 America/Toronto
