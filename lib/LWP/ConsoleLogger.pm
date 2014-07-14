@@ -3,7 +3,7 @@ use warnings;
 
 package LWP::ConsoleLogger;
 
-use Data::Printer;
+use Data::Printer { end_separator => 1, hash_separator => ' => ' };
 use DateTime qw();
 use Email::MIME qw();
 use Email::MIME::ContentType qw( parse_content_type );
