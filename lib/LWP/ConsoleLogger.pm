@@ -150,7 +150,7 @@ sub _log_headers {
         $t->row( $name, $headers->header( $name ) );
     }
 
-    $self->logger->debug( ucfirst( $type ) . " Headers:\n" . $t->draw );
+    $self->_draw( $t, ucfirst $type . " Headers:\n" );
 }
 
 sub _log_params {
@@ -194,7 +194,7 @@ sub _log_params {
         $t->row( $name, $_ ) for sort @values;
     }
 
-    $self->logger->debug( "$method Params:\n" . $t->draw );
+    $self->_draw( $t, "$method Params:\n" );
 }
 
 sub _log_cookies {
@@ -226,7 +226,7 @@ sub _log_cookies {
             }
         }
 
-        $self->logger->debug( ucfirst( $type ) . " Cookie:\n" . $t->draw );
+        $self->_draw( $t, ucfirst $type . " Cookie:\n" );
     }
 
 }
@@ -260,7 +260,7 @@ sub _log_content {
     $t->captions( ['Content'] );
 
     $t->row( $content );
-    $self->logger->debug( $t->draw );
+    $self->_draw( $t );
 }
 
 sub _log_text {
@@ -278,25 +278,27 @@ sub _log_text {
 
     return unless $content;
 
+    my $t = Text::SimpleTable::AutoWidth->new();
+    $t->captions( ['Text'] );
+
     my ( $type, $subtype ) = parse_mime_type( $content_type );
     if ( lc $subtype eq 'html' ) {
         $content = $self->html_restrict->process( $content );
         $content =~ s{\s+}{ }g;
         $content =~ s{\n{2,}}{\n\n}g;
+
+        return if !$content;
     }
     elsif ( lc $subtype eq 'xml' ) {
         try {
             my $pretty = XMLin( $content, KeepRoot => 1 );
             $content = p $pretty;
         }
-        catch { warn $_ };
+        catch { $t->row( "Error parsing XML: $_" ) };
     }
 
-    my $t = Text::SimpleTable::AutoWidth->new();
-    $t->captions( ['Text'] );
-
     $t->row( $content );
-    $self->logger->debug( $t->draw );
+    $self->_draw( $t );
 }
 
 sub _build_term_width {
@@ -316,6 +318,15 @@ sub _build_term_width {
 
     $width = 80 unless ( $width && $width >= 80 );
     return $width;
+}
+
+sub _draw {
+    my $self     = shift;
+    my $t        = shift;
+    my $preamble = shift;
+
+    return if !$t->rows;
+    $self->logger->debug( $t->draw );
 }
 
 1;
