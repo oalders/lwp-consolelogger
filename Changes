@@ -2,6 +2,8 @@ Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
 
+0.000007  2014-07-14 17:51:25EDT-0400 America/Toronto
+
     - Configure Data::Printer layout options
 
 0.000006  2014-07-14 11:54:12EDT-0400 America/Toronto
