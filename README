@@ -2,7 +2,7 @@ NAME
     LWP::ConsoleLogger - Easy LWP tracing and debugging
 
 VERSION
-    version 0.000007
+    version 0.000008
 
 SYNOPSIS
         my $ua = LWP::UserAgent->new( cookie_jar => {} );
