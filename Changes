@@ -2,6 +2,8 @@ Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
 
+    - Configure Data::Printer layout options
+
 0.000006  2014-07-14 11:54:12EDT-0400 America/Toronto
     - Make XML testing a bit more verbose
 
