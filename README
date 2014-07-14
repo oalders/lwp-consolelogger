@@ -2,7 +2,7 @@ NAME
     LWP::ConsoleLogger - Easy LWP tracing and debugging
 
 VERSION
-    version 0.000005
+    version 0.000006
 
 SYNOPSIS
         my $ua = LWP::UserAgent->new( cookie_jar => {} );
@@ -245,7 +245,7 @@ CAVEATS
     example, I'm really only dealing with GET and POST. There's probably a
     much better way of getting the POST params than what I copied in a hurry
     from a very old module. Also, I'm mostly assuming that the content will
-    be text or HTML.
+    be text, HTML or XML.
 
     The test suite is not very robust either. If you'd like to contribute to
     this module and you can't find an appropriate test, do add something to
