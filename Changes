@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+
+0.000006  2014-07-14 11:54:12EDT-0400 America/Toronto
     - Make XML testing a bit more verbose
 
 0.000005  2014-07-12 10:54:08EDT-0400 America/Toronto
