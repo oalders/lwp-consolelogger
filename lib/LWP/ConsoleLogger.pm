@@ -293,6 +293,7 @@ sub _log_text {
         try {
             my $pretty = XMLin( $content, KeepRoot => 1 );
             $content = p $pretty;
+            $content =~ s{^\\ }{}; # don't prefix HashRef with slash
         }
         catch { $t->row( "Error parsing XML: $_" ) };
     }
