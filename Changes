@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+
+0.000009  2014-07-17 10:14:29EDT-0400 America/Toronto
     - Don't prefix XML HashRef (in text) with a slash
     - Restore table descriptions which were wiped out in previous release
 
