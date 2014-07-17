@@ -326,6 +326,7 @@ sub _draw {
     my $preamble = shift;
 
     return if !$t->rows;
+    $self->logger->debug( $preamble ) if $preamble;
     $self->logger->debug( $t->draw );
 }
 
