@@ -31,6 +31,8 @@ sub debug_ua {
 
 __END__
 
+# ABSTRACT: Easy LWP tracing and debugging
+
 =pod
 
 =head1 DESCRIPTION

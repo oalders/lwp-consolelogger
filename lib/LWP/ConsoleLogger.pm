@@ -335,7 +335,7 @@ sub _draw {
 
 __END__
 
-# ABSTRACT: Easy LWP tracing and debugging
+# ABSTRACT: LWP tracing and debugging
 
 =pod
 
