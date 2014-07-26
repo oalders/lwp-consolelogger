@@ -342,7 +342,7 @@ __END__
 =head1 SYNOPSIS
 
     my $ua = LWP::UserAgent->new( cookie_jar => {} );
-    my $console_logger = LWP::Consoleconsole_logger->new(
+    my $console_logger = LWP::ConsoleLogger->new(
         dump_content       => 1,
         dump_text          => 1,
         content_pre_filter => sub {
@@ -371,7 +371,7 @@ __END__
     #################################################################
 
     # or start the easy way
-    use LWP::Consoleconsole_logger::Easy qw( debug_ua );
+    use LWP::ConsoleLogger::Easy qw( debug_ua );
     use WWW::Mechanize;
 
     my $mech           = WWW::Mechanize->new;   # or LWP::UserAgent->new() etc

@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Fixes typos in documentation
+    - Adds MetaCPAN::Client to the examples folder
 
 0.000009  2014-07-17 10:14:29EDT-0400 America/Toronto
     - Don't prefix XML HashRef (in text) with a slash

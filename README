@@ -2,11 +2,11 @@ NAME
     LWP::ConsoleLogger - LWP tracing and debugging
 
 VERSION
-    version 0.000009
+    version 0.000010
 
 SYNOPSIS
         my $ua = LWP::UserAgent->new( cookie_jar => {} );
-        my $console_logger = LWP::Consoleconsole_logger->new(
+        my $console_logger = LWP::ConsoleLogger->new(
             dump_content       => 1,
             dump_text          => 1,
             content_pre_filter => sub {
@@ -35,7 +35,7 @@ SYNOPSIS
         #################################################################
 
         # or start the easy way
-        use LWP::Consoleconsole_logger::Easy qw( debug_ua );
+        use LWP::ConsoleLogger::Easy qw( debug_ua );
         use WWW::Mechanize;
 
         my $mech           = WWW::Mechanize->new;   # or LWP::UserAgent->new() etc
