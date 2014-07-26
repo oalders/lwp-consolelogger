@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+
+0.000010  2014-07-25 23:33:35EDT-0400 America/Toronto
     - Fixes typos in documentation
     - Adds MetaCPAN::Client to the examples folder
 
