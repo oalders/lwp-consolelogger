@@ -1,6 +1,8 @@
 use strict;
 use warnings;
 
+use 5.006;
+
 package LWP::ConsoleLogger;
 
 use Data::Printer { end_separator => 1, hash_separator => ' => ' };
