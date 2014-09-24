@@ -11,6 +11,7 @@ use Email::MIME qw();
 use Email::MIME::ContentType qw( parse_content_type );
 use HTML::Restrict qw();
 use HTTP::CookieMonster qw();
+use JSON::MaybeXS qw( decode_json );
 use Log::Dispatch qw();
 use Moose;
 use MooseX::StrictConstructor;
@@ -298,6 +299,12 @@ sub _log_text {
             $content =~ s{^\\ }{}; # don't prefix HashRef with slash
         }
         catch { $t->row( "Error parsing XML: $_" ) };
+    }
+    elsif ( lc $subtype eq 'json' ) {
+        try {
+            $content = p decode_json( $content );
+        }
+        catch { $t->row( "Error parsing JSON: $_" ) };
     }
 
     $t->row( $content );
