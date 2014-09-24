@@ -4,6 +4,7 @@ requires "Email::MIME" => "0";
 requires "Email::MIME::ContentType" => "0";
 requires "HTML::Restrict" => "0";
 requires "HTTP::CookieMonster" => "0";
+requires "JSON::MaybeXS" => "0";
 requires "Log::Dispatch" => "0";
 requires "Moose" => "0";
 requires "MooseX::StrictConstructor" => "0";

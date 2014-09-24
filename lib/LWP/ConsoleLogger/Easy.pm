@@ -69,6 +69,11 @@ desire.
 
     $mech->get(...);
 
+=head2 EXAMPLES
+
+Please see the "examples" folder in this distribution for more ideas on how to
+use this module.
+
 =cut
 
 # ABSTRACT: Start logging your LWP useragent the easy way.
