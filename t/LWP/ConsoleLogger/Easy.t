@@ -8,6 +8,7 @@ use Log::Dispatch::Array;
 use Path::Tiny qw( path );
 use Plack::Test;
 use Plack::Test::Agent;
+use Test::FailWarnings;
 use Test::Fatal qw( exception );
 use Test::Most;
 use WWW::Mechanize;
@@ -46,32 +47,35 @@ foreach my $mech ( $lwp, $mech ) {
 
     $logger->logger( $ld );
 
-    my $xml = q[<foo id="1"><bar>baz</bar></foo>];
-    my $app
-        = sub { return [ 200, [ 'Content-Type' => 'text/xml' ], [$xml] ] };
+    {
+        my $xml = q[<foo id="1"><bar>baz</bar></foo>];
+        my $app
+            = sub { return [ 200, [ 'Content-Type' => 'text/xml' ], [$xml] ] };
 
-    my $server_agent = Plack::Test::Agent->new(
-        app    => $app,
-        server => 'HTTP::Server::Simple',
-        ua     => $ua,
-    );
+        my $server_agent = Plack::Test::Agent->new(
+            app    => $app,
+            server => 'HTTP::Server::Simple',
+            ua     => $ua,
+        );
 
-    ok( $server_agent->get( '/' )->is_success, 'GET XML' );
-
-    my $xml;
-
-    foreach my $item ( reverse @{$logging_output} ) {
-        if ( $item->{message} =~ m{| Text} ) {
-            $xml = $item->{message};
-            last;
-        }
+        ok( $server_agent->get( '/' )->is_success, 'GET XML' );
     }
+    {
+        my $xml;
 
-    # brittle and hackish, but it works
-    $xml =~ s{[ \s | + \- ' \. \\ ]}{}gxms;
-    $xml =~ s{Text}{};
-    my $ref = eval $xml;
-    is_deeply( $ref, { foo => { bar => "baz", id => 1 } }, 'XML parsed' );
+        foreach my $item ( reverse @{$logging_output} ) {
+            if ( $item->{message} =~ m{| Text} ) {
+                $xml = $item->{message};
+                last;
+            }
+        }
+
+        # brittle and hackish, but it works
+        $xml =~ s{[ \s | + \- ' \. \\ ]}{}gxms;
+        $xml =~ s{Text}{};
+        my $ref = eval $xml;
+        is_deeply( $ref, { foo => { bar => "baz", id => 1 } }, 'XML parsed' );
+    }
 }
 
 done_testing();
