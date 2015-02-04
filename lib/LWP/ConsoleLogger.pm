@@ -19,7 +19,7 @@ use MooseX::Types::Common::Numeric qw( PositiveInt );
 use MooseX::Types::Moose qw( Bool CodeRef );
 use Parse::MIME qw( parse_mime_type );
 use Term::Size::Any qw( chars );
-use Text::SimpleTable::AutoWidth qw();
+use Text::SimpleTable::AutoWidth 0.09 qw();
 use Try::Tiny;
 use URI::Query qw();
 use URI::QueryParam qw();
