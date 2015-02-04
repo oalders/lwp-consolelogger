@@ -1,10 +1,5 @@
-NAME
-    LWP::ConsoleLogger - LWP tracing and debugging
-
-VERSION
-    version 0.000012
-
 SYNOPSIS
+
         my $ua = LWP::UserAgent->new( cookie_jar => {} );
         my $console_logger = LWP::ConsoleLogger->new(
             dump_content       => 1,
@@ -12,72 +7,70 @@ SYNOPSIS
             content_pre_filter => sub {
                 my $content      = shift;
                 my $content_type = shift;
-
+    
                 # mangle content here
                 ...
-
+    
                     return $content;
             },
         );
-
+    
         my $ua = LWP::UserAgent->new();
         $ua->default_header(
             'Accept-Encoding' => scalar HTTP::Message::decodable() );
-
+    
         $ua->add_handler( 'response_done',
             sub { $console_logger->response_callback( @_ ) } );
         $ua->add_handler( 'request_send',
             sub { $console_logger->request_callback( @_ ) } );
-
+    
         # now watch debugging output to your screen
         $ua->get( 'http://nytimes.com/' );
-
+    
         #################################################################
-
+    
         # or start the easy way
         use LWP::ConsoleLogger::Easy qw( debug_ua );
         use WWW::Mechanize;
-
+    
         my $mech           = WWW::Mechanize->new;   # or LWP::UserAgent->new() etc
         my $console_logger = debug_ua( $mech );
         $mech->get( $some_url );
-
+    
         # now watch the console for debugging output
         # turn off header dumps
         $console_logger->dump_headers( 0 );
-
+    
         $mech->get( $some_other_url );
-
+    
         #################################################################
         # sample output might look like this
-
+    
         GET http://www.nytimes.com/2014/04/24/technology/fcc-new-net-neutrality-rules.html
-
-        Params:
+    
+        GET params:
         .-----+-------.
         | Key | Value |
         +-----+-------+
         | _r  | 1     |
         | hp  |       |
         '-----+-------'
-
-        Request Headers:
+    
         .-----------------+--------------------------------.
-        | Header Name     | Value                          |
+        | Request Header  | Value                          |
         +-----------------+--------------------------------+
         | Accept-Encoding | gzip                           |
         | Cookie2         | $Version="1"                   |
         | Referer         | http://www.nytimes.com?foo=bar |
         | User-Agent      | WWW-Mechanize/1.73             |
         '-----------------+--------------------------------'
-
-        200 OK
-
+    
+        ==> 200 OK
+    
         Title: The New York Times - Breaking News, World News & Multimedia
-
-        Response Headers:
+    
         .--------------------------+-------------------------------.
-        | Header Name              | Value                         |
+        | Response Header          | Value                         |
         +--------------------------+-------------------------------+
         | Accept-Ranges            | bytes                         |
         | Age                      | 176                           |
@@ -97,7 +90,7 @@ SYNOPSIS
         | X-Cache                  | HIT                           |
         | X-Varnish                | 1142859770 1142854917         |
         '--------------------------+-------------------------------'
-
+    
         .--------------------------+-------------------------------.
         | Text                                                     |
         +--------------------------+-------------------------------+
@@ -105,6 +98,7 @@ SYNOPSIS
         '--------------------------+-------------------------------'
 
 DESCRIPTION
+
     BETA BETA BETA. This is currently an experiment. Things could change.
     Please adjust accordingly.
 
@@ -116,70 +110,104 @@ DESCRIPTION
     which in turn stole most of its internals from Catalyst. If you're new
     to LWP::ConsoleLogger, I suggest getting started with the
     LWP::ConsoleLogger::Easy wrapper. This will get you up and running in
-    minutes. If you need to tweak the settings that LWP::ConsoleLogger::Easy
-    chooses for you (or if you just want to be fancy), please read on.
+    minutes. If you need to tweak the settings that
+    LWP::ConsoleLogger::Easy chooses for you (or if you just want to be
+    fancy), please read on.
 
     Since this is a debugging library, I've left as much mutable state as
     possible, so that you can easily toggle output on and off and otherwise
     adjust how you deal with the output.
 
 CONSTRUCTOR
-  new()
+
+ new()
+
     The following arguments can be passed to new(), although none are
     required. They can also be called as methods on an instantiated object.
     I'll list them here and discuss them in detail below.
 
-    *   "dump_content => 0|1"
+      * dump_content => 0|1
 
-    *   "dump_cookies => 0|1"
+      * dump_cookies => 0|1
 
-    *   "dump_headers => 0|1"
+      * dump_headers => 0|1
 
-    *   "dump_params => 0|1"
+      * dump_params => 0|1
 
-    *   "dump_text => 0|1"
+      * dump_status => 0|1
 
-    *   "content_pre_filter => sub { ... }"
+      * dump_text => 0|1
 
-    *   "text_pre_filter => sub { ... }"
+      * dump_title => 0|1
 
-    *   "html_restrict => HTML::Restrict->new( ... )"
+      * dump_text => 0|1
 
-    *   "logger => Log::Dispatch->new( ... )"
+      * dump_uri => 0|1
 
-    *   "term_width => $integer"
+      * content_pre_filter => sub { ... }
+
+      * text_pre_filter => sub { ... }
+
+      * html_restrict => HTML::Restrict->new( ... )
+
+      * logger => Log::Dispatch->new( ... )
+
+      * term_width => $integer
 
 SUBROUTINES/METHODS
-  dump_content( 0|1 )
-    Boolean value. If true, the actual content of your response (HTML, JSON,
-    etc) will be dumped to your screen. Defaults to false.
 
-  dump_cookies( 0|1 )
+ dump_content( 0|1 )
+
+    Boolean value. If true, the actual content of your response (HTML,
+    JSON, etc) will be dumped to your screen. Defaults to false.
+
+ dump_cookies( 0|1 )
+
     Boolean value. If true, the content of your cookies will be dumped to
     your screen. Defaults to false.
 
-  dump_headers( 0|1 )
-    Boolean value. If true, both request and response headers will be dumped
-    to your screen. Defaults to true.
+ dump_headers( 0|1 )
+
+    Boolean value. If true, both request and response headers will be
+    dumped to your screen. Defaults to true.
 
     Headers are dumped in alphabetical order.
 
-  dump_params( 0|1 )
+ dump_params( 0|1 )
+
     Boolean value. If true, both GET and POST params will be dumped to your
     screen. Defaults to true.
 
     Params are dumped in alphabetical order.
 
-  dump_text( 0|1 )
+ dump_status( 0|1 )
+
+    Boolean value. If true, dumps the HTTP response code for each page
+    being visited. Defaults to true.
+
+ dump_text( 0|1 )
+
     Boolean value. If true, dumps the text of your page after both the
     content_pre_filter and text_pre_filters have been applied. Defaults to
     true.
 
-  content_pre_filter( sub { ... } )
-    Subroutine reference. This allows you to manipulate content before it is
-    dumped. A common use case might be stripping headers and footers away
-    from HTML content to make it easier to detect changes in the body of the
-    page.
+ dump_title( 0|1 )
+
+    Boolean value. If true, dumps the titles of HTML pages if your
+    UserAgent has a c<title> method and if it returns something useful.
+    Defaults to true.
+
+ dump_uri( 0|1 )
+
+    Boolean value. If true, dumps the URI of each page being visited.
+    Defaults to true.
+
+ content_pre_filter( sub { ... } )
+
+    Subroutine reference. This allows you to manipulate content before it
+    is dumped. A common use case might be stripping headers and footers
+    away from HTML content to make it easier to detect changes in the body
+    of the page.
 
         $easy_logger->content_pre_filter(
         sub {
@@ -196,11 +224,12 @@ SUBROUTINES/METHODS
     Try to make sure that your content mangling doesn't return broken HTML
     as that may not play with with HTML::Restrict.
 
-  text_pre_filter( sub { ... } )
+ text_pre_filter( sub { ... } )
+
     Subroutine reference. This allows you to manipulate text before it is
     dumped. A common use case might be stripping away duplicate whitespace
     and/or newlines in order to improve formatting. Keep in mind that the
-    "content_pre_filter" will have been applied to the content which is
+    content_pre_filter will have been applied to the content which is
     passed to the text_pre_filter. The idea is that you can strip away an
     HTML you don't care about in the content_pre_filter phase and then
     process the remainder of the content in the text_pre_filter.
@@ -209,10 +238,10 @@ SUBROUTINES/METHODS
         sub {
             my $content      = shift;
             my $content_type = shift; # the value of the Content-Type header
-
+    
             # do something with the content
             # ...
-
+    
             return $content;
         }
         );
@@ -222,43 +251,37 @@ SUBROUTINES/METHODS
     some whitespace and newlines from processed HTML in its own opinionated
     way, in order to present you with more readable text.
 
-  html_restrict( HTML::Restrict->new( ... ) )
-    If the content_type indicates HTML then HTML::Restrict will be used to
-    strip tags from your content in the text rendering process. You may pass
-    your own HTML::Restrict object, if you like. This would be helpful in
-    situations where you still do want to some some tags in your text.
+ html_restrict( HTML::Restrict->new( ... ) )
 
-  logger( Log::Dispatch->new( ... ) )
+    If the content_type indicates HTML then HTML::Restrict will be used to
+    strip tags from your content in the text rendering process. You may
+    pass your own HTML::Restrict object, if you like. This would be helpful
+    in situations where you still do want to some some tags in your text.
+
+ logger( Log::Dispatch->new( ... ) )
+
     By default all data will be dumped to your console (as the name of this
     module implies) using Log::Dispatch. However, you may use your own
     Log::Dispatch module in order to facilitate logging to files or any
     other output which Log::Dispatch supports.
 
-  term_width( $integer )
+ term_width( $integer )
+
     By default this module will try to find the maximum width of your
     terminal and use all available space when displaying tabular data. You
     may use this parameter to constrain the tables to an arbitrary width.
 
 CAVEATS
+
     Aside from the BETA warnings, I should say that I've written this to
     suit my needs and there are a lot of things I haven't considered. For
     example, I'm really only dealing with GET and POST. There's probably a
-    much better way of getting the POST params than what I copied in a hurry
-    from a very old module. Also, I'm mostly assuming that the content will
-    be text, HTML or XML.
+    much better way of getting the POST params than what I copied in a
+    hurry from a very old module. Also, I'm mostly assuming that the
+    content will be text, HTML or XML.
 
-    The test suite is not very robust either. If you'd like to contribute to
-    this module and you can't find an appropriate test, do add something to
-    the example folder (either a new script or alter an existing one), so
-    that I can see what your patch does.
-
-AUTHOR
-    Olaf Alders <olaf@wundercounter.com>
-
-COPYRIGHT AND LICENSE
-    This software is Copyright (c) 2014 by MaxMind, Inc..
-
-    This is free software, licensed under:
-
-      The Artistic License 2.0 (GPL Compatible)
+    The test suite is not very robust either. If you'd like to contribute
+    to this module and you can't find an appropriate test, do add something
+    to the example folder (either a new script or alter an existing one),
+    so that I can see what your patch does.
 

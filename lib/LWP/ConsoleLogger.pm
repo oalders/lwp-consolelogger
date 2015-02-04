@@ -512,7 +512,15 @@ here and discuss them in detail below.
 
 =item * C<< dump_params => 0|1 >>
 
+=item * C<< dump_status => 0|1 >>
+
 =item * C<< dump_text => 0|1 >>
+
+=item * C<< dump_title => 0|1 >>
+
+=item * C<< dump_text => 0|1 >>
+
+=item * C<< dump_uri => 0|1 >>
 
 =item * C<< content_pre_filter => sub { ... } >>
 
