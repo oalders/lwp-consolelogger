@@ -295,14 +295,14 @@ sub _log_text {
     elsif ( lc $subtype eq 'xml' ) {
         try {
             my $pretty = XMLin( $content, KeepRoot => 1 );
-            $content = p $pretty;
+            $content = p( $pretty );
             $content =~ s{^\\ }{}; # don't prefix HashRef with slash
         }
         catch { $t->row( "Error parsing XML: $_" ) };
     }
     elsif ( lc $subtype eq 'json' ) {
         try {
-            $content = p decode_json( $content );
+            $content = p( decode_json( $content ));
         }
         catch { $t->row( "Error parsing JSON: $_" ) };
     }
