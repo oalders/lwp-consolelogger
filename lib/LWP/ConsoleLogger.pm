@@ -129,7 +129,7 @@ sub response_callback {
     my $res  = shift;
     my $ua   = shift;
 
-    $self->logger->debug( $res->status_line . "\n" );
+    $self->logger->debug( '==> ' . $res->status_line . "\n" );
     $self->logger->debug( 'Title: ' . $ua->title . "\n" )
         if $ua->can( 'title' ) && $ua->title;
     $self->_log_headers( 'response', $res->headers );
@@ -146,14 +146,14 @@ sub _log_headers {
     return if !$self->dump_headers;
 
     my $t = Text::SimpleTable::AutoWidth->new();
-    $t->captions( [ 'Header Name', 'Value' ] );
+    $t->captions( [ ucfirst $type . ' Header', 'Value' ] );
 
     foreach my $name ( sort $headers->header_field_names ) {
         next if $name eq 'Cookie' || $name eq 'Set-Cookie';
         $t->row( $name, $headers->header( $name ) );
     }
 
-    $self->_draw( $t, ucfirst $type . " Headers:\n" );
+    $self->_draw( $t );
 }
 
 sub _log_params {
@@ -398,7 +398,7 @@ __END__
 
     GET http://www.nytimes.com/2014/04/24/technology/fcc-new-net-neutrality-rules.html
 
-    Params:
+    GET params:
     .-----+-------.
     | Key | Value |
     +-----+-------+
@@ -406,9 +406,8 @@ __END__
     | hp  |       |
     '-----+-------'
 
-    Request Headers:
     .-----------------+--------------------------------.
-    | Header Name     | Value                          |
+    | Request Header  | Value                          |
     +-----------------+--------------------------------+
     | Accept-Encoding | gzip                           |
     | Cookie2         | $Version="1"                   |
@@ -416,13 +415,12 @@ __END__
     | User-Agent      | WWW-Mechanize/1.73             |
     '-----------------+--------------------------------'
 
-    200 OK
+    ==> 200 OK
 
     Title: The New York Times - Breaking News, World News & Multimedia
 
-    Response Headers:
     .--------------------------+-------------------------------.
-    | Header Name              | Value                         |
+    | Response Header          | Value                         |
     +--------------------------+-------------------------------+
     | Accept-Ranges            | bytes                         |
     | Age                      | 176                           |
