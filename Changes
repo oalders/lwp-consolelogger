@@ -1,9 +1,9 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Adds logging levels and more fine grained control over what gets logged
 
 0.000012  2014-09-24 00:09:28-04:00 America/Toronto
-
     - Print JSON as Perl data structure when dumping text
     - Adds more scripts to examples folder
 
