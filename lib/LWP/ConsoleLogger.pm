@@ -59,7 +59,25 @@ has dump_params => (
     default => 1,
 );
 
+has dump_status => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 1,
+);
+
 has dump_text => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 1,
+);
+
+has dump_title => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 1,
+);
+
+has dump_uri => (
     is      => 'rw',
     isa     => Bool,
     default => 1,
@@ -76,6 +94,7 @@ has logger => (
     is      => 'rw',
     isa     => 'Log::Dispatch',
     lazy    => 1,
+    handles => { _debug => 'debug' },
     default => sub {
         return Log::Dispatch->new(
             outputs => [ [ 'Screen', min_level => 'debug', newline => 1, ], ],
@@ -108,9 +127,12 @@ sub request_callback {
     my $req  = shift;
     my $ua   = shift;
 
-    my $uri_without_query = $req->uri->clone;
-    $uri_without_query->query( undef );
-    $self->logger->debug( $req->method . q{ } . $uri_without_query . "\n" );
+    if ( $self->dump_uri ) {
+        my $uri_without_query = $req->uri->clone;
+        $uri_without_query->query( undef );
+
+        $self->_debug( $req->method . q{ } . $uri_without_query . "\n" );
+    }
 
     if ( $req->method eq 'GET' ) {
         $self->_log_params( $req, 'GET' );
@@ -129,9 +151,13 @@ sub response_callback {
     my $res  = shift;
     my $ua   = shift;
 
-    $self->logger->debug( '==> ' . $res->status_line . "\n" );
-    $self->logger->debug( 'Title: ' . $ua->title . "\n" )
-        if $ua->can( 'title' ) && $ua->title;
+    if ( $self->dump_status ) {
+        $self->_debug( '==> ' . $res->status_line . "\n" );
+    }
+    if ( $self->dump_title && $ua->can( 'title' ) && $ua->title ) {
+        $self->_debug( 'Title: ' . $ua->title . "\n" );
+    }
+
     $self->_log_headers( 'response', $res->headers );
     $self->_log_cookies( 'response', $ua->cookie_jar );
 
@@ -296,13 +322,13 @@ sub _log_text {
         try {
             my $pretty = XMLin( $content, KeepRoot => 1 );
             $content = p( $pretty );
-            $content =~ s{^\\ }{}; # don't prefix HashRef with slash
+            $content =~ s{^\\ }{};    # don't prefix HashRef with slash
         }
         catch { $t->row( "Error parsing XML: $_" ) };
     }
     elsif ( lc $subtype eq 'json' ) {
         try {
-            $content = p( decode_json( $content ));
+            $content = p( decode_json( $content ) );
         }
         catch { $t->row( "Error parsing JSON: $_" ) };
     }
@@ -336,8 +362,8 @@ sub _draw {
     my $preamble = shift;
 
     return if !$t->rows;
-    $self->logger->debug( $preamble ) if $preamble;
-    $self->logger->debug( $t->draw );
+    $self->_debug( $preamble ) if $preamble;
+    $self->_debug( $t->draw );
 }
 
 1;
@@ -526,10 +552,25 @@ Defaults to true.
 
 Params are dumped in alphabetical order.
 
+=head2 dump_status( 0|1 )
+
+Boolean value. If true, dumps the HTTP response code for each page being
+visited.  Defaults to true.
+
 =head2 dump_text( 0|1 )
 
 Boolean value. If true, dumps the text of your page after both the
 content_pre_filter and text_pre_filters have been applied.  Defaults to true.
+
+=head2 dump_title( 0|1 )
+
+Boolean value. If true, dumps the titles of HTML pages if your UserAgent has
+a c<title> method and if it returns something useful. Defaults to true.
+
+=head2 dump_uri( 0|1 )
+
+Boolean value. If true, dumps the URI of each page being visited. Defaults to
+true.
 
 =head2 content_pre_filter( sub { ... } )
 

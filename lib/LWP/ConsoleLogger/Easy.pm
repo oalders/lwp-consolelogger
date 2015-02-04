@@ -6,25 +6,40 @@ use warnings;
 use LWP::ConsoleLogger;
 use Sub::Exporter -setup => { exports => ['debug_ua'] };
 
+my %VERBOSITY = (
+    dump_content => 8,
+    dump_cookies => 6,
+    dump_headers => 5,
+    dump_params  => 4,
+    dump_status  => 2,
+    dump_text    => 7,
+    dump_title   => 3,
+    dump_uri     => 1,
+);
+
 sub debug_ua {
-    my $mech   = shift;
-    my $logger = LWP::ConsoleLogger->new(
-        dump_content => 1,
-        dump_cookies => 1,
-        dump_headers => 1,
-        dump_params  => 1,
-        dump_text    => 1,
-    );
+    my $ua = shift;
+    my $level = shift || 10;
 
-    $mech->default_header(
-        'Accept-Encoding' => scalar HTTP::Message::decodable() );
+    my %args = map { $_ => $VERBOSITY{$_} <= $level } keys %VERBOSITY;
+    my $logger = LWP::ConsoleLogger->new( %args );
 
-    $mech->add_handler( 'response_done',
-        sub { $logger->response_callback( @_ ) } );
-    $mech->add_handler( 'request_send',
-        sub { $logger->request_callback( @_ ) } );
+    add_ua_handlers( $ua, $logger );
 
     return $logger;
+}
+
+sub add_ua_handlers {
+    my $ua     = shift;
+    my $logger = shift;
+
+    $ua->default_header(
+        'Accept-Encoding' => scalar HTTP::Message::decodable() );
+
+    $ua->add_handler( 'response_done',
+        sub { $logger->response_callback( @_ ) } );
+    $ua->add_handler( 'request_send',
+        sub { $logger->request_callback( @_ ) } );
 }
 
 1;
@@ -37,10 +52,11 @@ __END__
 
 =head1 DESCRIPTION
 
-This module gives you the easiest possible (and the most verbose) introduction
-to L<LWP::ConsoleLogger>.  It turns on all logging by default.  I'd suggest
-going with the defaults to start with and then turning down the verbosity after
-that.
+This module gives you the easiest possible introduction to
+L<LWP::ConsoleLogger>.  It offers one wrappers around L<LWP::ConsoleLogger>:
+C<debug_ua>.  This function allows you to get up and running quickly with just
+a couple of lines of code. It instantiates LWP logging and also returns a
+L<LWP::ConsoleLogger> object, which you may then tweak to your heart's desire.
 
 =head1 SYNOPSIS
 
@@ -53,21 +69,36 @@ that.
 
     # now watch the console for debugging output
 
+    # ...
+    # stop dumping headers
+    $logger->dump_headers( 0 );
+
+    my $quiet_logger = debug_ua( $mech, 1 );
+
+    my $noisy_logger = debug_ua( $mech, 5 );
+
 =head1 FUNCTIONS
 
-=head2 debug_ua
+=head2 debug_ua( $mech, $verbosity )
 
-This module exports one function: debug_ua().  It's essentially an easy wrapper
-around L<LWP::ConsoleLogger>, allowing you to get up and running quickly with
-just a couple of lines of code.  This method instantiates LWP logging and also
-returns an LWP::ConsoleLogger object, which you may then tweak to your heart's
-desire.
+When called without a verbosity argument, this function turns on all logging.
+I'd suggest going with this to start with and then turning down the verbosity
+after that.   This method returns an L<LWP::ConsoleLogger> object, which you
+may tweak to your heart's desire.
 
     my $ua_logger = debug_ua( $mech );
     $ua_logger->content_pre_filter( sub {...} );
     $ua_logger->logger( Log::Dispatch->new(...) );
 
     $mech->get(...);
+
+You can provide a verbosity level of 0 or more.  (Currently 0 - 8 supported.)
+This will turn up the verbosity on your output gradually.  A verbosity of 0
+will display nothing.  8 will display all available outputs.
+
+    # don't get too verbose
+    my $ua_logger = debug_ua( $mech, 4 );
+
 
 =head2 EXAMPLES
 
