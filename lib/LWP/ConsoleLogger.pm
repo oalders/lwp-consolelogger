@@ -626,9 +626,14 @@ text_pre_filter.
         # do something with the content
         # ...
 
-        return $content;
+        return ( $content, $new_content_type );
     }
     );
+
+If your C<text_pre_filter()> converts from HTML to plain text, be sure to
+return the new content type (text/plain) when you exit the sub.  If you do not
+do this, HTML formatting will then be applied to your plain text as is
+explained below.
 
 If this is HTML content, L<HTML::Restrict> will be applied after the
 text_pre_filter has been run.  LWP::ConsoleLogger will then strip away some
