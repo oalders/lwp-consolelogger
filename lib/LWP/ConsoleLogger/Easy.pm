@@ -22,7 +22,7 @@ sub debug_ua {
     my $level = shift || 10;
 
     my %args = map { $_ => $VERBOSITY{$_} <= $level } keys %VERBOSITY;
-    my $logger = LWP::ConsoleLogger->new( %args );
+    my $logger = LWP::ConsoleLogger->new(%args);
 
     add_ua_handlers( $ua, $logger );
 
@@ -36,10 +36,14 @@ sub add_ua_handlers {
     $ua->default_header(
         'Accept-Encoding' => scalar HTTP::Message::decodable() );
 
-    $ua->add_handler( 'response_done',
-        sub { $logger->response_callback( @_ ) } );
-    $ua->add_handler( 'request_send',
-        sub { $logger->request_callback( @_ ) } );
+    $ua->add_handler(
+        'response_done',
+        sub { $logger->response_callback(@_) }
+    );
+    $ua->add_handler(
+        'request_send',
+        sub { $logger->request_callback(@_) }
+    );
 }
 
 1;

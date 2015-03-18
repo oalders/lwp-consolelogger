@@ -1,6 +1,5 @@
 [PerlTidy]
 select = {examples,lib,t}/**/*.{pl,pm,t,psgi}
 
-[SortLines]
+[SortLines::Naturally]
 select = .gitignore
-select = cpanfile

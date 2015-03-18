@@ -16,12 +16,13 @@ use WWW::Mechanize;
 my $lwp = LWP::UserAgent->new( cookie_jar => {} );
 my $mech = WWW::Mechanize->new();
 
-my $foo = 'file://' . path( 't/test-data/foo.html' )->absolute;
+my $foo = 'file://' . path('t/test-data/foo.html')->absolute;
 
 foreach my $mech ( $lwp, $mech ) {
-    my $logger = debug_ua( $mech );
-    is( exception {
-            $mech->get( $foo );
+    my $logger = debug_ua($mech);
+    is(
+        exception {
+            $mech->get($foo);
         },
         undef,
         'code lives'
@@ -31,7 +32,7 @@ foreach my $mech ( $lwp, $mech ) {
 # Check XML parsing
 {
     my $ua             = LWP::UserAgent->new( cookie_jar => {} );
-    my $logger         = debug_ua( $ua );
+    my $logger         = debug_ua($ua);
     my $logging_output = [];
 
     my $ld = Log::Dispatch->new(
@@ -45,7 +46,7 @@ foreach my $mech ( $lwp, $mech ) {
         )
     );
 
-    $logger->logger( $ld );
+    $logger->logger($ld);
 
     {
         my $xml = q[<foo id="1"><bar>baz</bar></foo>];
@@ -58,7 +59,7 @@ foreach my $mech ( $lwp, $mech ) {
             ua     => $ua,
         );
 
-        ok( $server_agent->get( '/' )->is_success, 'GET XML' );
+        ok( $server_agent->get('/')->is_success, 'GET XML' );
     }
     {
         my $xml;

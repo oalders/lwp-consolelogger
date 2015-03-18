@@ -9,13 +9,16 @@ use LWP::UserAgent;
 use Pithub;
 
 my $mech  = LWP::UserAgent->new;
-my $debug = debug_ua( $mech );
+my $debug = debug_ua($mech);
 
 my $token = shift @ARGV;
 
 die 'usage: perl pithub.pl my-access-token' unless $token;
 
-my $c = Pithub::Repos::Collaborators->new( ua => $mech, user => 'tokuhirom', token => $token );
+my $c = Pithub::Repos::Collaborators->new(
+    ua    => $mech, user => 'tokuhirom',
+    token => $token
+);
 my $result = $c->list( repo => 'OrePAN2' );
 
 =pod

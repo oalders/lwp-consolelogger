@@ -1,6 +1,6 @@
-/LWP-ConsoleLogger*
 .build
 cpanfile.snapshot
 local
+/LWP-ConsoleLogger*
 *.sw*
 .tidyall.d/

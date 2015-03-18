@@ -129,7 +129,7 @@ sub request_callback {
 
     if ( $self->dump_uri ) {
         my $uri_without_query = $req->uri->clone;
-        $uri_without_query->query( undef );
+        $uri_without_query->query(undef);
 
         $self->_debug( $req->method . q{ } . $uri_without_query . "\n" );
     }
@@ -154,15 +154,15 @@ sub response_callback {
     if ( $self->dump_status ) {
         $self->_debug( '==> ' . $res->status_line . "\n" );
     }
-    if ( $self->dump_title && $ua->can( 'title' ) && $ua->title ) {
+    if ( $self->dump_title && $ua->can('title') && $ua->title ) {
         $self->_debug( 'Title: ' . $ua->title . "\n" );
     }
 
     $self->_log_headers( 'response', $res->headers );
     $self->_log_cookies( 'response', $ua->cookie_jar );
 
-    $self->_log_content( $res, $res->header( 'Content-Type' ) );
-    $self->_log_text( $res, $res->header( 'Content-Type' ) );
+    $self->_log_content( $res, $res->header('Content-Type') );
+    $self->_log_text( $res, $res->header('Content-Type') );
     return;
 }
 
@@ -176,10 +176,10 @@ sub _log_headers {
 
     foreach my $name ( sort $headers->header_field_names ) {
         next if $name eq 'Cookie' || $name eq 'Set-Cookie';
-        $t->row( $name, $headers->header( $name ) );
+        $t->row( $name, $headers->header($name) );
     }
 
-    $self->_draw( $t );
+    $self->_draw($t);
 }
 
 sub _log_params {
@@ -194,7 +194,7 @@ sub _log_params {
         my @params = $uri->query_param;
         return unless @params;
 
-        $params{$_} = [ $uri->query_param( $_ ) ] for @params;
+        $params{$_} = [ $uri->query_param($_) ] for @params;
     }
 
     else {
@@ -202,15 +202,15 @@ sub _log_params {
         my $mime = Email::MIME->new( $req->as_string );
 
         foreach my $part ( $mime->parts ) {
-            $part->disposition_set( 'text/plain' );    # for easy parsing
+            $part->disposition_set('text/plain');    # for easy parsing
 
-            my $disp    = $part->header( 'Content-Disposition' );
-            my $ct      = parse_content_type( $disp );
+            my $disp    = $part->header('Content-Disposition');
+            my $ct      = parse_content_type($disp);
             my $name    = $ct->{attributes}->{name};
             my $content = $part->body;
 
             $content =~ s/\r\n$//;
-            my $query = URI::Query->new( $content );
+            my $query = URI::Query->new($content);
             %params = %{ $query->hash_arrayref };
             last if keys %params;
         }
@@ -233,22 +233,24 @@ sub _log_cookies {
 
     return if !$self->dump_cookies || !$jar;
 
-    my $monster = HTTP::CookieMonster->new( $jar );
+    my $monster = HTTP::CookieMonster->new($jar);
 
     my @cookies    = $monster->all_cookies;
     my $name_width = 10;
 
-    my @methods = ( 'key', 'val', 'path', 'domain',
-        'path_spec', 'secure', 'expires' );
+    my @methods = (
+        'key',       'val',    'path', 'domain',
+        'path_spec', 'secure', 'expires'
+    );
 
-    foreach my $cookie ( @cookies ) {
+    foreach my $cookie (@cookies) {
 
         my $t = Text::SimpleTable::AutoWidth->new();
         $t->captions( [ 'Key', 'Value' ] );
 
-        foreach my $method ( @methods ) {
+        foreach my $method (@methods) {
             my $val = $cookie->$method;
-            if ( $val ) {
+            if ($val) {
                 $val = DateTime->from_epoch( epoch => $val )
                     if $method eq 'expires';
                 $t->row( $method, $val );
@@ -288,8 +290,8 @@ sub _log_content {
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( ['Content'] );
 
-    $t->row( $content );
-    $self->_draw( $t );
+    $t->row($content);
+    $self->_draw($t);
 }
 
 sub _log_text {
@@ -315,9 +317,9 @@ sub _log_text {
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( ['Text'] );
 
-    my ( $type, $subtype ) = parse_mime_type( $content_type );
+    my ( $type, $subtype ) = parse_mime_type($content_type);
     if ( lc $subtype eq 'html' ) {
-        $content = $self->html_restrict->process( $content );
+        $content = $self->html_restrict->process($content);
         $content =~ s{\s+}{ }g;
         $content =~ s{\n{2,}}{\n\n}g;
 
@@ -326,24 +328,24 @@ sub _log_text {
     elsif ( lc $subtype eq 'xml' ) {
         try {
             my $pretty = XMLin( $content, KeepRoot => 1 );
-            $content = p( $pretty );
+            $content = p($pretty);
             $content =~ s{^\\ }{};    # don't prefix HashRef with slash
         }
-        catch { $t->row( "Error parsing XML: $_" ) };
+        catch { $t->row("Error parsing XML: $_") };
     }
     elsif ( lc $subtype eq 'json' ) {
         try {
-            $content = p( decode_json( $content ) );
+            $content = p( decode_json($content) );
         }
-        catch { $t->row( "Error parsing JSON: $_" ) };
+        catch { $t->row("Error parsing JSON: $_") };
     }
 
-    $t->row( $content );
-    $self->_draw( $t );
+    $t->row($content);
+    $self->_draw($t);
 }
 
 sub _build_term_width {
-    my ( $self ) = @_;
+    my ($self) = @_;
 
     # cargo culted from Plack::Middleware::DebugLogging
     my $width = eval '
@@ -351,7 +353,7 @@ sub _build_term_width {
         return $columns;
     ';
 
-    if ( $@ ) {
+    if ($@) {
         $width = $ENV{COLUMNS}
             if exists( $ENV{COLUMNS} )
             && $ENV{COLUMNS} =~ m/^\d+$/;
@@ -367,7 +369,7 @@ sub _draw {
     my $preamble = shift;
 
     return if !$t->rows;
-    $self->_debug( $preamble ) if $preamble;
+    $self->_debug($preamble) if $preamble;
     $self->_debug( $t->draw );
 }
 

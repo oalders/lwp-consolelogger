@@ -8,18 +8,18 @@ use LWP::ConsoleLogger::Easy qw( debug_ua );
 use WWW::Mechanize;
 
 my $mech  = WWW::Mechanize->new;
-my $debug = debug_ua( $mech );
+my $debug = debug_ua($mech);
 
-$debug->dump_content( 0 );
-$debug->dump_cookies( 0 );
-$debug->dump_params( 0 );
+$debug->dump_content(0);
+$debug->dump_cookies(0);
+$debug->dump_params(0);
 
 my $hr = HTML::Restrict->new(
     rules => { link => [ 'href', 'rel', 'title', 'type' ], } );
 
-$debug->html_restrict( $hr );
+$debug->html_restrict($hr);
 
-$mech->get( 'https://metacpan.org' );
+$mech->get('https://metacpan.org');
 
 =pod
 

@@ -8,7 +8,7 @@ use LWP::ConsoleLogger::Easy qw( debug_ua );
 use WWW::Mechanize;
 
 my $mech  = WWW::Mechanize->new;
-my $debug = debug_ua( $mech );
+my $debug = debug_ua($mech);
 
 my $log_dispatch = Log::Dispatch->new(
     outputs => [
@@ -17,6 +17,6 @@ my $log_dispatch = Log::Dispatch->new(
     ],
 );
 
-$debug->logger( $log_dispatch );
+$debug->logger($log_dispatch);
 
-$mech->get( 'http://www.nytimes.com' );
+$mech->get('http://www.nytimes.com');

@@ -10,12 +10,12 @@ use WWW::Mechanize;
 
 my $ua
     = WWW::Mechanize->new( headers => { 'Accept-Encoding' => 'identity' } );
-my $logger = debug_ua( $ua );
+my $logger = debug_ua($ua);
 
 my $wrapped_ua = HTTP::Tiny::Mech->new( mechua => $ua );
 
 my $mcpan = MetaCPAN::Client->new( ua => $wrapped_ua );
-my $author = $mcpan->author( 'XSAWYERX' );
+my $author = $mcpan->author('XSAWYERX');
 
 =pod
 
