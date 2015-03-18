@@ -27,6 +27,7 @@ on 'build' => sub {
 };
 
 on 'test' => sub {
+  requires "HTML::FormatText::WithLinks" => "0";
   requires "HTTP::Request" => "0";
   requires "LWP::UserAgent" => "0";
   requires "Log::Dispatch::Array" => "0";

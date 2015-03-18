@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - text_pre_filter subs should now return a content type
 
 0.000013  2015-02-04 18:30:17-05:00 America/Toronto
     - Adds logging levels and more fine grained control over what gets logged
