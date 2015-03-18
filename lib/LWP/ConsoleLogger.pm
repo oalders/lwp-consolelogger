@@ -301,8 +301,13 @@ sub _log_text {
     my $content = $self->_get_content( $ua, $content_type );
     return unless $content;
 
+    # If a pre_filter converts HTML to text, for example, we don't want to
+    # reprocess the text as HTML.
+
     if ( $self->text_pre_filter ) {
-        $content = $self->text_pre_filter->( $content, $content_type );
+        ( $content, my $type )
+            = $self->text_pre_filter->( $content, $content_type );
+        $content_type = $type if $type;
     }
 
     return unless $content;
