@@ -78,12 +78,13 @@ foreach my $mech ( $lwp, $mech ) {
         my $ref = eval $xml;
         is_deeply( $ref, { foo => { bar => "baz", id => 1 } }, 'XML parsed' );
     }
+
 }
 
 # Check text_pre_filter
 {
     my $ua             = LWP::UserAgent->new( cookie_jar => {} );
-    my $easy         = debug_ua($ua);
+    my $easy           = debug_ua($ua);
     my $logging_output = [];
 
     $easy->logger->add(
@@ -115,6 +116,26 @@ foreach my $mech ( $lwp, $mech ) {
 
         ok( $server_agent->get('/')->is_success, 'GET HTML' );
     }
+}
+
+# check POST body parsing
+{
+    my $app
+        = sub { return [ 200, [ 'Content-Type' => 'text/html' ], ['boo'] ] };
+
+    my $ua = LWP::UserAgent->new( cookie_jar => {} );
+    debug_ua($ua);
+    my $server_agent = Plack::Test::Agent->new(
+        app    => $app,
+        server => 'HTTP::Server::Simple',
+        ua     => $ua,
+    );
+
+    # mostly just do a visual check that POST params are parsed
+    ok(
+        $server_agent->post( '/', [ foo => 'bar', baz => 'qux' ] ),
+        'POST param pasring'
+    );
 }
 
 done_testing();

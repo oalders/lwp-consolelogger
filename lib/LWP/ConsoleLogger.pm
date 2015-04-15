@@ -7,9 +7,8 @@ package LWP::ConsoleLogger;
 
 use Data::Printer { end_separator => 1, hash_separator => ' => ' };
 use DateTime qw();
-use Email::MIME qw();
-use Email::MIME::ContentType qw( parse_content_type );
 use HTML::Restrict qw();
+use HTTP::Body;
 use HTTP::CookieMonster qw();
 use JSON::MaybeXS qw( decode_json );
 use Log::Dispatch qw();
@@ -86,14 +85,14 @@ has dump_uri => (
 
 has html_restrict => (
     is      => 'rw',
-    isa     => InstanceOf[ 'HTML::Restrict' ],
+    isa     => InstanceOf ['HTML::Restrict'],
     lazy    => 1,
     default => sub { HTML::Restrict->new },
 );
 
 has logger => (
     is      => 'rw',
-    isa     => InstanceOf[ 'Log::Dispatch' ],
+    isa     => InstanceOf ['Log::Dispatch'],
     lazy    => 1,
     handles => { _debug => 'debug' },
     default => sub {
@@ -199,28 +198,17 @@ sub _log_params {
     }
 
     else {
-        # this block mostly cargo-culted from HTTP::Request::Params
-        my $mime = Email::MIME->new( $req->as_string );
-
-        foreach my $part ( $mime->parts ) {
-            $part->disposition_set('text/plain');    # for easy parsing
-
-            my $disp    = $part->header('Content-Disposition');
-            my $ct      = parse_content_type($disp);
-            my $name    = $ct->{attributes}->{name};
-            my $content = $part->body;
-
-            $content =~ s/\r\n$//;
-            my $query = URI::Query->new($content);
-            %params = %{ $query->hash_arrayref };
-            last if keys %params;
-        }
+        my $length = length( $req->content );
+        my $body = HTTP::Body->new( $req->header('Content-Type'), $length );
+        $body->add( $req->content );
+        %params = %{ $body->param };
     }
 
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( [ 'Key', 'Value' ] );
     foreach my $name ( sort keys %params ) {
-        my @values = @{ $params{$name} };
+        my @values
+            = ref $params{$name} ? @{ $params{$name} } : $params{$name};
         $t->row( $name, $_ ) for sort @values;
     }
 
@@ -665,9 +653,8 @@ parameter to constrain the tables to an arbitrary width.
 
 Aside from the BETA warnings, I should say that I've written this to suit my
 needs and there are a lot of things I haven't considered.  For example, I'm
-really only dealing with GET and POST.  There's probably a much better way of
-getting the POST params than what I copied in a hurry from a very old module.
-Also, I'm mostly assuming that the content will be text, HTML or XML.
+really only dealing with GET and POST. Also, I'm mostly assuming that the
+content will be text, HTML, JSON or XML.
 
 The test suite is not very robust either.  If you'd like to contribute to this
 module and you can't find an appropriate test, do add something to the example
