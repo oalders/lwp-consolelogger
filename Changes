@@ -2,6 +2,8 @@ Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
 
+    - Converted from Moose to Moo
+
 0.000014  2015-03-18 18:09:23-04:00 America/Toronto
     - text_pre_filter subs should now return a content type
 

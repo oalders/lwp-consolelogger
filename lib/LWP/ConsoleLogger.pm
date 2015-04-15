@@ -13,14 +13,15 @@ use HTML::Restrict qw();
 use HTTP::CookieMonster qw();
 use JSON::MaybeXS qw( decode_json );
 use Log::Dispatch qw();
-use Moose;
-use MooseX::StrictConstructor;
-use MooseX::Types::Common::Numeric qw( PositiveInt );
-use MooseX::Types::Moose qw( Bool CodeRef );
+use Moo;
+use MooX::StrictConstructor;
 use Parse::MIME qw( parse_mime_type );
 use Term::Size::Any qw( chars );
 use Text::SimpleTable::AutoWidth 0.09 qw();
 use Try::Tiny;
+use Type::Tiny;
+use Types::Common::Numeric qw( PositiveInt );
+use Types::Standard qw( Bool CodeRef InstanceOf );
 use URI::Query qw();
 use URI::QueryParam qw();
 use XML::Simple qw( XMLin );
@@ -85,14 +86,14 @@ has dump_uri => (
 
 has html_restrict => (
     is      => 'rw',
-    isa     => 'HTML::Restrict',
+    isa     => InstanceOf[ 'HTML::Restrict' ],
     lazy    => 1,
     default => sub { HTML::Restrict->new },
 );
 
 has logger => (
     is      => 'rw',
-    isa     => 'Log::Dispatch',
+    isa     => InstanceOf[ 'Log::Dispatch' ],
     lazy    => 1,
     handles => { _debug => 'debug' },
     default => sub {
