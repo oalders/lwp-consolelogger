@@ -1,15 +1,13 @@
 requires "Data::Printer" => "0";
 requires "DateTime" => "0";
-requires "Email::MIME" => "0";
-requires "Email::MIME::ContentType" => "0";
 requires "HTML::Restrict" => "0";
+requires "HTTP::Body" => "0";
 requires "HTTP::CookieMonster" => "0";
 requires "JSON::MaybeXS" => "0";
 requires "Log::Dispatch" => "0";
 requires "Moo" => "0";
 requires "MooX::StrictConstructor" => "0";
 requires "Parse::MIME" => "0";
-requires "Plack::Handler::HTTP::Server::Simple", "0.16";
 requires "Sub::Exporter" => "0";
 requires "Term::Size::Any" => "0";
 requires "Text::SimpleTable::AutoWidth" => "0.09";

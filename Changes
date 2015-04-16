@@ -1,7 +1,6 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
-
     - Converted from Moose to Moo
     - Now uses HTTP::Body to parse POST params
 
