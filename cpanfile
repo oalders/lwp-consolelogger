@@ -32,6 +32,7 @@ on 'test' => sub {
   requires "LWP::UserAgent" => "0";
   requires "Log::Dispatch::Array" => "0";
   requires "Path::Tiny" => "0";
+  requires "Plack::Handler::HTTP::Server::Simple" => "0.016";
   requires "Plack::Test" => "0";
   requires "Plack::Test::Agent" => "0";
   requires "Test::FailWarnings" => "0";
