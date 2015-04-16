@@ -9,6 +9,7 @@ requires "Log::Dispatch" => "0";
 requires "Moo" => "0";
 requires "MooX::StrictConstructor" => "0";
 requires "Parse::MIME" => "0";
+requires "Plack::Handler::HTTP::Server::Simple", "0.16";
 requires "Sub::Exporter" => "0";
 requires "Term::Size::Any" => "0";
 requires "Text::SimpleTable::AutoWidth" => "0.09";
