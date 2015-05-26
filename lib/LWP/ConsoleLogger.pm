@@ -138,7 +138,7 @@ sub request_callback {
         $self->_log_params( $req, 'GET' );
     }
     else {
-        $self->_log_params( $req, $_ ) for ( 'GET', 'POST' );
+        $self->_log_params( $req, $_ ) for ( 'GET', $req->method );
     }
 
     $self->_log_headers( 'request', $req->headers );
@@ -183,14 +183,14 @@ sub _log_headers {
 }
 
 sub _log_params {
-    my ( $self, $req, $method ) = @_;
+    my ( $self, $req, $type ) = @_;
 
     return if !$self->dump_params;
 
     my %params;
     my $uri = $req->uri;
 
-    if ( $method eq 'GET' ) {
+    if ( $type eq 'GET' ) {
         my @params = $uri->query_param;
         return unless @params;
 
@@ -212,7 +212,7 @@ sub _log_params {
         $t->row( $name, $_ ) for sort @values;
     }
 
-    $self->_draw( $t, "$method Params:\n" );
+    $self->_draw( $t, "$type Params:\n" );
 }
 
 sub _log_cookies {
