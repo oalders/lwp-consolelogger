@@ -4,7 +4,9 @@ use strict;
 use warnings;
 
 use LWP::ConsoleLogger;
+use Module::Load::Conditional qw( can_load );
 use Sub::Exporter -setup => { exports => ['debug_ua'] };
+use String::Trim;
 
 my %VERBOSITY = (
     dump_content => 8,
@@ -25,6 +27,28 @@ sub debug_ua {
     my $logger = LWP::ConsoleLogger->new(%args);
 
     add_ua_handlers( $ua, $logger );
+
+    if ( can_load( modules => { 'HTML::FormatText::Lynx' => 23 } ) ) {
+        $logger->text_pre_filter(
+            sub {
+                my $text         = shift;
+                my $content_type = shift;
+                my $base_url     = shift;
+
+                return $text unless $content_type =~ m{html}i;
+
+                return (
+                    trim(
+                        HTML::FormatText::Lynx->format_string(
+                            $text,
+                            base => $base_url,
+                        )
+                    ),
+                    'text/plain'
+                );
+            }
+        );
+    }
 
     return $logger;
 }
@@ -61,6 +85,9 @@ L<LWP::ConsoleLogger>.  It offers one wrappers around L<LWP::ConsoleLogger>:
 C<debug_ua>.  This function allows you to get up and running quickly with just
 a couple of lines of code. It instantiates LWP logging and also returns a
 L<LWP::ConsoleLogger> object, which you may then tweak to your heart's desire.
+
+If you're able to install L<HTML::FormatText::Lynx> then you'll get highly
+readable HTML to text conversions.
 
 =head1 SYNOPSIS
 
@@ -103,6 +130,12 @@ will display nothing.  8 will display all available outputs.
     # don't get too verbose
     my $ua_logger = debug_ua( $mech, 4 );
 
+=head2 CAVEATS
+
+Text formatting now defaults to attempting to use L<HTML::FormatText::Lynx> to
+format HTML as text.  If you do not have this installed, we'll fall back to
+using HTML::Restrict to remove any HTML tags which you have not specifically
+whitelisted.
 
 =head2 EXAMPLES
 
