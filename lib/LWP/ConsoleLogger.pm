@@ -285,11 +285,11 @@ sub _log_content {
 
 sub _log_text {
     my $self         = shift;
-    my $ua           = shift;
+    my $res          = shift;
     my $content_type = shift;
 
     return unless $self->dump_text;
-    my $content = $self->_get_content( $ua, $content_type );
+    my $content = $self->_get_content( $res, $content_type );
     return unless $content;
 
     # If a pre_filter converts HTML to text, for example, we don't want to
