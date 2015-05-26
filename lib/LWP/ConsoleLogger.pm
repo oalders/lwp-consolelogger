@@ -297,7 +297,7 @@ sub _log_text {
 
     if ( $self->text_pre_filter ) {
         ( $content, my $type )
-            = $self->text_pre_filter->( $content, $content_type );
+            = $self->text_pre_filter->( $content, $content_type, $res->base );
         $content_type = $type if $type;
     }
 
@@ -611,6 +611,7 @@ text_pre_filter.
     sub {
         my $content      = shift;
         my $content_type = shift; # the value of the Content-Type header
+        my $base_url     = shift;
 
         # do something with the content
         # ...
