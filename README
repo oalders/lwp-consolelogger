@@ -238,6 +238,7 @@ SUBROUTINES/METHODS
         sub {
             my $content      = shift;
             my $content_type = shift; # the value of the Content-Type header
+            my $base_url     = shift;
     
             # do something with the content
             # ...
