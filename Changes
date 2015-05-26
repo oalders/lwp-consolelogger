@@ -1,8 +1,12 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Fixes examples/html-in-text.pl to show how to bypass
+      HTML::FormatText::Lynx formating.
 
 0.000016  2015-05-26 14:01:03-04:00 America/Toronto
+    - Adds a nice HTML text_pre_filter to Easy if HTML::FormatText::Lynx is
+      installed.
 
 0.000015  2015-04-16 23:49:16+02:00 Europe/Berlin
     - Converted from Moose to Moo
