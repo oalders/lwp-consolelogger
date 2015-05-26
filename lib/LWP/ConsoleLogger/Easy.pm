@@ -137,6 +137,12 @@ format HTML as text.  If you do not have this installed, we'll fall back to
 using HTML::Restrict to remove any HTML tags which you have not specifically
 whitelisted.
 
+If you have L<HTML::FormatText::Lynx> installed, but you don't want to use it,
+override the default filter:
+
+    my $logger = debug_ua( $mech );
+    $logger->text_pre_filter( sub { return shift } );
+
 =head2 EXAMPLES
 
 Please see the "examples" folder in this distribution for more ideas on how to
