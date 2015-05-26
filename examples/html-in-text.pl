@@ -10,6 +10,7 @@ use WWW::Mechanize;
 my $mech  = WWW::Mechanize->new;
 my $debug = debug_ua($mech);
 
+$debug->text_pre_filter( sub { return shift } );
 $debug->dump_content(0);
 $debug->dump_cookies(0);
 $debug->dump_params(0);
