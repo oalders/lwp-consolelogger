@@ -654,8 +654,7 @@ parameter to constrain the tables to an arbitrary width.
 
 Aside from the BETA warnings, I should say that I've written this to suit my
 needs and there are a lot of things I haven't considered.  For example, I'm
-really only dealing with GET and POST. Also, I'm mostly assuming that the
-content will be text, HTML, JSON or XML.
+mostly assuming that the content will be text, HTML, JSON or XML.
 
 The test suite is not very robust either.  If you'd like to contribute to this
 module and you can't find an appropriate test, do add something to the example
