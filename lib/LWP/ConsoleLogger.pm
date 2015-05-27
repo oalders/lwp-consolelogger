@@ -197,9 +197,11 @@ sub _log_params {
         $params{$_} = [ $uri->query_param($_) ] for @params;
     }
 
-    elsif ( length $req->content ) {
-        my $length = length( $req->content );
-        my $body = HTTP::Body->new( $req->header('Content-Type'), $length );
+    elsif ( $req->header('Content-Length') ) {
+        my $body = HTTP::Body->new(
+            $req->header('Content-Type'),
+            $req->header('Content-Length')
+        );
         $body->add( $req->content );
         %params = %{ $body->param };
 
