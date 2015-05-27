@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+
+0.000018  2015-05-27 16:52:26-04:00 America/Toronto
     - Adds deserializing of HTML and JSON in request body.
 
 0.000017  2015-05-26 17:02:41-04:00 America/Toronto
