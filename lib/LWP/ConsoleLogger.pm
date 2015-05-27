@@ -197,11 +197,30 @@ sub _log_params {
         $params{$_} = [ $uri->query_param($_) ] for @params;
     }
 
-    else {
+    elsif ( length $req->content ) {
         my $length = length( $req->content );
         my $body = HTTP::Body->new( $req->header('Content-Type'), $length );
         $body->add( $req->content );
         %params = %{ $body->param };
+
+        unless ( keys %params ) {
+            {
+                my $t = Text::SimpleTable::AutoWidth->new;
+                $t->captions( [ $type . ' Raw Body' ] );
+                $t->row( $req->content );
+                $self->_draw($t);
+            }
+
+            {
+                my $t = Text::SimpleTable::AutoWidth->new;
+                $t->captions( [ $type . ' Parsed Body' ] );
+                $self->_parse_body(
+                    $req->content, $req->header('Content-Type'),
+                    $t
+                );
+                $self->_draw($t);
+            }
+        }
     }
 
     my $t = Text::SimpleTable::AutoWidth->new();
@@ -306,6 +325,17 @@ sub _log_text {
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( ['Text'] );
 
+    $self->_parse_body( $content, $content_type, $t );
+
+    $self->_draw($t);
+}
+
+sub _parse_body {
+    my $self         = shift;
+    my $content      = shift;
+    my $content_type = shift;
+    my $t            = shift;
+
     my ( $type, $subtype ) = parse_mime_type($content_type);
     if ( lc $subtype eq 'html' ) {
         $content = $self->html_restrict->process($content);
@@ -318,7 +348,6 @@ sub _log_text {
         try {
             my $pretty = XMLin( $content, KeepRoot => 1 );
             $content = p($pretty);
-            $content =~ s{^\\ }{};    # don't prefix HashRef with slash
         }
         catch { $t->row("Error parsing XML: $_") };
     }
@@ -329,8 +358,8 @@ sub _log_text {
         catch { $t->row("Error parsing JSON: $_") };
     }
 
+    $content =~ s{^\\ }{};   # don't prefix HashRef with Data::Printer's slash
     $t->row($content);
-    $self->_draw($t);
 }
 
 sub _build_term_width {

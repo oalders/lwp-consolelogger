@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Adds deserializing of HTML and JSON in request body.
 
 0.000017  2015-05-26 17:02:41-04:00 America/Toronto
     - Fixes examples/html-in-text.pl to show how to bypass
