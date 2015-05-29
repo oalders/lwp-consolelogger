@@ -1,6 +1,9 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Ensure module works still under both perl 5.21 and Data::Printer > 0.35
+      https://github.com/oalders/lwp-consolelogger/issues/3 (reported by Slaven
+      Rezić and solution proposed by Breno G. de Oliveira).
 
 0.000018  2015-05-27 16:52:26-04:00 America/Toronto
     - Adds deserializing of HTML and JSON in request body.
