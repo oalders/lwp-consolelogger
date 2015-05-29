@@ -349,13 +349,13 @@ sub _parse_body {
     elsif ( lc $subtype eq 'xml' ) {
         try {
             my $pretty = XMLin( $content, KeepRoot => 1 );
-            $content = p($pretty);
+            $content = p( $pretty, return_value => 'dump' );
         }
         catch { $t->row("Error parsing XML: $_") };
     }
     elsif ( lc $subtype eq 'json' ) {
         try {
-            $content = p( decode_json($content) );
+            $content = p( decode_json($content), return_value => 'dump' );
         }
         catch { $t->row("Error parsing JSON: $_") };
     }
