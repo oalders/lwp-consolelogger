@@ -355,7 +355,8 @@ sub _parse_body {
     }
     elsif ( lc $subtype eq 'json' ) {
         try {
-            $content = p( decode_json($content), return_value => 'dump' );
+            $content = decode_json($content);
+            $content = p( $content, return_value => 'dump' );
         }
         catch { $t->row("Error parsing JSON: $_") };
     }
