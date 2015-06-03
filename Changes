@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Really fix failures under Perl 5.22 (reported by Andreas König)
 
 0.000019  2015-05-29 18:02:07-04:00 America/Toronto
     - Ensure module works still under both perl 5.21 and Data::Printer > 0.35
