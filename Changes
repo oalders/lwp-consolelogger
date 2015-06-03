@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+
+0.000020  2015-06-03 18:14:25-04:00 America/Toronto
     - Really fix failures under Perl 5.22 (reported by Andreas König)
 
 0.000019  2015-05-29 18:02:07-04:00 America/Toronto
