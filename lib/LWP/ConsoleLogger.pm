@@ -217,7 +217,7 @@ sub _log_params {
                 my $t = Text::SimpleTable::AutoWidth->new;
                 $t->captions( [ $type . ' Parsed Body' ] );
                 $self->_parse_body(
-                    $req->content, $req->header('Content-Type'),
+                    $req->content, scalar $req->header('Content-Type'),
                     $t
                 );
                 $self->_draw($t);
