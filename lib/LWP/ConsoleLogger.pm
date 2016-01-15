@@ -338,25 +338,38 @@ sub _parse_body {
     my $content_type = shift;
     my $t            = shift;
 
+    # nothing to do here
+    unless ($content_type) {
+        $t->row($content);
+        return;
+    }
+
     my ( $type, $subtype ) = parse_mime_type($content_type);
-    if ( lc $subtype eq 'html' ) {
+    unless ($subtype) {
+        $t->row($content);
+        return;
+    }
+
+    $subtype = lc $subtype;
+
+    if ( $subtype eq 'html' ) {
         $content = $self->html_restrict->process($content);
         $content =~ s{\s+}{ }g;
         $content =~ s{\n{2,}}{\n\n}g;
 
         return if !$content;
     }
-    elsif ( lc $subtype eq 'xml' ) {
+    elsif ( $subtype eq 'xml' ) {
         try {
             my $pretty = XMLin( $content, KeepRoot => 1 );
-            $content = p( $pretty, return_value => 'dump' );
+            $content = np( $pretty, return_value => 'dump' );
         }
         catch { $t->row("Error parsing XML: $_") };
     }
-    elsif ( lc $subtype eq 'json' ) {
+    elsif ( $subtype eq 'json' ) {
         try {
             $content = decode_json($content);
-            $content = p( $content, return_value => 'dump' );
+            $content = np( $content, return_value => 'dump' );
         }
         catch { $t->row("Error parsing JSON: $_") };
     }
