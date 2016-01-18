@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Fixes an occasional warning in body parsing.
 
 0.000020  2015-06-03 18:14:25-04:00 America/Toronto
     - Really fix failures under Perl 5.22 (reported by Andreas König)
