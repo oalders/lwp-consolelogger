@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+
+0.000021  2016-01-18 11:58:04-05:00 America/Toronto
     - Fixes an occasional warning in body parsing.
 
 0.000020  2015-06-03 18:14:25-04:00 America/Toronto
