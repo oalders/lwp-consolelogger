@@ -142,7 +142,10 @@ foreach my $mech ( $lwp, $mech ) {
 # check POST body parsing of JSON
 {
     my $app = sub {
-        return [ 200, [ 'Content-Type' => 'application/json' ], ['{"foo":"bar"}'] ];
+        return [
+            200, [ 'Content-Type' => 'application/json' ],
+            ['{"foo":"bar"}']
+        ];
     };
 
     my $ua = LWP::UserAgent->new( cookie_jar => {} );
@@ -155,7 +158,10 @@ foreach my $mech ( $lwp, $mech ) {
 
     # mostly just do a visual check that POST params are parsed
     ok(
-        $server_agent->post( '/', Content_Type => 'application/json', Content => '{"aaa":"bbb"}' ),
+        $server_agent->post(
+            '/', Content_Type => 'application/json',
+            Content => '{"aaa":"bbb"}'
+        ),
         'POST param pasring'
     );
 }
