@@ -35,7 +35,7 @@ sub debug_ua {
                 my $content_type = shift;
                 my $base_url     = shift;
 
-                return $text unless $content_type =~ m{html}i;
+                return $text unless $content_type && $content_type =~ m{html}i;
 
                 return (
                     trim(
