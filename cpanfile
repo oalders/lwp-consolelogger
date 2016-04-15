@@ -4,7 +4,6 @@ requires "HTML::Restrict" => "0";
 requires "HTTP::Body" => "0";
 requires "HTTP::CookieMonster" => "0";
 requires "JSON::MaybeXS" => "1.003005";
-requires "JSON::PP" => "2.27300";
 requires "Log::Dispatch" => "0";
 requires "Module::Load::Conditional" => "0";
 requires "Moo" => "0";
@@ -49,6 +48,10 @@ on 'test' => sub {
 on 'configure' => sub {
   requires "ExtUtils::MakeMaker" => "0";
   requires "Module::Build" => "0.28";
+};
+
+on 'configure' => sub {
+  suggests "JSON::PP" => "2.27300";
 };
 
 on 'develop' => sub {

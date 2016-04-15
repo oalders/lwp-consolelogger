@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Avoid warning when Content-Type header is not set.
 
 0.000022  2016-01-29 12:19:00-05:00 America/Toronto
     - Adds minimum versions for Data::Printer and JSON::MaybeXS.
