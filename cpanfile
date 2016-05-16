@@ -4,6 +4,7 @@ requires "HTML::Restrict" => "0";
 requires "HTTP::Body" => "0";
 requires "HTTP::CookieMonster" => "0";
 requires "JSON::MaybeXS" => "1.003005";
+requires "List::AllUtils" => "0";
 requires "Log::Dispatch" => "0";
 requires "Module::Load::Conditional" => "0";
 requires "Moo" => "0";
