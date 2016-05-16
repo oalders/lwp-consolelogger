@@ -12,7 +12,7 @@ my $debug = debug_ua($mech);
 
 my $log_dispatch = Log::Dispatch->new(
     outputs => [
-        [ 'File', min_level => 'debug', filename => 'log_file.txt' ],
+        [ 'File',   min_level => 'debug', filename => 'log_file.txt' ],
         [ 'Screen', min_level => 'debug' ],
     ],
 );
