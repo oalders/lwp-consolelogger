@@ -11,6 +11,7 @@ use HTML::Restrict qw();
 use HTTP::Body;
 use HTTP::CookieMonster qw();
 use JSON::MaybeXS qw( decode_json );
+use List::AllUtils qw( none );
 use Log::Dispatch qw();
 use Moo;
 use MooX::StrictConstructor;
@@ -280,9 +281,15 @@ sub _get_content {
     my $content = $ua->decoded_content;
     return unless $content;
 
-    if ( $self->content_pre_filter ) {
+    my ( $type, $subtype ) = parse_mime_type($content_type);
+    if (   ( $type ne 'text' )
+        && ( none { $_ eq $subtype } ( 'html', 'json', 'xml' ) ) ) {
+        $content = $self->_redaction_message($content_type);
+    }
+    elsif ( $self->content_pre_filter ) {
         $content = $self->content_pre_filter->( $content, $content_type );
     }
+
     return $content;
 }
 
@@ -373,9 +380,21 @@ sub _parse_body {
         }
         catch { $t->row("Error parsing JSON: $_") };
     }
+    elsif ( !$type || $type ne 'text' ) {
+
+        # Avoid things like dumping gzipped content to the screen
+        $content = $self->_redaction_message($content_type);
+    }
 
     $content =~ s{^\\ }{};   # don't prefix HashRef with Data::Printer's slash
     $t->row($content);
+}
+
+sub _redaction_message {
+    my $self         = shift;
+    my $content_type = shift;
+    return sprintf '[ REDACTED by %s.  Do not know how to display %s. ]',
+        __PACKAGE__, $content_type;
 }
 
 sub _build_term_width {
