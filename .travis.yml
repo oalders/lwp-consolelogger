@@ -16,5 +16,8 @@ notifications:
     on_success: always
     on_failure: always
 sudo: false             # faster builds as long as you don't need sudo access
+install:
+  - cpanm App::cpm
+  - cpm install -g
 before_install:
   - eval $(curl https://travis-perl.github.io/init) --auto
