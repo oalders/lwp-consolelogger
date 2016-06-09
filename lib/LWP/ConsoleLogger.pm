@@ -285,7 +285,7 @@ sub _get_content {
 
     my ( $type, $subtype ) = apply { lc $_ } parse_mime_type($content_type);
     if (   ( $type ne 'text' )
-        && ( none { $_ eq $subtype } ( 'html', 'json', 'xml', 'javascript' ) )
+        && ( none { $_ eq $subtype } ( 'javascript', 'html', 'json', 'xml' ) )
         && $subtype !~ m{$json_regex} ) {
         $content = $self->_redaction_message($content_type);
     }
