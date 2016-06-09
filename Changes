@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Displays application/javascript content type (Andy Jack)
+    - Allow arbitrary headers and params to be redacted.
 
 0.000026  2016-06-09 16:22:18-04:00 America/Toronto
     - Fixes test that broke under scalar_quotes  => q{'}

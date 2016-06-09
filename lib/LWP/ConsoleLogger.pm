@@ -11,7 +11,7 @@ use HTML::Restrict qw();
 use HTTP::Body;
 use HTTP::CookieMonster qw();
 use JSON::MaybeXS qw( decode_json );
-use List::AllUtils qw( apply none );
+use List::AllUtils qw( any apply none );
 use Log::Dispatch qw();
 use Moo;
 use MooX::StrictConstructor;
@@ -21,7 +21,7 @@ use Text::SimpleTable::AutoWidth 0.09 qw();
 use Try::Tiny;
 use Type::Tiny;
 use Types::Common::Numeric qw( PositiveInt );
-use Types::Standard qw( Bool CodeRef InstanceOf );
+use Types::Standard qw( ArrayRef Bool CodeRef InstanceOf );
 use URI::Query qw();
 use URI::QueryParam qw();
 use XML::Simple qw( XMLin );
@@ -86,6 +86,13 @@ has dump_uri => (
     default => 1,
 );
 
+has headers_to_redact => (
+    is      => 'rw',
+    isa     => ArrayRef,
+    lazy    => 1,
+    builder => '_build_headers_to_redact',
+);
+
 has html_restrict => (
     is      => 'rw',
     isa     => InstanceOf ['HTML::Restrict'],
@@ -105,6 +112,13 @@ has logger => (
     },
 );
 
+has params_to_redact => (
+    is      => 'rw',
+    isa     => ArrayRef,
+    lazy    => 1,
+    builder => '_build_params_to_redact',
+);
+
 has term_width => (
     is       => 'rw',
     isa      => PositiveInt,
@@ -118,6 +132,20 @@ has text_pre_filter => (
     is  => 'rw',
     isa => CodeRef,
 );
+
+sub _build_headers_to_redact {
+    my $self = shift;
+    return $ENV{LWPCL_REDACT_HEADERS}
+        ? [ split m{,}, $ENV{LWPCL_REDACT_HEADERS} ]
+        : [];
+}
+
+sub _build_params_to_redact {
+    my $self = shift;
+    return $ENV{LWPCL_REDACT_PARAMS}
+        ? [ split m{,}, $ENV{LWPCL_REDACT_PARAMS} ]
+        : [];
+}
 
 sub _term_set {
     my $self  = shift;
@@ -179,7 +207,11 @@ sub _log_headers {
 
     foreach my $name ( sort $headers->header_field_names ) {
         next if $name eq 'Cookie' || $name eq 'Set-Cookie';
-        $t->row( $name, $headers->header($name) );
+        my $val = (
+            any { $name eq $_ }
+            @{ $self->headers_to_redact }
+        ) ? '[REDACTED]' : $headers->header($name);
+        $t->row( $name, $val );
     }
 
     $self->_draw($t);
@@ -231,8 +263,13 @@ sub _log_params {
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( [ 'Key', 'Value' ] );
     foreach my $name ( sort keys %params ) {
-        my @values
-            = ref $params{$name} ? @{ $params{$name} } : $params{$name};
+        my @values = (
+            any { $name eq $_ }
+            @{ $self->params_to_redact }
+            )                    ? '[REDACTED]'
+            : ref $params{$name} ? @{ $params{$name} }
+            :                      $params{$name};
+
         $t->row( $name, $_ ) for sort @values;
     }
 
@@ -592,6 +629,10 @@ here and discuss them in detail below.
 =item * C<< dump_uri => 0|1 >>
 
 =item * C<< content_pre_filter => sub { ... } >>
+
+=item * C<< headers_to_redact => ['Authentication', 'Foo'] >>
+
+=item * C<< params_to_redact => ['token', 'password'] >>
 
 =item * C<< text_pre_filter => sub { ... } >>
 
