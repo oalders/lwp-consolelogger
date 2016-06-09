@@ -33,53 +33,43 @@ foreach my $mech ( $lwp, $mech ) {
 
 # Check XML parsing
 {
-    my $ua             = LWP::UserAgent->new( cookie_jar => {} );
-    my $logger         = debug_ua($ua);
-    my $logging_output = [];
+    my $xml = q[<foo id="1"><bar>baz</bar></foo>];
+    test_content(
+        $xml,
+        'text/xml',
+        sub {
+            my $xml = shift;
 
-    my $ld = Log::Dispatch->new(
-        outputs => [ [ 'Screen', min_level => 'debug', newline => 1, ] ] );
-
-    $ld->add(
-        Log::Dispatch::Array->new(
-            name      => 'test',
-            min_level => 'debug',
-            array     => $logging_output
-        )
-    );
-
-    $logger->logger($ld);
-
-    {
-        my $xml = q[<foo id="1"><bar>baz</bar></foo>];
-        my $app
-            = sub { return [ 200, [ 'Content-Type' => 'text/xml' ], [$xml] ] };
-
-        my $server_agent = Plack::Test::Agent->new(
-            app    => $app,
-            server => 'HTTP::Server::Simple',
-            ua     => $ua,
-        );
-
-        ok( $server_agent->get('/')->is_success, 'GET XML' );
-    }
-    {
-        my $xml;
-
-        foreach my $item ( reverse @{$logging_output} ) {
-            if ( $item->{message} =~ m{| Text} ) {
-                $xml = $item->{message};
-                last;
-            }
+            # brittle and hackish, but it works
+            $xml =~ s{[ \s | + \- ' \. \\ ]}{}gxms;
+            $xml =~ s{Text}{};
+            my $ref = eval $xml;
+            is_deeply(
+                $ref, { foo => { bar => "baz", id => 1 } },
+                'XML parsed'
+            );
         }
+    );
+}
 
-        # brittle and hackish, but it works
-        $xml =~ s{[ \s | + \- ' \. \\ ]}{}gxms;
-        $xml =~ s{Text}{};
-        my $ref = eval $xml;
-        is_deeply( $ref, { foo => { bar => "baz", id => 1 } }, 'XML parsed' );
-    }
-
+# Check javascript parsing
+{
+    my $js = <<'EOF';
+var foo = function(bar) {
+    var baz = bar();
+    console.dir(baz);
+    var quux = 'A very long string to go over the cutoff limit of 255 chars. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+};
+EOF
+    test_content(
+        $js,
+        'application/javascript',
+        sub {
+            my $text = shift;
+            ok( $text =~ /^| var baz/m,    'leading whitespace is trimmed' );
+            ok( $text =~ /magna al\.\.\./, 'text is cut off at 255 chars' );
+        }
+    );
 }
 
 # Check text_pre_filter
@@ -162,7 +152,55 @@ foreach my $mech ( $lwp, $mech ) {
             '/', Content_Type => 'application/json',
             Content => '{"aaa":"bbb"}'
         ),
-        'POST param pasring'
+        'POST param parsing'
     );
 }
+
 done_testing();
+
+sub test_content {
+    my $content      = shift;
+    my $content_type = shift;
+    my $test_sub     = shift;
+
+    my $ua             = LWP::UserAgent->new( cookie_jar => {} );
+    my $logger         = debug_ua($ua);
+    my $logging_output = [];
+
+    my $ld = Log::Dispatch->new(
+        outputs => [ [ 'Screen', min_level => 'debug', newline => 1, ] ] );
+
+    $ld->add(
+        Log::Dispatch::Array->new(
+            name      => 'test',
+            min_level => 'debug',
+            array     => $logging_output
+        )
+    );
+
+    $logger->logger($ld);
+
+    my $app = sub {
+        return [ 200, [ 'Content-Type' => $content_type ], [$content] ];
+    };
+
+    my $server_agent = Plack::Test::Agent->new(
+        app    => $app,
+        server => 'HTTP::Server::Simple',
+        ua     => $ua,
+    );
+
+    ok( $server_agent->get('/')->is_success, 'GET OK' );
+
+    my $text;
+    foreach my $item ( reverse @{$logging_output} ) {
+        if ( $item->{message} =~ m{| Text} ) {
+            $text = $item->{message};
+            last;
+        }
+    }
+
+    # NOTE: $text passed here is a Text::SimpleTable string, not the bare
+    # content.  So your tests need to accommodate this.
+    $test_sub->($text);
+}

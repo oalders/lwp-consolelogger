@@ -11,7 +11,7 @@ use HTML::Restrict qw();
 use HTTP::Body;
 use HTTP::CookieMonster qw();
 use JSON::MaybeXS qw( decode_json );
-use List::AllUtils qw( none );
+use List::AllUtils qw( apply none );
 use Log::Dispatch qw();
 use Moo;
 use MooX::StrictConstructor;
@@ -283,9 +283,9 @@ sub _get_content {
     my $content = $ua->decoded_content;
     return unless $content;
 
-    my ( $type, $subtype ) = parse_mime_type($content_type);
+    my ( $type, $subtype ) = apply { lc $_ } parse_mime_type($content_type);
     if (   ( $type ne 'text' )
-        && ( none { $_ eq $subtype } ( 'html', 'json', 'xml' ) )
+        && ( none { $_ eq $subtype } ( 'html', 'json', 'xml', 'javascript' ) )
         && $subtype !~ m{$json_regex} ) {
         $content = $self->_redaction_message($content_type);
     }
@@ -354,13 +354,11 @@ sub _parse_body {
         return;
     }
 
-    my ( $type, $subtype ) = parse_mime_type($content_type);
+    my ( $type, $subtype ) = apply { lc $_ } parse_mime_type($content_type);
     unless ($subtype) {
         $t->row($content);
         return;
     }
-
-    $subtype = lc $subtype;
 
     if ( $subtype eq 'html' ) {
         $content = $self->html_restrict->process($content);
@@ -382,6 +380,12 @@ sub _parse_body {
             $content = np( $content, return_value => 'dump' );
         }
         catch { $t->row("Error parsing JSON: $_") };
+    }
+    elsif ( $type && $type eq 'application' && $subtype eq 'javascript' ) {
+
+        # clean it up a bit, and print some of it
+        $content =~ s{^\s*}{}mg;
+        $content = substr( $content, 0, 252 ) . '...';
     }
     elsif ( !$type || $type ne 'text' ) {
 
