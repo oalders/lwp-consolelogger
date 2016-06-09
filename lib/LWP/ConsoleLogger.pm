@@ -385,7 +385,9 @@ sub _parse_body {
 
         # clean it up a bit, and print some of it
         $content =~ s{^\s*}{}mg;
-        $content = substr( $content, 0, 252 ) . '...';
+        if ( length $content > 253 ) {
+            $content = substr( $content, 0, 252 ) . '...';
+        }
     }
     elsif ( !$type || $type ne 'text' ) {
 
