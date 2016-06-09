@@ -41,7 +41,8 @@ foreach my $mech ( $lwp, $mech ) {
             my $xml = shift;
 
             # brittle and hackish, but it works
-            $xml =~ s{[ \s | + \- ' \. \\ ]}{}gxms;
+            $xml =~ s{[ \s | + \- \. \\ ]}{}gxms;
+            $xml =~ s{'+\z}{};
             $xml =~ s{Text}{};
             my $ref = eval $xml;
             is_deeply(
