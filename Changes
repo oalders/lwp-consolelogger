@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+
+0.000025  2016-06-09 09:29:08-04:00 America/Toronto
     - Don't redact JSON with vendor-specific content types.
 
 0.000024  2016-05-16 12:15:53-04:00 America/Toronto
