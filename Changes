@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Don't redact JSON with vendor-specific content types.
 
 0.000024  2016-05-16 12:15:53-04:00 America/Toronto
     - Don't print gzipped and other non-text content to the screen.

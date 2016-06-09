@@ -26,6 +26,8 @@ use URI::Query qw();
 use URI::QueryParam qw();
 use XML::Simple qw( XMLin );
 
+my $json_regex = qr{vnd.*\+json};
+
 sub BUILD {
     my $self = shift;
     $Text::SimpleTable::AutoWidth::WIDTH_LIMIT = $self->term_width();
@@ -283,7 +285,8 @@ sub _get_content {
 
     my ( $type, $subtype ) = parse_mime_type($content_type);
     if (   ( $type ne 'text' )
-        && ( none { $_ eq $subtype } ( 'html', 'json', 'xml' ) ) ) {
+        && ( none { $_ eq $subtype } ( 'html', 'json', 'xml' ) )
+        && $subtype !~ m{$json_regex} ) {
         $content = $self->_redaction_message($content_type);
     }
     elsif ( $self->content_pre_filter ) {
@@ -373,7 +376,7 @@ sub _parse_body {
         }
         catch { $t->row("Error parsing XML: $_") };
     }
-    elsif ( $subtype eq 'json' ) {
+    elsif ( $subtype eq 'json' || $subtype =~ m{$json_regex} ) {
         try {
             $content = decode_json($content);
             $content = np( $content, return_value => 'dump' );
