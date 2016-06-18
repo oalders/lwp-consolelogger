@@ -41,6 +41,7 @@ on 'test' => sub {
   requires "Plack::Test::Agent" => "0";
   requires "Test::FailWarnings" => "0";
   requires "Test::Fatal" => "0";
+  requires "Test::More" => "0";
   requires "Test::Most" => "0";
   requires "URI::file" => "0";
   requires "WWW::Mechanize" => "0";

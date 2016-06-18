@@ -146,6 +146,10 @@ CONSTRUCTOR
 
       * content_pre_filter => sub { ... }
 
+      * headers_to_redact => ['Authentication', 'Foo']
+
+      * params_to_redact => ['token', 'password']
+
       * text_pre_filter => sub { ... }
 
       * html_restrict => HTML::Restrict->new( ... )
