@@ -107,7 +107,9 @@ has logger => (
     handles => { _debug => 'debug' },
     default => sub {
         return Log::Dispatch->new(
-            outputs => [ [ 'Screen', min_level => 'debug', newline => 1, ], ],
+            outputs => [
+                [ 'Screen', min_level => 'debug', newline => 1, utf8 => 1, ],
+            ],
         );
     },
 );

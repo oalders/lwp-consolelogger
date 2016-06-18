@@ -2,6 +2,8 @@ Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
     - Allow arbitrary headers and params to be redacted.
+    - Fixes "Wide character in print" warnings.  Reported by Ricardo SIGNES 😄
+      https://github.com/oalders/lwp-consolelogger/issues/6
 
 0.000026  2016-06-09 16:22:18-04:00 America/Toronto
     - Fixes test that broke under scalar_quotes  => q{'}
