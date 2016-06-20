@@ -2,6 +2,8 @@ Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
 
+0.000028  2016-06-20 15:46:31-04:00 America/Toronto
+
 0.000027  2016-06-18 10:31:58-04:00 America/Toronto (TRIAL RELEASE)
     - Allow arbitrary headers and params to be redacted.
     - Fixes "Wide character in print" warnings.  Reported by Ricardo SIGNES 😄
