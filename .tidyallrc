@@ -3,3 +3,4 @@ select = {examples,lib,t}/**/*.{pl,pm,t,psgi}
 
 [SortLines::Naturally]
 select = .gitignore
+select = .stopwords

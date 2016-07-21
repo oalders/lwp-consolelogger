@@ -21,7 +21,7 @@ requires "Types::Standard" => "0";
 requires "URI::Query" => "0";
 requires "URI::QueryParam" => "0";
 requires "XML::Simple" => "0";
-requires "perl" => "5.006";
+requires "perl" => "5.01301";
 requires "strict" => "0";
 requires "warnings" => "0";
 recommends "HTML::FormatText::Lynx" => "23";
@@ -45,11 +45,13 @@ on 'test' => sub {
   requires "Test::Most" => "0";
   requires "URI::file" => "0";
   requires "WWW::Mechanize" => "0";
+  requires "perl" => "5.01301";
 };
 
 on 'configure' => sub {
   requires "ExtUtils::MakeMaker" => "0";
   requires "Module::Build" => "0.28";
+  requires "perl" => "5.006";
 };
 
 on 'configure' => sub {
@@ -57,6 +59,9 @@ on 'configure' => sub {
 };
 
 on 'develop' => sub {
+  requires "Pod::Coverage::TrustPod" => "0";
   requires "Test::CPAN::Changes" => "0.19";
+  requires "Test::Pod::Coverage" => "1.08";
   requires "Test::Spelling" => "0.12";
+  requires "Test::Synopsis" => "0";
 };
