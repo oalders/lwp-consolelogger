@@ -16,7 +16,7 @@ use Test::Most;
 use WWW::Mechanize;
 
 my $lwp = LWP::UserAgent->new( cookie_jar => {} );
-my $mech = WWW::Mechanize->new();
+my $mech = WWW::Mechanize->new( autocheck => 0);
 
 my $foo = 'file://' . path('t/test-data/foo.html')->absolute;
 
@@ -155,6 +155,20 @@ EOF
         ),
         'POST param parsing'
     );
+}
+
+# check POST body parsing that includes a file upload
+#
+# This will fail with "400 Library does not allow method POST for 'file:'
+# URLs", but the point of this is just to produce some output which proves file
+# upload fields get displayed.
+
+{
+    my $file = 'file://' . path('t/test-data/file-upload.html')->absolute;
+    $mech->get($file);
+    $mech->form_id('this-form');
+    $mech->field( file => 't/test-data/foo.html' );
+    $mech->submit('submit batch lookup');
 }
 
 done_testing();

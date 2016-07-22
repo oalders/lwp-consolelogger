@@ -10,14 +10,17 @@ use Test::Most;
 use URI::file;
 use WWW::Mechanize;
 
-my @mech = ( LWP::UserAgent->new( cookie_jar => {} ), WWW::Mechanize->new );
+my @mech = (
+    LWP::UserAgent->new( cookie_jar => {} ),
+    WWW::Mechanize->new( autocheck  => 0 ),
+);
 my $logger = LWP::ConsoleLogger->new( dump_content => 1, dump_text => 1 );
 ok( $logger, 'logger compiles' );
 
 foreach my $mech (@mech) {
     $mech->default_header(
         'Accept-Encoding' => scalar HTTP::Message::decodable() );
-    is( exception { get_local_file($mech) }, undef, 'code lives' );
+    is( exception { get_local_file($mech) }, undef, 'GET lives' );
 }
 
 $logger->content_pre_filter(
@@ -48,9 +51,8 @@ sub get_local_file {
         sub { $logger->request_callback(@_) }
     );
 
-    $mech->get(uri_for_file('foo.html'));
+    $mech->get( uri_for_file('foo.html') );
 }
-
 
 sub uri_for_file {
     my $path = path( 't', 'test-data', shift );
