@@ -17,4 +17,5 @@ notifications:
     on_failure: always
 sudo: false             # faster builds as long as you don't need sudo access
 before_install:
+  - rm dist.ini # prevent perl helpers from installing via dzil
   - eval $(curl https://travis-perl.github.io/init) --auto
