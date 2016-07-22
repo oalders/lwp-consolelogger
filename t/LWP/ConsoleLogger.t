@@ -35,8 +35,7 @@ $logger->content_pre_filter(
     }
 );
 
-$mech[0]
-    ->get( 'file:///' . path('t/test-data/content-regex.html')->absolute );
+$mech[0]->get( uri_for_file('content-regex.html') );
 
 sub get_local_file {
     my $mech = shift;
@@ -48,9 +47,14 @@ sub get_local_file {
         'request_send',
         sub { $logger->request_callback(@_) }
     );
-    my $uri = URI::file->new( path('t/test-data/foo.html')->absolute );
 
-    $mech->get($uri);
+    $mech->get(uri_for_file('foo.html'));
+}
+
+
+sub uri_for_file {
+    my $path = path( 't', 'test-data', shift );
+    return URI::file->new( $path->absolute );
 }
 
 done_testing();
