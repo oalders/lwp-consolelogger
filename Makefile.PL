@@ -9,12 +9,8 @@ use ExtUtils::MakeMaker;
 my %WriteMakefileArgs = (
   "ABSTRACT" => "LWP tracing and debugging",
   "AUTHOR" => "Olaf Alders <olaf\@wundercounter.com>",
-  "BUILD_REQUIRES" => {
-    "Module::Build" => "0.28"
-  },
   "CONFIGURE_REQUIRES" => {
-    "ExtUtils::MakeMaker" => 0,
-    "Module::Build" => "0.28"
+    "ExtUtils::MakeMaker" => 0
   },
   "DISTNAME" => "LWP-ConsoleLogger",
   "LICENSE" => "artistic_2",
@@ -60,6 +56,8 @@ my %WriteMakefileArgs = (
     "Test::Fatal" => 0,
     "Test::More" => 0,
     "Test::Most" => 0,
+    "Test::Needs" => 0,
+    "Test::RequiresInternet" => 0,
     "URI::file" => 0,
     "WWW::Mechanize" => 0
   },
@@ -83,7 +81,6 @@ my %FallbackPrereqs = (
   "List::AllUtils" => 0,
   "Log::Dispatch" => "2.56",
   "Log::Dispatch::Array" => 0,
-  "Module::Build" => "0.28",
   "Module::Load::Conditional" => 0,
   "Moo" => 0,
   "MooX::StrictConstructor" => 0,
@@ -99,6 +96,8 @@ my %FallbackPrereqs = (
   "Test::Fatal" => 0,
   "Test::More" => 0,
   "Test::Most" => 0,
+  "Test::Needs" => 0,
+  "Test::RequiresInternet" => 0,
   "Text::SimpleTable::AutoWidth" => "0.09",
   "Try::Tiny" => 0,
   "Type::Tiny" => 0,
