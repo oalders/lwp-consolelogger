@@ -777,4 +777,6 @@ module and you can't find an appropriate test, do add something to the example
 folder (either a new script or alter an existing one), so that I can see what
 your patch does.
 
+=for Pod::Coverage BUILD
+
 =cut
