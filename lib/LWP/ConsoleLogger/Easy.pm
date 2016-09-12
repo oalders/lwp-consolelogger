@@ -94,7 +94,7 @@ readable HTML to text conversions.
 
     my $mech = WWW::Mechanize->new;
     my $logger = debug_ua( $mech );
-    $mech->get(...);
+    $mech->get('https://google.com');
 
     # now watch the console for debugging output
 
