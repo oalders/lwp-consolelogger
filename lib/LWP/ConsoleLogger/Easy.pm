@@ -58,9 +58,6 @@ sub add_ua_handlers {
     my $ua     = shift;
     my $logger = shift;
 
-    $ua->default_header(
-        'Accept-Encoding' => scalar HTTP::Message::decodable() );
-
     $ua->add_handler(
         'response_done',
         sub { $logger->response_callback(@_) }
