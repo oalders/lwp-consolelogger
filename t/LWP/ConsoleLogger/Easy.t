@@ -15,8 +15,8 @@ use Test::Fatal qw( exception );
 use Test::Most;
 use WWW::Mechanize;
 
-my $lwp = LWP::UserAgent->new( cookie_jar => {} );
-my $mech = WWW::Mechanize->new( autocheck => 0);
+my $lwp  = LWP::UserAgent->new( cookie_jar => {} );
+my $mech = WWW::Mechanize->new( autocheck  => 0 );
 
 my $foo = 'file://' . path('t/test-data/foo.html')->absolute;
 
