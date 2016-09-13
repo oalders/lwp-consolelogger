@@ -2,7 +2,7 @@ use strict;
 use warnings;
 
 use LWP::ConsoleLogger::Easy qw( debug_ua );
-use LWP::UserAgent ();
+use LWP::UserAgent     ();
 use Plack::Test::Agent ();
 use Test::More;
 
@@ -27,7 +27,7 @@ use Test::More;
     );
 
     # mostly just do a visual check that POST params are parsed
-    ok( $server_agent->get( '/' ), 'POST param parsing' );
+    ok( $server_agent->get('/'), 'POST param parsing' );
 }
 
 done_testing();
