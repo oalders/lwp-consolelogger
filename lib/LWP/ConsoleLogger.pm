@@ -121,6 +121,12 @@ has params_to_redact => (
     builder => '_build_params_to_redact',
 );
 
+has pretty => (
+    is      => 'rw',
+    isa     => Bool,
+    default => 1,
+);
+
 has term_width => (
     is       => 'rw',
     isa      => PositiveInt,
@@ -203,6 +209,11 @@ sub _log_headers {
     my ( $self, $type, $headers ) = @_;
 
     return if !$self->dump_headers;
+
+    unless ( $self->pretty ) {
+        $self->_debug( $headers->as_string );
+        return;
+    }
 
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( [ ucfirst $type . ' Header', 'Value' ] );
@@ -346,6 +357,11 @@ sub _log_content {
 
     return unless $content;
 
+    unless ( $self->pretty ) {
+        $self->_debug("Content\n\n$content\n\n");
+        return;
+    }
+
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( ['Content'] );
 
@@ -372,6 +388,11 @@ sub _log_text {
     }
 
     return unless $content;
+
+    unless ( $self->pretty ) {
+        $self->_debug("Text\n\n$content\n\n");
+        return;
+    }
 
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( ['Text'] );
@@ -639,6 +660,8 @@ here and discuss them in detail below.
 
 =item * C<< logger => Log::Dispatch->new( ... ) >>
 
+=item * C<< pretty => 0|1 >>
+
 =item * C<< term_width => $integer >>
 
 =back
@@ -688,6 +711,12 @@ a c<title> method and if it returns something useful. Defaults to true.
 
 Boolean value. If true, dumps the URI of each page being visited. Defaults to
 true.
+
+=head2 pretty ( 0|1 )
+
+Boolean value. If disabled, request headers, response headers, content and text
+sections will be dumped without using tables. Handy for copy/pasting JSON etc
+for faking responses later. Defaults to true.
 
 =head2 content_pre_filter( sub { ... } )
 

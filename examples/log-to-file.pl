@@ -9,6 +9,7 @@ use WWW::Mechanize;
 
 my $mech  = WWW::Mechanize->new;
 my $debug = debug_ua($mech);
+$debug->pretty(0);
 
 my $log_dispatch = Log::Dispatch->new(
     outputs => [
