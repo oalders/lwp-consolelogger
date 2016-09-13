@@ -79,7 +79,7 @@ __END__
 =head1 DESCRIPTION
 
 This module gives you the easiest possible introduction to
-L<LWP::ConsoleLogger>.  It offers one wrappers around L<LWP::ConsoleLogger>:
+L<LWP::ConsoleLogger>.  It offers one wrapper around L<LWP::ConsoleLogger>:
 C<debug_ua>.  This function allows you to get up and running quickly with just
 a couple of lines of code. It instantiates LWP logging and also returns a
 L<LWP::ConsoleLogger> object, which you may then tweak to your heart's desire.
@@ -101,6 +101,10 @@ readable HTML to text conversions.
     # ...
     # stop dumping headers
     $logger->dump_headers( 0 );
+
+    # Redact sensitive data
+    $ENV{LWPCL_REDACT_HEADERS} = 'Authorization,Foo,Bar';
+    $ENV{LWPCL_REDACT_PARAMS} = 'seekrit,password,credit_card';
 
     my $quiet_logger = debug_ua( $mech, 1 );
 
@@ -132,6 +136,44 @@ will display nothing.  8 will display all available outputs.
 
 This method sets up response and request handlers on your user agent.  This is
 done for you automatically if you're using C<debug_ua>.
+
+=head1 ENVIRONMENT VARIABLES
+
+=head2 LWPCL_REDACT_HEADERS
+
+A comma-separated list of header values to redact from output.
+
+    $ENV{LWPCL_REDACT_HEADERS} = 'Authorization,Foo,Bar';
+
+Output will be something like:
+
+    .----------------+------------------.
+    | Request Header | Value            |
+    +----------------+------------------+
+    | Authorization  | [REDACTED]       |
+    | Content-Length | 0                |
+    | User-Agent     | libwww-perl/6.15 |
+    '----------------+------------------'
+
+Use at the command line.
+
+    LWPCL_REDACT_HEADERS='Authorization,Foo,Bar' perl script.pl
+
+=head2 LWPCL_REDACT_PARAMS
+
+A comma-separated list of parameter values to redact from output.
+
+    $ENV{LWPCL_REDACT_PARAMS} = 'credit_card,foo,bar';
+
+Use at the command line.
+
+    LWPCL_REDACT_PARAMS='credit_card,foo,bar' perl script.pl
+
+    .-------------+------------.
+    | Key         | Value      |
+    +-------------+------------+
+    | credit_card | [REDACTED] |
+    '-------------+------------'
 
 =head2 CAVEATS
 
