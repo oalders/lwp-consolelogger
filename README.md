@@ -6,7 +6,7 @@ LWP::ConsoleLogger - LWP tracing and debugging
 
 # VERSION
 
-version 0.000029
+version 0.000030
 
 # SYNOPSIS
 
@@ -147,6 +147,7 @@ here and discuss them in detail below.
 - `text_pre_filter => sub { ... }`
 - `html_restrict => HTML::Restrict->new( ... )`
 - `logger => Log::Dispatch->new( ... )`
+- `pretty => 0|1`
 - `term_width => $integer`
 
 # SUBROUTINES/METHODS
@@ -194,6 +195,12 @@ a c&lt;title> method and if it returns something useful. Defaults to true.
 
 Boolean value. If true, dumps the URI of each page being visited. Defaults to
 true.
+
+## pretty ( 0|1 )
+
+Boolean value. If disabled, request headers, response headers, content and text
+sections will be dumped without using tables. Handy for copy/pasting JSON etc
+for faking responses later. Defaults to true.
 
 ## content\_pre\_filter( sub { ... } )
 
