@@ -24,12 +24,12 @@ sub debug_ua {
     my $level = shift || 10;
 
     my %args = map { $_ => $VERBOSITY{$_} <= $level } keys %VERBOSITY;
-    my $logger = LWP::ConsoleLogger->new(%args);
+    my $console_logger = LWP::ConsoleLogger->new(%args);
 
-    add_ua_handlers( $ua, $logger );
+    add_ua_handlers( $ua, $console_logger );
 
     if ( can_load( modules => { 'HTML::FormatText::Lynx' => 23 } ) ) {
-        $logger->text_pre_filter(
+        $console_logger->text_pre_filter(
             sub {
                 my $text         = shift;
                 my $content_type = shift;
@@ -51,20 +51,20 @@ sub debug_ua {
         );
     }
 
-    return $logger;
+    return $console_logger;
 }
 
 sub add_ua_handlers {
-    my $ua     = shift;
-    my $logger = shift;
+    my $ua             = shift;
+    my $console_logger = shift;
 
     $ua->add_handler(
         'response_done',
-        sub { $logger->response_callback(@_) }
+        sub { $console_logger->response_callback(@_) }
     );
     $ua->add_handler(
         'request_send',
-        sub { $logger->request_callback(@_) }
+        sub { $console_logger->request_callback(@_) }
     );
 }
 
@@ -127,6 +127,11 @@ will display nothing.  8 will display all available outputs.
 
     # don't get too verbose
     my $ua_logger = debug_ua( $mech, 4 );
+
+=head2 add_ua_handlers
+
+This method sets up response and request handlers on your user agent.  This is
+done for you automatically if you're using C<debug_ua>.
 
 =head2 CAVEATS
 

@@ -493,13 +493,12 @@ __END__
             my $content_type = shift;
 
             # mangle content here
-            ...
+            # ...
 
-                return $content;
+            return $content;
         },
     );
 
-    my $ua = LWP::UserAgent->new();
     $ua->default_header(
         'Accept-Encoding' => scalar HTTP::Message::decodable() );
 
@@ -511,15 +510,14 @@ __END__
     # now watch debugging output to your screen
     $ua->get( 'http://nytimes.com/' );
 
-    #################################################################
+Or start the easy way.
 
-    # or start the easy way
     use LWP::ConsoleLogger::Easy qw( debug_ua );
     use WWW::Mechanize;
 
     my $mech           = WWW::Mechanize->new;   # or LWP::UserAgent->new() etc
     my $console_logger = debug_ua( $mech );
-    $mech->get( $some_url );
+    $mech->get( 'https://metacpan.org' );
 
     # now watch the console for debugging output
     # turn off header dumps
@@ -527,8 +525,7 @@ __END__
 
     $mech->get( $some_other_url );
 
-    #################################################################
-    # sample output might look like this
+Sample output might look like this.
 
     GET http://www.nytimes.com/2014/04/24/technology/fcc-new-net-neutrality-rules.html
 
@@ -712,6 +709,32 @@ HTML content to make it easier to detect changes in the body of the page.
 
 Try to make sure that your content mangling doesn't return broken HTML as that
 may not play with with L<HTML::Restrict>.
+
+=head2 request_callback
+
+Use this handler to set up console logging on your requests.
+
+    my $ua = LWP::UserAgent->new;
+    $ua->add_handler(
+        'request_send',
+        sub { $console_logger->request_callback(@_) }
+    );
+
+This is done for you by default if you set up your logging via
+L<LWP::ConsoleLogger::Easy>.
+
+=head2 response_callback
+
+Use this handler to set up console logging on your responses.
+
+    my $ua = LWP::UserAgent->new;
+    $ua->add_handler(
+        'response_done',
+        sub { $console_logger->response_callback(@_) }
+    );
+
+This is done for you by default if you set up your logging via
+L<LWP::ConsoleLogger::Easy>.
 
 =head2 text_pre_filter( sub { ... } )
 
