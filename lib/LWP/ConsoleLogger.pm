@@ -328,8 +328,8 @@ sub _log_cookies {
 }
 
 sub _get_content {
-    my $self         = shift;
-    my $r            = shift;
+    my $self = shift;
+    my $r    = shift;
 
     my $content
         = $r->can('decoded_content') ? $r->decoded_content : $r->content;

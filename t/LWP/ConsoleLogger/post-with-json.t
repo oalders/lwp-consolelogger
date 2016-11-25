@@ -16,7 +16,9 @@ debug_ua($test_ua);
 
 $test_ua->map_response(
     qr{example.com/success},
-    HTTP::Response->new( 200, 'OK', [ 'Content-Type' => 'text/plain' ], 'Content is queen' )
+    HTTP::Response->new(
+        200, 'OK', [ 'Content-Type' => 'text/plain' ], 'Content is queen'
+    )
 );
 
 my $app = sub {
