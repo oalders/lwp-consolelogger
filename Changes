@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Display request body if available.
 
 0.000030  2016-09-13 17:55:24-04:00 America/Toronto
     - Document header and parameter redaction

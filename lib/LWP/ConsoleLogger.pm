@@ -182,6 +182,11 @@ sub request_callback {
 
     $self->_log_headers( 'request', $req->headers );
 
+    # This request might have a body.
+    return unless $req->content;
+
+    $self->_log_content( $req, $req->header('Content-Type'), $req->content );
+    $self->_log_text( $req, $req->header('Content-Type'), $req->content );
     return;
 }
 
@@ -350,10 +355,11 @@ sub _log_content {
     my $self         = shift;
     my $ua           = shift;
     my $content_type = shift;
+    my $content      = shift;
 
     return unless $self->dump_content;
 
-    my $content = $self->_get_content( $ua, $content_type );
+    $content ||= $self->_get_content( $ua, $content_type );
 
     return unless $content;
 
@@ -371,19 +377,20 @@ sub _log_content {
 
 sub _log_text {
     my $self         = shift;
-    my $res          = shift;
+    my $r            = shift;    # HTTP::Request or HTTP::Response
     my $content_type = shift;
+    my $content      = shift;
 
     return unless $self->dump_text;
-    my $content = $self->_get_content( $res, $content_type );
+    $content ||= $self->_get_content( $r, $content_type );
     return unless $content;
 
     # If a pre_filter converts HTML to text, for example, we don't want to
     # reprocess the text as HTML.
 
-    if ( $self->text_pre_filter ) {
+    if ( $self->text_pre_filter && $r->isa('HTTP::Response') ) {
         ( $content, my $type )
-            = $self->text_pre_filter->( $content, $content_type, $res->base );
+            = $self->text_pre_filter->( $content, $content_type, $r->base );
         $content_type = $type if $type;
     }
 
