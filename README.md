@@ -6,7 +6,7 @@ LWP::ConsoleLogger - LWP tracing and debugging
 
 # VERSION
 
-version 0.000030
+version 0.000031
 
 # SYNOPSIS
 
