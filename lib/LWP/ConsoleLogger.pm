@@ -332,10 +332,10 @@ sub _log_cookies {
 
 sub _get_content {
     my $self         = shift;
-    my $ua           = shift;
+    my $r            = shift;
     my $content_type = shift;
 
-    my $content = $ua->decoded_content;
+    my $content = $r->decoded_content;
     return unless $content;
 
     my ( $type, $subtype ) = apply { lc $_ } parse_mime_type($content_type);
@@ -353,13 +353,13 @@ sub _get_content {
 
 sub _log_content {
     my $self         = shift;
-    my $ua           = shift;
+    my $r            = shift;
     my $content_type = shift;
     my $content      = shift;
 
     return unless $self->dump_content;
 
-    $content ||= $self->_get_content( $ua, $content_type );
+    $content ||= $self->_get_content( $r, $content_type );
 
     return unless $content;
 
