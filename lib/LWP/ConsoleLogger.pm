@@ -8,7 +8,7 @@ package LWP::ConsoleLogger;
 use Data::Printer { end_separator => 1, hash_separator => ' => ' };
 use DateTime qw();
 use HTML::Restrict qw();
-use HTTP::Body;
+use HTTP::Body ();
 use HTTP::CookieMonster qw();
 use JSON::MaybeXS qw( decode_json );
 use List::AllUtils qw( any apply none );
@@ -18,8 +18,7 @@ use MooX::StrictConstructor;
 use Parse::MIME qw( parse_mime_type );
 use Term::Size::Any qw( chars );
 use Text::SimpleTable::AutoWidth 0.09 qw();
-use Try::Tiny;
-use Type::Tiny;
+use Try::Tiny qw( catch try );
 use Types::Common::Numeric qw( PositiveInt );
 use Types::Standard qw( ArrayRef Bool CodeRef InstanceOf );
 use URI::Query qw();
@@ -185,8 +184,8 @@ sub request_callback {
     # This request might have a body.
     return unless $req->content;
 
-    $self->_log_content( $req, $req->header('Content-Type'), $req->content );
-    $self->_log_text( $req, $req->header('Content-Type'), $req->content );
+    $self->_log_content($req);
+    $self->_log_text($req);
     return;
 }
 
@@ -205,8 +204,8 @@ sub response_callback {
     $self->_log_headers( 'response', $res->headers );
     $self->_log_cookies( 'response', $ua->cookie_jar );
 
-    $self->_log_content( $res, $res->header('Content-Type') );
-    $self->_log_text( $res, $res->header('Content-Type') );
+    $self->_log_content($res);
+    $self->_log_text($res);
     return;
 }
 
@@ -251,8 +250,9 @@ sub _log_params {
     }
 
     elsif ( $req->header('Content-Length') ) {
-        my $body = HTTP::Body->new(
-            $req->header('Content-Type'),
+        my $content_type = $req->header('Content-Type');
+        my $body         = HTTP::Body->new(
+            $content_type,
             $req->header('Content-Length')
         );
         $body->add( $req->content );
@@ -269,10 +269,7 @@ sub _log_params {
             {
                 my $t = Text::SimpleTable::AutoWidth->new;
                 $t->captions( [ $type . ' Parsed Body' ] );
-                $self->_parse_body(
-                    $req->content, scalar $req->header('Content-Type'),
-                    $t
-                );
+                $self->_parse_body( $req->content, $content_type, $t );
                 $self->_draw($t);
             }
         }
@@ -333,11 +330,12 @@ sub _log_cookies {
 sub _get_content {
     my $self         = shift;
     my $r            = shift;
-    my $content_type = shift;
 
-    my $content = $r->decoded_content;
+    my $content
+        = $r->can('decoded_content') ? $r->decoded_content : $r->content;
     return unless $content;
 
+    my $content_type = $r->header('Content-Type');
     my ( $type, $subtype ) = apply { lc $_ } parse_mime_type($content_type);
     if (   ( $type ne 'text' )
         && ( none { $_ eq $subtype } ( 'javascript', 'html', 'json', 'xml' ) )
@@ -352,14 +350,12 @@ sub _get_content {
 }
 
 sub _log_content {
-    my $self         = shift;
-    my $r            = shift;
-    my $content_type = shift;
-    my $content      = shift;
+    my $self = shift;
+    my $r    = shift;
 
     return unless $self->dump_content;
 
-    $content ||= $self->_get_content( $r, $content_type );
+    my $content = $self->_get_content($r);
 
     return unless $content;
 
@@ -376,14 +372,14 @@ sub _log_content {
 }
 
 sub _log_text {
-    my $self         = shift;
-    my $r            = shift;    # HTTP::Request or HTTP::Response
-    my $content_type = shift;
-    my $content      = shift;
+    my $self = shift;
+    my $r    = shift;    # HTTP::Request or HTTP::Response
 
     return unless $self->dump_text;
-    $content ||= $self->_get_content( $r, $content_type );
+    my $content = $self->_get_content($r);
     return unless $content;
+
+    my $content_type = $r->header('Content-Type');
 
     # If a pre_filter converts HTML to text, for example, we don't want to
     # reprocess the text as HTML.
