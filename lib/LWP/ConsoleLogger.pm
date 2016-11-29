@@ -336,6 +336,8 @@ sub _get_content {
     return unless $content;
 
     my $content_type = $r->header('Content-Type');
+    return $content unless $content_type;
+
     my ( $type, $subtype ) = apply { lc $_ } parse_mime_type($content_type);
     if (   ( $type ne 'text' )
         && ( none { $_ eq $subtype } ( 'javascript', 'html', 'json', 'xml' ) )
