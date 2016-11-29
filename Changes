@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Maybe guess at content type when parsing body.
 
 0.000031  2016-11-25 13:08:50-05:00 America/Toronto
     - Display request body if available.

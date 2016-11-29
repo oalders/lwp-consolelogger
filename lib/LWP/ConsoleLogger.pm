@@ -413,6 +413,14 @@ sub _parse_body {
     my $content_type = shift;
     my $t            = shift;
 
+    # Is this maybe JSON?
+    try {
+        decode_json( $content );
+
+        # If we get this far, it's valid JSON.
+        $content_type = 'application/json';
+    };
+
     # nothing to do here
     unless ($content_type) {
         $t->row($content);
