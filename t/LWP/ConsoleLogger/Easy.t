@@ -166,6 +166,7 @@ sub test_content {
         )
     );
 
+    $logger->term_width(80);
     $logger->logger($ld);
 
     my $app = sub {
