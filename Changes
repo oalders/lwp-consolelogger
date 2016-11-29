@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+
+0.000032  2016-11-29 14:58:25-05:00 America/Toronto
     - Maybe guess at content type when parsing body.
 
 0.000031  2016-11-25 13:08:50-05:00 America/Toronto
