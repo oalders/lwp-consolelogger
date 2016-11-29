@@ -415,7 +415,7 @@ sub _parse_body {
 
     # Is this maybe JSON?
     try {
-        decode_json( $content );
+        decode_json($content);
 
         # If we get this far, it's valid JSON.
         $content_type = 'application/json';
