@@ -67,6 +67,7 @@ EOF
         'application/javascript',
         sub {
             my $text = shift;
+	    $text =~ s/-[\s|]+//g;
             ok( $text =~ /^| var baz/m,    'leading whitespace is trimmed' );
             ok( $text =~ /magna al\.\.\./, 'text is cut off at 255 chars' );
         }
