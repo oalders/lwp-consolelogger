@@ -107,10 +107,11 @@
          "web" : "https://github.com/oalders/lwp-consolelogger"
       }
    },
-   "version" : "0.000032",
+   "version" : "0.000033",
    "x_contributors" : [
       "Andy Jack <github@veracity.ca>",
       "Olaf Alders <olaf@wundersolutions.com>",
+      "Varadinsky <varadinsky@yahoo.com>",
       "\u0421\u0435\u0440\u0433\u0435\u0439 \u0420\u043e\u043c\u0430\u043d\u043e\u0432 <sromanov-dev@yandex.ru>"
    ],
    "x_serialization_backend" : "Cpanel::JSON::XS version 3.0217"

@@ -2,6 +2,10 @@ Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
 
+0.000033  2016-12-03 21:46:12-05:00 America/Toronto
+    - Fix test that failed under some terminal widths (Varadinsky).
+      https://github.com/oalders/lwp-consolelogger/pull/8
+
 0.000032  2016-11-29 14:58:25-05:00 America/Toronto
     - Maybe guess at content type when parsing body.
 
