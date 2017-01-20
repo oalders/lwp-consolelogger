@@ -339,9 +339,14 @@ sub _get_content {
     return $content unless $content_type;
 
     my ( $type, $subtype ) = apply { lc $_ } parse_mime_type($content_type);
-    if (   ( $type ne 'text' )
-        && ( none { $_ eq $subtype } ( 'javascript', 'html', 'json', 'xml' ) )
-        && $subtype !~ m{$json_regex} ) {
+    if (
+        ( $type ne 'text' )
+        && (
+            none { $_ eq $subtype }
+            ( 'javascript', 'html', 'json', 'xml', 'x-www-form-urlencoded', )
+        )
+        && $subtype !~ m{$json_regex}
+        ) {
         $content = $self->_redaction_message($content_type);
     }
     elsif ( $self->content_pre_filter ) {
@@ -461,6 +466,14 @@ sub _parse_body {
         if ( length $content > 253 ) {
             $content = substr( $content, 0, 252 ) . '...';
         }
+    }
+    elsif ($type
+        && $type eq 'application'
+        && $subtype eq 'x-www-form-urlencoded' ) {
+
+        # Pretend we have query params.
+        my $uri = URI->new( '?' . $content );
+        $content = np( $uri->query_form_hash );
     }
     elsif ( !$type || $type ne 'text' ) {
 

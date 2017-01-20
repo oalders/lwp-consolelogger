@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Don't redact x-www-form-urlencoded data.
 
 0.000033  2016-12-03 21:46:12-05:00 America/Toronto
     - Fix test that failed under some terminal widths (Varadinsky).
