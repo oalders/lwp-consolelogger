@@ -6,7 +6,7 @@ LWP::ConsoleLogger - LWP tracing and debugging
 
 # VERSION
 
-version 0.000033
+version 0.000034
 
 # SYNOPSIS
 
@@ -319,7 +319,7 @@ Olaf Alders <olaf@wundercounter.com>
 
 # COPYRIGHT AND LICENSE
 
-This software is Copyright (c) 2014 by MaxMind, Inc.
+This software is Copyright (c) 2014-2017 by MaxMind, Inc.
 
 This is free software, licensed under:
 
