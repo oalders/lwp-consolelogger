@@ -51,4 +51,7 @@ foreach my $ua ( $Foo::Bar::lwp, $Foo::Bar::mech ) {
     ok $stderr, 'there was a dump';
 }
 
+is( ( grep { $_->isa('LWP::ConsoleLogger') } @{ LWP::ConsoleLogger::Everywhere->loggers } ),
+    4, 'all loggers are stored' );
+
 done_testing();
