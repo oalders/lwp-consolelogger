@@ -54,4 +54,15 @@ foreach my $ua ( $Foo::Bar::lwp, $Foo::Bar::mech ) {
 is( ( grep { $_->isa('LWP::ConsoleLogger') } @{ LWP::ConsoleLogger::Everywhere->loggers } ),
     4, 'all loggers are stored' );
 
+is(
+    exception {
+        LWP::ConsoleLogger::Everywhere->set( dump_content => 0 );
+    },
+    undef,
+    'changing settings on all loggers at once lives'
+);
+
+is( ( grep { $_->dump_content == 0 } @{ LWP::ConsoleLogger::Everywhere->loggers } ),
+    4, '... and all loggers have been changed' );
+
 done_testing();

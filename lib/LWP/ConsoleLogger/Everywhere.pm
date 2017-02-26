@@ -18,7 +18,7 @@ Class::Method::Modifiers::install_modifier(
         my $self = shift;
 
         my $ua = $self->$orig(@_);
-        push @{ $loggers }, debug_ua($ua);
+        push @{$loggers}, debug_ua($ua);
 
         return $ua;
     }
@@ -26,6 +26,17 @@ Class::Method::Modifiers::install_modifier(
 
 sub loggers {
     return $loggers;
+}
+
+sub set {
+    my $class   = shift;
+    my $setting = shift;
+
+    foreach my $logger ( @{$loggers} ) {
+        $logger->$setting(@_);
+    }
+
+    return;
 }
 
 1;
@@ -43,8 +54,9 @@ based user agent anywhere in your code. It doesn't matter what package or class 
 or if you have access to the object itself. All you need to do is C<use> this module
 anywhere in your code and it will work.
 
-You can access and configure the loggers after they have been created using
-the C<loggers> class method.
+You can access and configure the loggers individually after they have been created
+using the C<loggers> class method. To change all of them at once, use the C<set> class
+method instead.
 
 =head1 SYNOPSIS
 
@@ -55,14 +67,27 @@ the C<loggers> class method.
     # and now it will tell you what it's up to
 
     # somewhere else you can access and fine-tune those loggers
+    # individually:
     my $loggers = LWP::ConsoleLogger::Everywhere->loggers;
     $loggers->[0]->pretty(0);
 
+    # or all of them at once:
+    LWP::ConsoleLogger::Everywhere->set( pretty => 1);
+    
     # Redact sensitive data for all user agents
     $ENV{LWPCL_REDACT_HEADERS} = 'Authorization,Foo,Bar';
     $ENV{LWPCL_REDACT_PARAMS} = 'seekrit,password,credit_card';
 
 =head1 CLASS METHODS
+
+=head2 set( <setting> => <value> )
+
+    LWP::ConsoleLogger::Everywhere->set( dump_content => 0 );
+
+This class method changes the given setting on all logger objects that have been created
+so far. The first argument is the accessor name of the setting you want to change, and the
+second argument is the new value. This cannot be used to access current values. See
+L<LWP::ConsoleLogger#SUBROUTINES/METHODS> for what those settings are.
 
 =head2 loggers
 
