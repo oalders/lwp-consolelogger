@@ -1,9 +1,11 @@
+requires "Class::Method::Modifiers" => "0";
 requires "Data::Printer" => "0.36";
 requires "DateTime" => "0";
 requires "HTML::Restrict" => "0";
 requires "HTTP::Body" => "0";
 requires "HTTP::CookieMonster" => "0";
 requires "JSON::MaybeXS" => "1.003005";
+requires "LWP::UserAgent" => "0";
 requires "List::AllUtils" => "0";
 requires "Log::Dispatch" => "2.56";
 requires "Module::Load::Conditional" => "0";
@@ -26,9 +28,9 @@ requires "warnings" => "0";
 recommends "HTML::FormatText::Lynx" => "23";
 
 on 'test' => sub {
+  requires "Capture::Tiny" => "0";
   requires "HTML::FormatText::WithLinks" => "0";
   requires "HTTP::Request" => "0";
-  requires "LWP::UserAgent" => "0";
   requires "Log::Dispatch::Array" => "0";
   requires "Path::Tiny" => "0";
   requires "Plack::Handler::HTTP::Server::Simple" => "0.016";
