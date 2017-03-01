@@ -17,12 +17,14 @@ my %WriteMakefileArgs = (
   "MIN_PERL_VERSION" => "5.013010",
   "NAME" => "LWP::ConsoleLogger",
   "PREREQ_PM" => {
+    "Class::Method::Modifiers" => 0,
     "Data::Printer" => "0.36",
     "DateTime" => 0,
     "HTML::Restrict" => 0,
     "HTTP::Body" => 0,
     "HTTP::CookieMonster" => 0,
     "JSON::MaybeXS" => "1.003005",
+    "LWP::UserAgent" => 0,
     "List::AllUtils" => 0,
     "Log::Dispatch" => "2.56",
     "Module::Load::Conditional" => 0,
@@ -43,9 +45,9 @@ my %WriteMakefileArgs = (
     "warnings" => 0
   },
   "TEST_REQUIRES" => {
+    "Capture::Tiny" => 0,
     "HTML::FormatText::WithLinks" => 0,
     "HTTP::Request" => 0,
-    "LWP::UserAgent" => 0,
     "Log::Dispatch::Array" => 0,
     "Path::Tiny" => 0,
     "Plack::Handler::HTTP::Server::Simple" => "0.016",
@@ -61,7 +63,7 @@ my %WriteMakefileArgs = (
     "URI::file" => 0,
     "WWW::Mechanize" => 0
   },
-  "VERSION" => "0.000034",
+  "VERSION" => "0.000035",
   "test" => {
     "TESTS" => "t/*.t t/LWP/*.t t/LWP/ConsoleLogger/*.t"
   }
@@ -69,6 +71,8 @@ my %WriteMakefileArgs = (
 
 
 my %FallbackPrereqs = (
+  "Capture::Tiny" => 0,
+  "Class::Method::Modifiers" => 0,
   "Data::Printer" => "0.36",
   "DateTime" => 0,
   "HTML::FormatText::WithLinks" => 0,

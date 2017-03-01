@@ -45,12 +45,14 @@
             "HTML::FormatText::Lynx" : "23"
          },
          "requires" : {
+            "Class::Method::Modifiers" : "0",
             "Data::Printer" : "0.36",
             "DateTime" : "0",
             "HTML::Restrict" : "0",
             "HTTP::Body" : "0",
             "HTTP::CookieMonster" : "0",
             "JSON::MaybeXS" : "1.003005",
+            "LWP::UserAgent" : "0",
             "List::AllUtils" : "0",
             "Log::Dispatch" : "2.56",
             "Module::Load::Conditional" : "0",
@@ -74,9 +76,9 @@
       },
       "test" : {
          "requires" : {
+            "Capture::Tiny" : "0",
             "HTML::FormatText::WithLinks" : "0",
             "HTTP::Request" : "0",
-            "LWP::UserAgent" : "0",
             "Log::Dispatch::Array" : "0",
             "Path::Tiny" : "0",
             "Plack::Handler::HTTP::Server::Simple" : "0.016",
@@ -107,10 +109,11 @@
          "web" : "https://github.com/oalders/lwp-consolelogger"
       }
    },
-   "version" : "0.000034",
+   "version" : "0.000035",
    "x_contributors" : [
       "Andy Jack <github@veracity.ca>",
       "Olaf Alders <olaf@wundersolutions.com>",
+      "simbabque <simbabque@cpan.org>",
       "Varadinsky <varadinsky@yahoo.com>",
       "\u0421\u0435\u0440\u0433\u0435\u0439 \u0420\u043e\u043c\u0430\u043d\u043e\u0432 <sromanov-dev@yandex.ru>"
    ],
