@@ -223,7 +223,6 @@ sub _log_headers {
     $t->captions( [ ucfirst $type . ' Header', 'Value' ] );
 
     foreach my $name ( sort $headers->header_field_names ) {
-        next if $name eq 'Cookie' || $name eq 'Set-Cookie';
         my $val = (
             any { $name eq $_ }
             @{ $self->headers_to_redact }
