@@ -179,7 +179,7 @@ sub request_callback {
         $self->_log_params( $req, $_ ) for ( 'GET', $req->method );
     }
 
-    $self->_log_headers( 'request', $req->headers );
+    $self->_log_headers( 'request (before sending)', $req->headers );
 
     # This request might have a body.
     return unless $req->content;
@@ -193,6 +193,8 @@ sub response_callback {
     my $self = shift;
     my $res  = shift;
     my $ua   = shift;
+
+    $self->_log_headers( 'request (after sending)', $res->request->headers );
 
     if ( $self->dump_status ) {
         $self->_debug( '==> ' . $res->status_line . "\n" );
