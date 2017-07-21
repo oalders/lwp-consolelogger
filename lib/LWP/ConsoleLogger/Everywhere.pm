@@ -1,4 +1,5 @@
 package LWP::ConsoleLogger::Everywhere;
+
 use strict;
 use warnings;
 
