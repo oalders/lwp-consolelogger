@@ -732,7 +732,7 @@ content_pre_filter and text_pre_filters have been applied.  Defaults to true.
 =head2 dump_title( 0|1 )
 
 Boolean value. If true, dumps the titles of HTML pages if your UserAgent has
-a c<title> method and if it returns something useful. Defaults to true.
+a C<title> method and if it returns something useful. Defaults to true.
 
 =head2 dump_uri( 0|1 )
 
