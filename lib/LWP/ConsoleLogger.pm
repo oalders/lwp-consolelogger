@@ -764,7 +764,7 @@ HTML content to make it easier to detect changes in the body of the page.
     );
 
 Try to make sure that your content mangling doesn't return broken HTML as that
-may not play with L<HTML::Restrict>.
+may not play well with L<HTML::Restrict>.
 
 =head2 request_callback
 
