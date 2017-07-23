@@ -764,7 +764,7 @@ HTML content to make it easier to detect changes in the body of the page.
     );
 
 Try to make sure that your content mangling doesn't return broken HTML as that
-may not play with with L<HTML::Restrict>.
+may not play well with L<HTML::Restrict>.
 
 =head2 request_callback
 
@@ -830,7 +830,7 @@ order to present you with more readable text.
 If the content_type indicates HTML then HTML::Restrict will be used to strip
 tags from your content in the text rendering process.  You may pass your own
 HTML::Restrict object, if you like.  This would be helpful in situations where
-you still do want to some some tags in your text.
+you still do want to have some tags in your text.
 
 =head2 logger( Log::Dispatch->new( ... ) )
 
