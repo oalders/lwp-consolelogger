@@ -347,7 +347,7 @@ sub _get_content {
             ( 'javascript', 'html', 'json', 'xml', 'x-www-form-urlencoded', )
         )
         && $subtype !~ m{$json_regex}
-        ) {
+    ) {
         $content = $self->_redaction_message($content_type);
     }
     elsif ( $self->content_pre_filter ) {
