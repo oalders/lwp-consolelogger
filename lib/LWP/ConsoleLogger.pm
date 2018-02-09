@@ -532,6 +532,28 @@ __END__
 
 =head1 SYNOPSIS
 
+The simplest way to get started is by adding L<LWP::ConsoleLogger::Everywhere>
+to your code and then just watching your output.
+
+    use LWP::ConsoleLogger::Everywhere ();
+
+If you need more control, look at L<LWP::ConsoleLogger::Easy>.
+
+    use LWP::ConsoleLogger::Easy qw( debug_ua );
+    use WWW::Mechanize;
+
+    my $mech           = WWW::Mechanize->new;   # or LWP::UserAgent->new() etc
+    my $console_logger = debug_ua( $mech );
+    $mech->get( 'https://metacpan.org' );
+
+    # now watch the console for debugging output
+    # turn off header dumps
+    $console_logger->dump_headers( 0 );
+
+    $mech->get( $some_other_url );
+
+To get down to the lowest level, use LWP::ConsoleLogger directly.
+
     my $ua = LWP::UserAgent->new( cookie_jar => {} );
     my $console_logger = LWP::ConsoleLogger->new(
         dump_content       => 1,
@@ -558,20 +580,6 @@ __END__
     # now watch debugging output to your screen
     $ua->get( 'http://nytimes.com/' );
 
-Or start the easy way.
-
-    use LWP::ConsoleLogger::Easy qw( debug_ua );
-    use WWW::Mechanize;
-
-    my $mech           = WWW::Mechanize->new;   # or LWP::UserAgent->new() etc
-    my $console_logger = debug_ua( $mech );
-    $mech->get( 'https://metacpan.org' );
-
-    # now watch the console for debugging output
-    # turn off header dumps
-    $console_logger->dump_headers( 0 );
-
-    $mech->get( $some_other_url );
 
 Sample output might look like this.
 

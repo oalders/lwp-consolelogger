@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Improve docs by pushing users towards LWP::ConsoleLogger::Everywhere as a
+      first step
 
 0.000036  2017-07-21 22:02:23Z
     - Re-log the request headers when we get the response
