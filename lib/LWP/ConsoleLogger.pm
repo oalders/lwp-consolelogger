@@ -16,6 +16,7 @@ use Log::Dispatch qw();
 use Moo;
 use MooX::StrictConstructor;
 use Parse::MIME qw( parse_mime_type );
+use Ref::Util qw( is_blessed_ref );
 use Term::Size::Any qw( chars );
 use Text::SimpleTable::AutoWidth 0.09 qw();
 use Try::Tiny qw( catch try );
@@ -297,35 +298,36 @@ sub _log_cookies {
     my $type = shift;
     my $jar  = shift;
 
-    return if !$self->dump_cookies || !$jar;
+    return if !$self->dump_cookies || !$jar || !is_blessed_ref($jar);
 
-    my $monster = HTTP::CookieMonster->new($jar);
+    if ( $jar->isa('HTTP::Cookies') ) {
+        my $monster = HTTP::CookieMonster->new($jar);
 
-    my @cookies    = $monster->all_cookies;
-    my $name_width = 10;
+        my @cookies    = $monster->all_cookies;
+        my $name_width = 10;
 
-    my @methods = (
-        'key',       'val',    'path', 'domain',
-        'path_spec', 'secure', 'expires'
-    );
+        my @methods = (
+            'key',       'val',    'path', 'domain',
+            'path_spec', 'secure', 'expires'
+        );
 
-    foreach my $cookie (@cookies) {
+        foreach my $cookie (@cookies) {
 
-        my $t = Text::SimpleTable::AutoWidth->new();
-        $t->captions( [ 'Key', 'Value' ] );
+            my $t = Text::SimpleTable::AutoWidth->new();
+            $t->captions( [ 'Key', 'Value' ] );
 
-        foreach my $method (@methods) {
-            my $val = $cookie->$method;
-            if ($val) {
-                $val = DateTime->from_epoch( epoch => $val )
-                    if $method eq 'expires';
-                $t->row( $method, $val );
+            foreach my $method (@methods) {
+                my $val = $cookie->$method;
+                if ($val) {
+                    $val = DateTime->from_epoch( epoch => $val )
+                        if $method eq 'expires';
+                    $t->row( $method, $val );
+                }
             }
+
+            $self->_draw( $t, ucfirst $type . " Cookie:\n" );
         }
-
-        $self->_draw( $t, ucfirst $type . " Cookie:\n" );
     }
-
 }
 
 sub _get_content {
