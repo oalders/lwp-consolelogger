@@ -205,7 +205,7 @@ sub response_callback {
     }
 
     $self->_log_headers( 'response', $res->headers );
-    $self->_log_cookies( 'response', $ua->cookie_jar );
+    $self->_log_cookies( 'response', $ua->cookie_jar, $res->request->uri );
 
     $self->_log_content($res);
     $self->_log_text($res);
@@ -297,14 +297,13 @@ sub _log_cookies {
     my $self = shift;
     my $type = shift;
     my $jar  = shift;
+    my $uri  = shift;
 
     return if !$self->dump_cookies || !$jar || !is_blessed_ref($jar);
 
     if ( $jar->isa('HTTP::Cookies') ) {
         my $monster = HTTP::CookieMonster->new($jar);
-
-        my @cookies    = $monster->all_cookies;
-        my $name_width = 10;
+        my @cookies = $monster->all_cookies;
 
         my @methods = (
             'key',       'val',    'path', 'domain',
@@ -313,7 +312,7 @@ sub _log_cookies {
 
         foreach my $cookie (@cookies) {
 
-            my $t = Text::SimpleTable::AutoWidth->new();
+            my $t = Text::SimpleTable::AutoWidth->new;
             $t->captions( [ 'Key', 'Value' ] );
 
             foreach my $method (@methods) {
@@ -326,6 +325,27 @@ sub _log_cookies {
             }
 
             $self->_draw( $t, ucfirst $type . " Cookie:\n" );
+        }
+    }
+    elsif ( $jar->isa('HTTP::CookieJar') ) {
+        my @cookies = $jar->cookies_for($uri);
+        for my $cookie (@cookies) {
+
+            my $t = Text::SimpleTable::AutoWidth->new;
+            $t->captions( [ 'Key', 'Value' ] );
+
+            for my $key ( sort keys %{$cookie} ) {
+                my $val = $cookie->{$key};
+                if ( $val && $key =~ m{expires|_time} ) {
+                    $val = DateTime->from_epoch( epoch => $val );
+                }
+                $t->row( $key, $val );
+            }
+
+            $self->_draw(
+                $t,
+                sprintf( '%s Cookie (%s)', ucfirst($type), $cookie->{name} )
+            );
         }
     }
 }
