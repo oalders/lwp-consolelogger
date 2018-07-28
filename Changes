@@ -1,6 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
-{{$NEXT}}
+0.000038  2018-07-28 02:39:17Z
+    - Add support for HTTP::CookieJar
 
 0.000037  2018-02-09 15:54:17Z
     - Improve docs by pushing users towards LWP::ConsoleLogger::Everywhere as a
