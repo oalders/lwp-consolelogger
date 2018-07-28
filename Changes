@@ -1,5 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
+{{$NEXT}}
+
 0.000038  2018-07-28 02:39:17Z
     - Add support for HTTP::CookieJar
 
