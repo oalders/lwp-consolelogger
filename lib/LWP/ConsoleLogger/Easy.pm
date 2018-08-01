@@ -1,5 +1,5 @@
 package LWP::ConsoleLogger::Easy;
-our $VERSION = '0.000039';
+our $VERSION = '0.000040';
 use strict;
 use warnings;
 
