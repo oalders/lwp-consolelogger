@@ -50,7 +50,7 @@ __END__
 
 =head1 DESCRIPTION
 
-This module turns on C<LWP::ConsoleLogger::Easy> debugging for every L<LWP::UserAgent>
+This module turns on L<LWP::ConsoleLogger::Easy> debugging for every L<LWP::UserAgent>
 based user agent anywhere in your code. It doesn't matter what package or class it is in,
 or if you have access to the object itself. All you need to do is C<use> this module
 anywhere in your code and it will work.
