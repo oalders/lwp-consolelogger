@@ -7,8 +7,7 @@ use HTML::FormatText::WithLinks ();
 use LWP::ConsoleLogger::Easy qw( debug_ua );
 use Log::Dispatch        ();
 use Log::Dispatch::Array ();
-use Mojo::UserAgent      ();
-use Mojolicious          ();
+use Module::Runtime qw( require_module );
 use Path::Tiny qw( path );
 use Plack::Handler::HTTP::Server::Simple 0.016;
 use Plack::Test;
@@ -19,12 +18,19 @@ use Test::Most;
 use WWW::Mechanize ();
 
 my $lwp  = LWP::UserAgent->new( cookie_jar => {} );
-my $mojo = Mojo::UserAgent->new;
-my $mech = WWW::Mechanize->new( autocheck => 0 );
+my $mech = WWW::Mechanize->new( autocheck  => 0 );
+
+my @user_agents = ( $lwp, $mech );
+
+my $mojo;
+if ( require_module('Mojo::UserAgent') ) {
+    $mojo = Mojo::UserAgent->new;
+    push @user_agents, $mojo;
+}
 
 my $foo = 'file://' . path('t/test-data/foo.html')->absolute;
 
-foreach my $mech ( $lwp, $mojo, $mech ) {
+foreach my $mech (@user_agents) {
     my $logger = debug_ua($mech);
     is(
         exception {
@@ -57,7 +63,7 @@ SKIP: {
         }
     );
     test_content_lwp(@args);
-    test_content_mojo(@args);
+    test_content_mojo(@args) if $mojo;
 }
 
 # Check javascript parsing
@@ -81,7 +87,7 @@ EOF
         }
     );
     test_content_lwp(@args);
-    test_content_mojo(@args)
+    test_content_mojo(@args) if $mojo;
 }
 
 # Check text_pre_filter
@@ -206,6 +212,7 @@ sub test_content_mojo {
 
     $logger->logger($ld);
 
+    require_module('Mojolicious');
     my $app = Mojolicious->new;
     Mojo::UserAgent::Server->app($app);
     $app->routes->get('/')->to(
