@@ -283,7 +283,7 @@ sub _log_params {
         my @values = (
             any { $name eq $_ }
             @{ $self->params_to_redact }
-            )                    ? '[REDACTED]'
+            ) ? '[REDACTED]'
             : ref $params{$name} ? @{ $params{$name} }
             :                      $params{$name};
 
