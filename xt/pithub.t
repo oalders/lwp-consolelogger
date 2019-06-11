@@ -1,3 +1,4 @@
+## no critic (Modules::RequireExplicitPackage,Modules::RequireEndWithOne)
 use strict;
 use warnings;
 
