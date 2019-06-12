@@ -6,6 +6,7 @@ use warnings;
 use LWP::ConsoleLogger::Easy qw( debug_ua );
 use LWP::UserAgent;
 use Class::Method::Modifiers ();
+use Module::Runtime qw( require_module );
 
 no warnings 'once';
 
@@ -24,6 +25,22 @@ Class::Method::Modifiers::install_modifier(
         return $ua;
     }
 );
+
+if ( require_module('Mojo::UserAgent') ) {
+    Class::Method::Modifiers::install_modifier(
+        'Mojo::UserAgent',
+        'around',
+        'new' => sub {
+            my $orig = shift;
+            my $self = shift;
+
+            my $ua = $self->$orig(@_);
+            push @{$loggers}, debug_ua($ua);
+
+            return $ua;
+        }
+    );
+}
 
 sub loggers {
     return $loggers;
@@ -50,7 +67,7 @@ __END__
 
 =head1 DESCRIPTION
 
-This module turns on L<LWP::ConsoleLogger::Easy> debugging for every L<LWP::UserAgent>
+This module turns on L<LWP::ConsoleLogger::Easy> debugging for every L<LWP::UserAgent> or L<Mojo::UserAgent>
 based user agent anywhere in your code. It doesn't matter what package or class it is in,
 or if you have access to the object itself. All you need to do is C<use> this module
 anywhere in your code and it will work.
