@@ -17,7 +17,7 @@ my $url = 'file://' . path('t/test-data/foo.html')->absolute;
 my $lwp  = LWP::UserAgent->new( cookie_jar => {} );
 my $mech = WWW::Mechanize->new( autocheck  => 0 );
 
-my ($mojo, $mojo_based);
+my ( $mojo, $mojo_based );
 if ( require_module('Mojo::UserAgent') ) {
     $mojo = Mojo::UserAgent->new;
 
@@ -29,7 +29,7 @@ if ( require_module('Mojo::UserAgent') ) {
 
         sub new {
             my $class = shift;
-            my $self = $class->SUPER::new(@_);
+            my $self  = $class->SUPER::new(@_);
             return $self;
         }
     }
@@ -45,7 +45,7 @@ foreach my $ua ( $lwp, $mech, $mojo, $mojo_based ) {
                 $ua->get($url);
             },
             undef,
-            'Same package: GETing with ' . ref($ua) .' lives'
+            'Same package: GETing with ' . ref($ua) . ' lives'
         );
     };
     ok $stderr, '... and there was a dump';
@@ -66,8 +66,11 @@ foreach my $ua ( $lwp, $mech, $mojo, $mojo_based ) {
 
 package main;
 
-foreach my $ua ( $Foo::Bar::lwp, $Foo::Bar::mech, $Foo::Bar::mua, $Foo::Bar::mua_based ) {
-    next unless $ua; # skip mojo if it's not installed
+foreach my $ua (
+    $Foo::Bar::lwp, $Foo::Bar::mech, $Foo::Bar::mua,
+    $Foo::Bar::mua_based
+) {
+    next unless $ua;    # skip mojo if it's not installed
 
     my $stderr = capture_stderr sub {
         is(
@@ -75,7 +78,7 @@ foreach my $ua ( $Foo::Bar::lwp, $Foo::Bar::mech, $Foo::Bar::mua, $Foo::Bar::mua
                 $ua->get($url);
             },
             undef,
-            'Different package: GETing with ' . ref($ua) .' lives'
+            'Different package: GETing with ' . ref($ua) . ' lives'
         );
     };
     diag $stderr;
@@ -88,7 +91,7 @@ is(
             @{ LWP::ConsoleLogger::Everywhere->loggers }
     ),
     4 + defined($mojo) + defined($mojo_based) + defined($Foo::Bar::mua)
-      + defined($Foo::Bar::mua_based),
+        + defined($Foo::Bar::mua_based),
     'all loggers are stored'
 );
 
@@ -106,7 +109,7 @@ is(
             @{ LWP::ConsoleLogger::Everywhere->loggers }
     ),
     4 + defined($mojo) + defined($mojo_based) + defined($Foo::Bar::mua)
-      + defined($Foo::Bar::mua_based),
+        + defined($Foo::Bar::mua_based),
     '... and all loggers have been changed'
 );
 
