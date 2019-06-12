@@ -1,11 +1,12 @@
 package LWP::ConsoleLogger::Everywhere;
-our $VERSION = '0.000042';
 use strict;
 use warnings;
 
-use LWP::ConsoleLogger::Easy qw( debug_ua );
-use LWP::UserAgent;
+our $VERSION = '0.000042';
+
 use Class::Method::Modifiers ();
+use LWP::ConsoleLogger::Easy qw( debug_ua );
+use LWP::UserAgent ();
 use Module::Runtime qw( require_module );
 
 no warnings 'once';
