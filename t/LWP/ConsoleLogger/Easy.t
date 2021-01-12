@@ -10,11 +10,10 @@ use Log::Dispatch::Array ();
 use Module::Runtime qw( require_module );
 use Path::Tiny qw( path );
 use Plack::Handler::HTTP::Server::Simple 0.016;
-use Plack::Test;
 use Plack::Test::Agent ();
 use Test::FailWarnings -allow_deps => 1;
 use Test::Fatal qw( exception );
-use Test::Most;
+use Test::More;
 use Try::Tiny qw( catch try );
 use WWW::Mechanize ();
 
