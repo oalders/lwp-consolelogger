@@ -3,12 +3,12 @@ our $VERSION = '0.000043';
 use strict;
 use warnings;
 
-use HTTP::Request;
-use HTTP::Response;
+use HTTP::Request  ();
+use HTTP::Response ();
 use LWP::ConsoleLogger;
 use Module::Load::Conditional qw( can_load );
+use String::Trim qw( trim );
 use Sub::Exporter -setup => { exports => ['debug_ua'] };
-use String::Trim;
 
 my %VERBOSITY = (
     dump_content => 8,

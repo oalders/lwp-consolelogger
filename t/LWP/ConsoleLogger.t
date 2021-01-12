@@ -2,13 +2,11 @@ use strict;
 use warnings;
 
 use HTTP::CookieJar::LWP ();
-
-#use HTTP::Request;
-use LWP::ConsoleLogger ();
-use LWP::UserAgent     ();
+use LWP::ConsoleLogger   ();
+use LWP::UserAgent       ();
 use Path::Tiny qw( path );
 use Test::Fatal qw( exception );
-use Test::Most;
+use Test::More;
 use URI::file      ();
 use WWW::Mechanize ();
 
