@@ -94,7 +94,7 @@ method instead.
 
     # or all of them at once:
     LWP::ConsoleLogger::Everywhere->set( pretty => 1);
-    
+
     # Redact sensitive data for all user agents
     $ENV{LWPCL_REDACT_HEADERS} = 'Authorization,Foo,Bar';
     $ENV{LWPCL_REDACT_PARAMS} = 'seekrit,password,credit_card';
