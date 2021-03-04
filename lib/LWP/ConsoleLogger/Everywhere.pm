@@ -2,7 +2,7 @@ package LWP::ConsoleLogger::Everywhere;
 use strict;
 use warnings;
 
-our $VERSION = '0.000043';
+our $VERSION = '0.000044';
 
 use Class::Method::Modifiers ();
 use LWP::ConsoleLogger::Easy qw( debug_ua );

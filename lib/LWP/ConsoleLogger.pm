@@ -4,7 +4,7 @@ use warnings;
 use 5.006;
 
 package LWP::ConsoleLogger;
-our $VERSION = '0.000043';
+our $VERSION = '0.000044';
 use Data::Printer { end_separator => 1, hash_separator => ' => ' };
 use DateTime qw();
 use HTML::Restrict qw();
