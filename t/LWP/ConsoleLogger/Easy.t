@@ -55,7 +55,7 @@ foreach my $mech (@user_agents) {
         'code lives'
     );
 
-    my $silent_logger = debug_ua($mech, 0);
+    my $silent_logger = debug_ua( $mech, 0 );
 
     my @dump_attrs = (
         'content', 'cookies', 'headers', 'params', 'status', 'text',

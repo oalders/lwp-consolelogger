@@ -539,7 +539,7 @@ sub _draw {
     my $t        = shift;
     my $preamble = shift;
 
-    return if !$t->rows;
+    return                   if !$t->rows;
     $self->_debug($preamble) if $preamble;
     $self->_debug( $t->draw );
 }
