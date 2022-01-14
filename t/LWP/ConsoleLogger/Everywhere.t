@@ -6,7 +6,7 @@ use Capture::Tiny qw( capture_stderr );
 use LWP::UserAgent ();
 use Module::Runtime qw( require_module );
 use Path::Tiny qw( path );
-use Test::FailWarnings -allow_deps => 1;
+use Test::Warnings;
 use Test::Fatal qw( exception );
 use Test::More;
 use Try::Tiny qw( catch try );
