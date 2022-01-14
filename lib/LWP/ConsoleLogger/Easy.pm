@@ -5,12 +5,12 @@ use warnings;
 
 our $VERSION = '0.000044';
 
-use HTTP::Request;
-use HTTP::Response;
-use LWP::ConsoleLogger;
+use HTTP::Request      ();
+use HTTP::Response     ();
+use LWP::ConsoleLogger ();
 use Module::Load::Conditional qw( can_load );
 use Sub::Exporter -setup => { exports => ['debug_ua'] };
-use String::Trim;
+use String::Trim qw( trim );
 
 my %VERBOSITY = (
     dump_content => 8,

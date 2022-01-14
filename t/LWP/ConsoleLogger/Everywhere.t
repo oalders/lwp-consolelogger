@@ -2,7 +2,7 @@ use strict;
 use warnings;
 use version;
 
-use Capture::Tiny 'capture_stderr';
+use Capture::Tiny qw( capture_stderr );
 use LWP::UserAgent ();
 use Module::Runtime qw( require_module );
 use Path::Tiny qw( path );
@@ -12,7 +12,7 @@ use Test::More;
 use Try::Tiny qw( catch try );
 use WWW::Mechanize ();
 
-use LWP::ConsoleLogger::Everywhere;
+use LWP::ConsoleLogger::Everywhere ();
 
 my $url = 'file://' . path('t/test-data/foo.html')->absolute;
 
