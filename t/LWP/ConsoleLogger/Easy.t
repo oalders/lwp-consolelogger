@@ -84,7 +84,7 @@ SKIP: {
             $xml =~ s{Text}{};
             my $ref = eval $xml;
             is_deeply(
-                $ref, { foo => { bar => "baz", id => 1 } },
+                $ref, { foo => { bar => 'baz', id => 1 } },
                 'XML parsed'
             );
         }
