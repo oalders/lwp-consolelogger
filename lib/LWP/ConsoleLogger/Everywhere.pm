@@ -79,6 +79,10 @@ You can access and configure the loggers individually after they have been creat
 using the C<loggers> class method. To change all of them at once, use the C<set> class
 method instead.
 
+See
+L<https://www.olafalders.com/2021/12/01/observing-network-traffic-with-lwp-consolelogger-everywhere/>
+for a practical example of how to use this module.
+
 =head1 SYNOPSIS
 
     use LWP::ConsoleLogger::Everywhere;
@@ -98,6 +102,11 @@ method instead.
     # Redact sensitive data for all user agents
     $ENV{LWPCL_REDACT_HEADERS} = 'Authorization,Foo,Bar';
     $ENV{LWPCL_REDACT_PARAMS} = 'seekrit,password,credit_card';
+
+    # Or observe without changing your code
+    PERL5OPT="-MLWP::ConsoleLogger::Everywhere" carton install
+
+    perl -MLWP::ConsoleLogger::Everywhere my-script.pl
 
 =head1 CLASS METHODS
 
