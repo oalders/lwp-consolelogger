@@ -226,10 +226,10 @@ sub _log_headers {
     $t->captions( [ ucfirst $type . ' Header', 'Value' ] );
 
     foreach my $name ( sort $headers->header_field_names ) {
-        my $val = (
-            any { $name eq $_ }
-            @{ $self->headers_to_redact }
-        ) ? '[REDACTED]' : $headers->header($name);
+        my $val
+            = ( any { $name eq $_ } @{ $self->headers_to_redact } )
+            ? '[REDACTED]'
+            : $headers->header($name);
         $t->row( $name, $val );
     }
 
@@ -280,10 +280,9 @@ sub _log_params {
     my $t = Text::SimpleTable::AutoWidth->new();
     $t->captions( [ 'Key', 'Value' ] );
     foreach my $name ( sort keys %params ) {
-        my @values = (
-            any { $name eq $_ }
-            @{ $self->params_to_redact }
-            ) ? '[REDACTED]'
+        my @values
+            = ( any { $name eq $_ } @{ $self->params_to_redact } )
+            ? '[REDACTED]'
             : ref $params{$name} ? @{ $params{$name} }
             :                      $params{$name};
 
@@ -364,8 +363,7 @@ sub _get_content {
     my ( $type, $subtype ) = apply { lc $_ } parse_mime_type($content_type);
     if (
         ( $type ne 'text' )
-        && (
-            none { $_ eq $subtype }
+        && ( none { $_ eq $subtype }
             ( 'javascript', 'html', 'json', 'xml', 'x-www-form-urlencoded', )
         )
         && $subtype !~ m{$json_regex}
