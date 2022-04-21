@@ -67,7 +67,7 @@ my %WriteMakefileArgs = (
     "WWW::Mechanize" => 0,
     "version" => 0
   },
-  "VERSION" => "0.000044",
+  "VERSION" => "0.000045",
   "test" => {
     "TESTS" => "t/*.t t/LWP/*.t t/LWP/ConsoleLogger/*.t"
   }
