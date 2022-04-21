@@ -22,7 +22,6 @@ use Text::SimpleTable::AutoWidth 0.09 ();
 use Try::Tiny qw( catch try );
 use Types::Common::Numeric qw( PositiveInt );
 use Types::Standard qw( ArrayRef Bool CodeRef InstanceOf );
-use URI::Query ();
 use URI::QueryParam qw();
 use XML::Simple qw( XMLin );
 
