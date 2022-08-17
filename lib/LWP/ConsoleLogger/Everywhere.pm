@@ -13,19 +13,22 @@ no warnings 'once';
 
 my $loggers;
 
-Class::Method::Modifiers::install_modifier(
-    'LWP::UserAgent',
-    'around',
-    'new' => sub {
-        my $orig = shift;
-        my $self = shift;
+try {
+    require_module('LWP::UserAgent');
+    Class::Method::Modifiers::install_modifier(
+        'LWP::UserAgent',
+        'around',
+        'new' => sub {
+            my $orig = shift;
+            my $self = shift;
 
-        my $ua = $self->$orig(@_);
-        push @{$loggers}, debug_ua($ua);
+            my $ua = $self->$orig(@_);
+            push @{$loggers}, debug_ua($ua);
 
-        return $ua;
-    }
-);
+            return $ua;
+        }
+    );
+};
 
 try {
     require_module('Mojo::UserAgent');
