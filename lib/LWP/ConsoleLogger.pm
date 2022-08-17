@@ -1,10 +1,12 @@
-use strict;
-use warnings;
+package LWP::ConsoleLogger;
+
+use Moo;
+use MooX::StrictConstructor;
 
 use 5.006;
 
-package LWP::ConsoleLogger;
 our $VERSION = '0.000044';
+
 use Data::Printer { end_separator => 1, hash_separator => ' => ' };
 use DateTime            ();
 use HTML::Restrict      ();
@@ -13,8 +15,6 @@ use HTTP::CookieMonster ();
 use JSON::MaybeXS qw( decode_json );
 use List::AllUtils qw( any apply none );
 use Log::Dispatch ();
-use Moo;
-use MooX::StrictConstructor;
 use Parse::MIME qw( parse_mime_type );
 use Ref::Util qw( is_blessed_ref );
 use Term::Size::Any ();
