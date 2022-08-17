@@ -6,9 +6,8 @@ our $VERSION = '0.000044';
 
 use Class::Method::Modifiers ();
 use LWP::ConsoleLogger::Easy qw( debug_ua );
-use LWP::UserAgent ();
-use Module::Runtime qw( require_module );
-use Try::Tiny qw( try );
+use Module::Runtime          qw( require_module );
+use Try::Tiny                qw( try );
 
 no warnings 'once';
 

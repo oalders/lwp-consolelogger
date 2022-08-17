@@ -2,9 +2,9 @@ use strict;
 use warnings;
 
 use LWP::ConsoleLogger::Easy qw( debug_ua );
-use LWP::UserAgent     ();
-use Plack::Test::Agent ();
-use Test::More;
+use LWP::UserAgent           ();
+use Plack::Test::Agent       ();
+use Test::More import => [qw( done_testing ok )];
 
 # check POST body parsing
 {

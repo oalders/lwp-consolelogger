@@ -1,12 +1,12 @@
 use strict;
 use warnings;
 
-use HTTP::Request ();
+use HTTP::Request            ();
 use LWP::ConsoleLogger::Easy qw( debug_ua );
-use LWP::UserAgent       ();
-use Plack::Test::Agent   ();
-use Test::LWP::UserAgent ();
-use Test::More;
+use LWP::UserAgent           ();
+use Plack::Test::Agent       ();
+use Test::LWP::UserAgent     ();
+use Test::More import => [qw( diag done_testing ok subtest )];
 
 my $ua = LWP::UserAgent->new( cookie_jar => {} );
 debug_ua($ua);
