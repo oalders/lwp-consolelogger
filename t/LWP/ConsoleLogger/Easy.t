@@ -3,14 +3,15 @@ use warnings;
 use version;
 
 use Data::Printer;
-use HTML::FormatText::WithLinks ();
-use LWP::ConsoleLogger::Easy    qw( debug_ua );
-use Log::Dispatch               ();
-use Log::Dispatch::Array        ();
-use Module::Runtime             qw( require_module );
-use Path::Tiny                  qw( path );
-use Plack::Test                 ();
-use Plack::Test::Agent          ();
+use HTML::FormatText::WithLinks          ();
+use LWP::ConsoleLogger::Easy             qw( debug_ua );
+use Log::Dispatch                        ();
+use Log::Dispatch::Array                 ();
+use Module::Runtime                      qw( require_module );
+use Path::Tiny                           qw( path );
+use Plack::Handler::HTTP::Server::Simple ();
+use Plack::Test                          ();
+use Plack::Test::Agent                   ();
 use Test::Warnings;
 use Test::Fatal qw( exception );
 use Test::Most import => [qw( diag done_testing is is_deeply ok skip )];
@@ -145,7 +146,7 @@ EOF
 
         my $server_agent = Plack::Test::Agent->new(
             app    => $app,
-            server => 'HTTP::Server::Simple',
+            server => Plack::Handler::HTTP::Server::Simple::,
             ua     => $ua,
         );
 
@@ -197,7 +198,7 @@ sub test_content_lwp {
 
     my $server_agent = Plack::Test::Agent->new(
         app    => $app,
-        server => 'HTTP::Server::Simple',
+        server => Plack::Handler::HTTP::Server::Simple::,
         ua     => $ua,
     );
 

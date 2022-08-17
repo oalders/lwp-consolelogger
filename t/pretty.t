@@ -1,9 +1,10 @@
 use strict;
 use warnings;
 
-use LWP::ConsoleLogger::Easy qw( debug_ua );
-use LWP::UserAgent           ();
-use Plack::Test::Agent       ();
+use LWP::ConsoleLogger::Easy             qw( debug_ua );
+use LWP::UserAgent                       ();
+use Plack::Handler::HTTP::Server::Simple ();
+use Plack::Test::Agent                   ();
 use Test::More import => [qw( done_testing ok )];
 
 # test pretty printing disabled
@@ -22,7 +23,7 @@ use Test::More import => [qw( done_testing ok )];
 
     my $server_agent = Plack::Test::Agent->new(
         app    => $app,
-        server => 'HTTP::Server::Simple',
+        server => Plack::Handler::HTTP::Server::Simple::,
         ua     => $ua,
     );
 
