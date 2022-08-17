@@ -364,7 +364,7 @@ sub _get_content {
     if (
         ( $type ne 'text' )
         && ( none { $_ eq $subtype }
-            ( 'javascript', 'html', 'json', 'xml', 'x-www-form-urlencoded', )
+            ( 'javascript', 'html', 'json', 'xml', 'soap+xml', 'x-www-form-urlencoded', )
         )
         && $subtype !~ m{$json_regex}
     ) {
