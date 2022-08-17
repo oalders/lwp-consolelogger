@@ -3,7 +3,7 @@ package LWP::ConsoleLogger::Easy;
 use strict;
 use warnings;
 
-our $VERSION = '0.000044';
+our $VERSION = '1.000001';
 
 use HTTP::Request             ();
 use HTTP::Response            ();
