@@ -1,6 +1,6 @@
 Revision history for LWP-ConsoleLogger
 
-{{$NEXT}}
+1.000000  2022-08-17 18:19:05Z
     - This module is no longer considered to be beta
     - Document that Everywhere can be used with the -M switch (GH#22) (Olaf
       Alders)
