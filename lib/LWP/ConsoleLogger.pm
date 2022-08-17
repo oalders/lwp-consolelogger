@@ -659,9 +659,6 @@ Sample output might look like this.
 
 =head1 DESCRIPTION
 
-BETA BETA BETA.  This is currently an experiment.  Things could change.  Please
-adjust accordingly.
-
 It can be hard (or at least tedious) to debug mechanize scripts.  LWP::Debug is
 deprecated.  It suggests you write your own debugging handlers, set up a proxy
 or install Wireshark.  Those are all workable solutions, but this module exists
@@ -877,9 +874,9 @@ parameter to constrain the tables to an arbitrary width.
 
 =head1 CAVEATS
 
-Aside from the BETA warnings, I should say that I've written this to suit my
-needs and there are a lot of things I haven't considered.  For example, I'm
-mostly assuming that the content will be text, HTML, JSON or XML.
+I've written this to suit my needs and there are a lot of things I haven't
+considered.  For example, I'm mostly assuming that the content will be text,
+HTML, JSON or XML.
 
 The test suite is not very robust either.  If you'd like to contribute to this
 module and you can't find an appropriate test, do add something to the example
