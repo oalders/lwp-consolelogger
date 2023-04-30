@@ -149,7 +149,7 @@ readable HTML to text conversions.
 
 =head1 FUNCTIONS
 
-=head2 debug_ua( $mech, $verbosity )
+=head2 debug_ua( $ua, $verbosity )
 
 When called without a verbosity argument, this function turns on all logging.
 I'd suggest going with this to start with and then turning down the verbosity
