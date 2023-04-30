@@ -5,11 +5,33 @@ use warnings;
 our $VERSION = '1.000001';
 
 use Class::Method::Modifiers ();
+use Log::Dispatch;
 use LWP::ConsoleLogger::Easy qw( debug_ua );
 use Module::Runtime          qw( require_module );
 use Try::Tiny                qw( try );
 
 no warnings 'once';
+
+my $dispatch_logger;
+
+sub import { ## no critic
+    my $class = shift;
+    return if @_ == 0;
+    die "Unexpected arguments [", (join ", ", @_ ), "] to " . __PACKAGE__
+            . '. Expected arguments on the form: logger => $logger, or log_file => log_file.txt'
+        if @_ != 2 || $_[0] !~ /^(?:logger|log_file)$/;
+    if ($_[0] eq "log_file") {
+        my $filename = $_[1];
+        $dispatch_logger = Log::Dispatch->new(
+            outputs => [
+                [ 'File',   min_level => 'debug', filename => $filename ],
+            ],
+        );
+    }
+    else { # $_[0] eq "logger"
+        $dispatch_logger = $_[1];
+    }
+}
 
 my $loggers;
 
@@ -23,7 +45,9 @@ try {
             my $self = shift;
 
             my $ua = $self->$orig(@_);
-            push @{$loggers}, debug_ua($ua);
+            my $debug_ua = debug_ua($ua);
+            $debug_ua->logger($dispatch_logger) if $dispatch_logger;
+            push @{$loggers}, $debug_ua;
 
             return $ua;
         }
