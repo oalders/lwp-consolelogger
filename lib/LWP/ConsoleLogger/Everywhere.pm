@@ -8,10 +8,22 @@ use Class::Method::Modifiers ();
 use LWP::ConsoleLogger::Easy qw( debug_ua );
 use Module::Runtime          qw( require_module );
 use Try::Tiny                qw( try );
-
+use Log::Dispatch            ();
 no warnings 'once';
 
 my $loggers;
+my $dispatch_logger;
+{
+    my $key = "LWPCL_LOGFILE";
+    if (exists $ENV{$key} && $ENV{$key}) {
+        my $filename = $ENV{$key};
+        $dispatch_logger = Log::Dispatch->new(
+            outputs => [
+                [ 'File',   min_level => 'debug', filename => $filename ],
+            ],
+        );
+    }
+}
 
 try {
     require_module('LWP::UserAgent');
@@ -23,7 +35,9 @@ try {
             my $self = shift;
 
             my $ua = $self->$orig(@_);
-            push @{$loggers}, debug_ua($ua);
+            my $debug_ua = debug_ua($ua);
+            $debug_ua->logger($dispatch_logger) if $dispatch_logger;
+            push @{$loggers}, $debug_ua;
 
             return $ua;
         }
