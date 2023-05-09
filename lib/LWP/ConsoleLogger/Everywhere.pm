@@ -13,51 +13,43 @@ no warnings 'once';
 
 my $loggers;
 my $dispatch_logger;
+
 {
     my $key = "LWPCL_LOGFILE";
-    if (exists $ENV{$key} && $ENV{$key}) {
+    if ( exists $ENV{$key} && $ENV{$key} ) {
         my $filename = $ENV{$key};
         $dispatch_logger = Log::Dispatch->new(
             outputs => [
-                [ 'File',   min_level => 'debug', filename => $filename ],
+                [ 'File', min_level => 'debug', filename => $filename ],
             ],
         );
     }
 }
 
+my $code_injection = sub {
+    my $orig = shift;
+    my $self = shift;
+
+    my $ua       = $self->$orig(@_);
+    my $debug_ua = debug_ua($ua);
+    $debug_ua->logger($dispatch_logger) if $dispatch_logger;
+    push @{$loggers}, $debug_ua;
+    return $ua;
+};
+
 try {
     require_module('LWP::UserAgent');
     Class::Method::Modifiers::install_modifier(
-        'LWP::UserAgent',
-        'around',
-        'new' => sub {
-            my $orig = shift;
-            my $self = shift;
-
-            my $ua = $self->$orig(@_);
-            my $debug_ua = debug_ua($ua);
-            $debug_ua->logger($dispatch_logger) if $dispatch_logger;
-            push @{$loggers}, $debug_ua;
-
-            return $ua;
-        }
+        'LWP::UserAgent', 'around',
+        'new' => $code_injection
     );
 };
 
 try {
     require_module('Mojo::UserAgent');
     Class::Method::Modifiers::install_modifier(
-        'Mojo::UserAgent',
-        'around',
-        'new' => sub {
-            my $orig = shift;
-            my $self = shift;
-
-            my $ua = $self->$orig(@_);
-            push @{$loggers}, debug_ua($ua);
-
-            return $ua;
-        }
+        'Mojo::UserAgent', 'around',
+        'new' => $code_injection
     );
 };
 
