@@ -160,7 +160,7 @@ within your script, for example like this:
         $logger->logger($log_dispatch);
     }
 
-The scecond approach is simpler and is done via an environment variable, for example you can run
+The second approach is simpler and is done via an environment variable, for example you can run
 your script like this:
 
     LWPCL_LOGFILE=foo.log perl -MLWP::ConsoleLogger::Everywhere foo.pl
