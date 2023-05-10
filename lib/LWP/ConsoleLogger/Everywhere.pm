@@ -140,6 +140,38 @@ been created so far, with the newest one last. You can use them to fine-tune set
 is more than one user agent in your application you will need to figure out which one is which.
 Since this is for debugging only, trial and error is a good strategy here.
 
+=head1 ENVIRONMENT VARIABLES
+
+=head2 LWPCL_LOGFILE
+
+By default all data will be dumped to your console (as the name of this module implies) using
+L<Log::Dispatch>. You may change this behavior though. The general approach is to do it from
+within your script, for example like this:
+
+    use LWP::ConsoleLogger::Everywhere;
+    my $loggers = LWP::ConsoleLogger::Everywhere->loggers;
+    my $log_dispatch = Log::Dispatch->new(
+      outputs => [
+          [ 'File',   min_level => 'debug', filename => 'log_file.txt' ],
+          [ 'Screen', min_level => 'debug' ],
+      ],
+    );
+    foreach my $logger ( @{ $loggers } ) {
+        $logger->logger($log_dispatch);
+    }
+
+The scecond approach is simpler and is done via an environment variable, for example you can run
+your script like this:
+
+    LWPCL_LOGFILE=foo.log perl -MLWP::ConsoleLogger::Everywhere foo.pl
+
+this will be equivalent to the first approach with the following Log::Dispatch logger:
+
+    my $log_dispatch = Log::Dispatch->new(
+        outputs => [ [ 'File', min_level => 'debug', filename => 'foo.log' ]  ],
+    );
+
+
 =head1 CAVEATS
 
 If there are several different user agents in your application, you will get debug
