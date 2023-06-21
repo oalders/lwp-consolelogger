@@ -1,6 +1,8 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Enable selection of log filename from environment variable (GH#28) (Håkon
+      Hægland)
 
 1.000000  2022-08-17 18:19:05Z
     - This module is no longer considered to be beta
