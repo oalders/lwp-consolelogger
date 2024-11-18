@@ -141,8 +141,9 @@ EOF
 
     {
         my $html = q[<ul><li>one</li><li>two</li></ul>];
-        my $app
-            = sub { return [ 200, [ 'Content-Type' => 'text/html' ], [$html] ] };
+        my $app  = sub {
+            return [ 200, [ 'Content-Type' => 'text/html' ], [$html] ];
+        };
 
         my $server_agent = Plack::Test::Agent->new(
             app    => $app,
