@@ -85,11 +85,11 @@ jobs:
       image: perldocker/perl-tester:5.42
     steps:
       - uses: actions/checkout@v5
-      - uses: oalders/install-ubi-action@v1
+      - uses: oalders/install-ubi-action@v0.0.6
         with:
           project: houseabsolute/precious
           tag: v0.10.2
-      - uses: oalders/install-ubi-action@v1
+      - uses: oalders/install-ubi-action@v0.0.6
         with:
           project: houseabsolute/omegasort
           tag: v0.1.3
