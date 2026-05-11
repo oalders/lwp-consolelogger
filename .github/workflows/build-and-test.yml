@@ -18,6 +18,8 @@ jobs:
       image: perldocker/perl-tester:5.42
     steps:
       - uses: actions/checkout@v5
+      - name: Install libexpat (for XML::Parser via XML::Simple recommends)
+        run: apt-get update && apt-get install -y libexpat1-dev
       - name: Run Tests
         env:
           AUTHOR_TESTING: 1
@@ -41,6 +43,8 @@ jobs:
         with:
           name: build_dir
           path: .
+      - name: Install libexpat (for XML::Parser via XML::Simple recommends)
+        run: apt-get update && apt-get install -y libexpat1-dev
       - name: Install deps and test
         run: cpan-install-dist-deps --with-develop && test-dist
         env:
@@ -70,6 +74,8 @@ jobs:
         with:
           name: build_dir
           path: .
+      - name: Install libexpat (for XML::Parser via XML::Simple recommends)
+        run: apt-get update && apt-get install -y libexpat1-dev
       - name: Install deps and test
         run: cpan-install-dist-deps && test-dist
   # test-windows:

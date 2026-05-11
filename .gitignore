@@ -1,5 +1,6 @@
 .build
 cpanfile.snapshot
+/docs/superpowers/
 local
 /LWP-ConsoleLogger*
 *.sw*

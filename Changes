@@ -1,6 +1,10 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Replace Text::SimpleTable::AutoWidth (last released 2015) with
+      Term::Table to fix box-border misalignment when output contains
+      wide characters such as emoji or CJK glyphs (GH#49). Border style
+      changes from .-/' corners to +/-.
 
 1.000001  2023-06-21 16:14:51Z
     - Enable selection of log filename from environment variable (GH#28) (Håkon
