@@ -151,7 +151,7 @@ sub _build_params_to_redact {
 sub request_callback {
     my $self = shift;
     my $req  = shift;
-    my $ua   = shift;
+    shift;
 
     if ( $self->dump_uri ) {
         my $uri_without_query = $req->uri->clone;

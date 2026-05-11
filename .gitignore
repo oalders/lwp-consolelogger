@@ -1,8 +1,7 @@
+/LWP-ConsoleLogger*
+/docs/superpowers/
+*.sw*
 .build
 cpanfile.snapshot
 /docs/superpowers/
 local
-/LWP-ConsoleLogger*
-*.sw*
-.tidyall.d/
-tidyall.ERR
