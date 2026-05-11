@@ -8,10 +8,10 @@ use 5.006;
 our $VERSION = '1.000002';
 
 use Data::Printer { end_separator => 1, hash_separator => ' => ' };
-use DateTime               ();
-use HTML::Restrict         ();
-use HTTP::Body             ();
-use HTTP::CookieMonster    ();
+use DateTime                  ();
+use HTML::Restrict            ();
+use HTTP::Body                ();
+use HTTP::CookieMonster       ();
 use JSON::MaybeXS             qw( decode_json );
 use List::AllUtils            qw( any apply none );
 use Log::Dispatch             ();
@@ -443,8 +443,7 @@ sub _parse_body {
     elsif ( $subtype eq 'xml' ) {
         if ( can_load( modules => { 'XML::Simple' => 0 } ) ) {
             try {
-                my $pretty
-                    = XML::Simple::XMLin( $content, KeepRoot => 1 );
+                my $pretty = XML::Simple::XMLin( $content, KeepRoot => 1 );
                 $content = np( $pretty, return_value => 'dump' );
             }
             catch { push @{$rows}, ["Error parsing XML: $_"] };
