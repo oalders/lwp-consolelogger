@@ -26,12 +26,12 @@ requires "Try::Tiny" => "0";
 requires "Types::Common::Numeric" => "0";
 requires "Types::Standard" => "0";
 requires "URI::QueryParam" => "0";
-requires "XML::Simple" => "0";
 requires "perl" => "5.016";
 requires "strict" => "0";
 requires "warnings" => "0";
 recommends "HTML::FormatText::Lynx" => "23";
 recommends "Unicode::GCString" => "0";
+recommends "XML::Simple" => "0";
 
 on 'test' => sub {
   requires "Capture::Tiny" => "0";

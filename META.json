@@ -60,7 +60,8 @@
       "runtime" : {
          "recommends" : {
             "HTML::FormatText::Lynx" : "23",
-            "Unicode::GCString" : "0"
+            "Unicode::GCString" : "0",
+            "XML::Simple" : "0"
          },
          "requires" : {
             "Class::Method::Modifiers" : "0",
@@ -88,7 +89,6 @@
             "Types::Common::Numeric" : "0",
             "Types::Standard" : "0",
             "URI::QueryParam" : "0",
-            "XML::Simple" : "0",
             "perl" : "5.016",
             "strict" : "0",
             "warnings" : "0"

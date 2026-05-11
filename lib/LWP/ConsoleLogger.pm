@@ -12,18 +12,18 @@ use DateTime               ();
 use HTML::Restrict         ();
 use HTTP::Body             ();
 use HTTP::CookieMonster    ();
-use JSON::MaybeXS          qw( decode_json );
-use List::AllUtils         qw( any apply none );
-use Log::Dispatch          ();
-use Parse::MIME            qw( parse_mime_type );
-use Ref::Util              qw( is_blessed_ref );
-use Term::Size::Any        ();
-use Term::Table 0.028      ();
-use Try::Tiny              qw( catch try );
-use Types::Common::Numeric qw( PositiveInt );
-use Types::Standard        qw( ArrayRef Bool CodeRef InstanceOf );
-use URI::QueryParam        qw();
-use XML::Simple            qw( XMLin );
+use JSON::MaybeXS             qw( decode_json );
+use List::AllUtils            qw( any apply none );
+use Log::Dispatch             ();
+use Module::Load::Conditional qw( can_load );
+use Parse::MIME               qw( parse_mime_type );
+use Ref::Util                 qw( is_blessed_ref );
+use Term::Size::Any           ();
+use Term::Table 0.028         ();
+use Try::Tiny                 qw( catch try );
+use Types::Common::Numeric    qw( PositiveInt );
+use Types::Standard           qw( ArrayRef Bool CodeRef InstanceOf );
+use URI::QueryParam           qw();
 
 my $json_regex = qr{vnd.*\+json};
 
@@ -441,11 +441,14 @@ sub _parse_body {
         return if !$content;
     }
     elsif ( $subtype eq 'xml' ) {
-        try {
-            my $pretty = XMLin( $content, KeepRoot => 1 );
-            $content = np( $pretty, return_value => 'dump' );
+        if ( can_load( modules => { 'XML::Simple' => 0 } ) ) {
+            try {
+                my $pretty
+                    = XML::Simple::XMLin( $content, KeepRoot => 1 );
+                $content = np( $pretty, return_value => 'dump' );
+            }
+            catch { push @{$rows}, ["Error parsing XML: $_"] };
         }
-        catch { push @{$rows}, ["Error parsing XML: $_"] };
     }
     elsif ( $subtype eq 'json' || $subtype =~ m{$json_regex} ) {
         try {

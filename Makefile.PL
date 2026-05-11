@@ -42,7 +42,6 @@ my %WriteMakefileArgs = (
     "Types::Common::Numeric" => 0,
     "Types::Standard" => 0,
     "URI::QueryParam" => 0,
-    "XML::Simple" => 0,
     "strict" => 0,
     "warnings" => 0
   },
@@ -120,7 +119,6 @@ my %FallbackPrereqs = (
   "URI::file" => 0,
   "Unicode::GCString" => 0,
   "WWW::Mechanize" => 0,
-  "XML::Simple" => 0,
   "strict" => 0,
   "version" => 0,
   "warnings" => 0
