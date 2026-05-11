@@ -18,7 +18,7 @@ use Log::Dispatch                     ();
 use Parse::MIME                       qw( parse_mime_type );
 use Ref::Util                         qw( is_blessed_ref );
 use Term::Size::Any                   ();
-use Text::SimpleTable::AutoWidth 0.09 ();
+use Term::Table 0.028 ();
 use Try::Tiny                         qw( catch try );
 use Types::Common::Numeric            qw( PositiveInt );
 use Types::Standard                   qw( ArrayRef Bool CodeRef InstanceOf );
@@ -26,11 +26,6 @@ use URI::QueryParam                   qw();
 use XML::Simple                       qw( XMLin );
 
 my $json_regex = qr{vnd.*\+json};
-
-sub BUILD {
-    my $self = shift;
-    $Text::SimpleTable::AutoWidth::WIDTH_LIMIT = $self->term_width();
-}
 
 has content_pre_filter => (
     is  => 'rw',
@@ -131,7 +126,6 @@ has term_width => (
     isa      => PositiveInt,
     required => 0,
     lazy     => 1,
-    trigger  => \&_term_set,
     builder  => '_build_term_width',
 );
 
@@ -152,12 +146,6 @@ sub _build_params_to_redact {
     return $ENV{LWPCL_REDACT_PARAMS}
         ? [ split m{,}, $ENV{LWPCL_REDACT_PARAMS} ]
         : [];
-}
-
-sub _term_set {
-    my $self  = shift;
-    my $width = shift;
-    $Text::SimpleTable::AutoWidth::WIDTH_LIMIT = $width;
 }
 
 sub request_callback {
@@ -221,18 +209,16 @@ sub _log_headers {
         return;
     }
 
-    my $t = Text::SimpleTable::AutoWidth->new();
-    $t->captions( [ ucfirst $type . ' Header', 'Value' ] );
-
+    my @rows;
     foreach my $name ( sort $headers->header_field_names ) {
         my $val
             = ( any { $name eq $_ } @{ $self->headers_to_redact } )
             ? '[REDACTED]'
             : $headers->header($name);
-        $t->row( $name, $val );
+        push @rows, [ $name, $val ];
     }
 
-    $self->_draw($t);
+    $self->_draw_table( [ ucfirst $type . ' Header', 'Value' ], \@rows );
 }
 
 sub _log_params {
@@ -260,24 +246,18 @@ sub _log_params {
         %params = %{ $body->param };
 
         unless ( keys %params ) {
-            {
-                my $t = Text::SimpleTable::AutoWidth->new;
-                $t->captions( [ $type . ' Raw Body' ] );
-                $t->row( $req->content );
-                $self->_draw($t);
-            }
+            $self->_draw_table(
+                [ $type . ' Raw Body' ],
+                [ [ $req->content ] ],
+            );
 
-            {
-                my $t = Text::SimpleTable::AutoWidth->new;
-                $t->captions( [ $type . ' Parsed Body' ] );
-                $self->_parse_body( $req->content, $content_type, $t );
-                $self->_draw($t);
-            }
+            my @rows;
+            $self->_parse_body( $req->content, $content_type, \@rows );
+            $self->_draw_table( [ $type . ' Parsed Body' ], \@rows );
         }
     }
 
-    my $t = Text::SimpleTable::AutoWidth->new();
-    $t->captions( [ 'Key', 'Value' ] );
+    my @rows;
     foreach my $name ( sort keys %params ) {
         my @values
             = ( any { $name eq $_ } @{ $self->params_to_redact } )
@@ -285,10 +265,10 @@ sub _log_params {
             : ref $params{$name} ? @{ $params{$name} }
             :                      $params{$name};
 
-        $t->row( $name, $_ ) for sort @values;
+        push @rows, [ $name, $_ ] for sort @values;
     }
 
-    $self->_draw( $t, "$type Params:\n" );
+    $self->_draw_table( [ 'Key', 'Value' ], \@rows, "$type Params:\n" );
 }
 
 sub _log_cookies {
@@ -309,40 +289,39 @@ sub _log_cookies {
         );
 
         foreach my $cookie (@cookies) {
-
-            my $t = Text::SimpleTable::AutoWidth->new;
-            $t->captions( [ 'Key', 'Value' ] );
-
+            my @rows;
             foreach my $method (@methods) {
                 my $val = $cookie->$method;
                 if ($val) {
                     $val = DateTime->from_epoch( epoch => $val )
                         if $method eq 'expires';
-                    $t->row( $method, $val );
+                    push @rows, [ $method, $val ];
                 }
             }
 
-            $self->_draw( $t, ucfirst $type . " Cookie:\n" );
+            $self->_draw_table(
+                [ 'Key', 'Value' ],
+                \@rows,
+                ucfirst $type . " Cookie:\n",
+            );
         }
     }
     elsif ( $jar->isa('HTTP::CookieJar') ) {
         my @cookies = $jar->cookies_for($uri);
         for my $cookie (@cookies) {
-
-            my $t = Text::SimpleTable::AutoWidth->new;
-            $t->captions( [ 'Key', 'Value' ] );
-
+            my @rows;
             for my $key ( sort keys %{$cookie} ) {
                 my $val = $cookie->{$key};
                 if ( $val && $key =~ m{expires|_time} ) {
                     $val = DateTime->from_epoch( epoch => $val );
                 }
-                $t->row( $key, $val );
+                push @rows, [ $key, $val ];
             }
 
-            $self->_draw(
-                $t,
-                sprintf( '%s Cookie (%s)', ucfirst($type), $cookie->{name} )
+            $self->_draw_table(
+                [ 'Key', 'Value' ],
+                \@rows,
+                sprintf( '%s Cookie (%s)', ucfirst($type), $cookie->{name} ),
             );
         }
     }
@@ -394,11 +373,7 @@ sub _log_content {
         return;
     }
 
-    my $t = Text::SimpleTable::AutoWidth->new();
-    $t->captions( ['Content'] );
-
-    $t->row($content);
-    $self->_draw($t);
+    $self->_draw_table( ['Content'], [ [$content] ] );
 }
 
 sub _log_text {
@@ -427,19 +402,16 @@ sub _log_text {
         return;
     }
 
-    my $t = Text::SimpleTable::AutoWidth->new();
-    $t->captions( ['Text'] );
-
-    $self->_parse_body( $content, $content_type, $t );
-
-    $self->_draw($t);
+    my @rows;
+    $self->_parse_body( $content, $content_type, \@rows );
+    $self->_draw_table( ['Text'], \@rows );
 }
 
 sub _parse_body {
     my $self         = shift;
     my $content      = shift;
     my $content_type = shift;
-    my $t            = shift;
+    my $rows         = shift;
 
     # Is this maybe JSON?
     try {
@@ -451,13 +423,13 @@ sub _parse_body {
 
     # nothing to do here
     unless ($content_type) {
-        $t->row($content);
+        push @{$rows}, [$content];
         return;
     }
 
     my ( $type, $subtype ) = apply { lc $_ } parse_mime_type($content_type);
     unless ($subtype) {
-        $t->row($content);
+        push @{$rows}, [$content];
         return;
     }
 
@@ -473,14 +445,14 @@ sub _parse_body {
             my $pretty = XMLin( $content, KeepRoot => 1 );
             $content = np( $pretty, return_value => 'dump' );
         }
-        catch { $t->row("Error parsing XML: $_") };
+        catch { push @{$rows}, ["Error parsing XML: $_"] };
     }
     elsif ( $subtype eq 'json' || $subtype =~ m{$json_regex} ) {
         try {
             $content = decode_json($content);
             $content = np( $content, return_value => 'dump' );
         }
-        catch { $t->row("Error parsing JSON: $_") };
+        catch { push @{$rows}, ["Error parsing JSON: $_"] };
     }
     elsif ( $type && $type eq 'application' && $subtype eq 'javascript' ) {
 
@@ -505,7 +477,7 @@ sub _parse_body {
     }
 
     $content =~ s{^\\ }{};   # don't prefix HashRef with Data::Printer's slash
-    $t->row($content);
+    push @{$rows}, [$content];
 }
 
 sub _redaction_message {
@@ -534,14 +506,23 @@ sub _build_term_width {
     return $width;
 }
 
-sub _draw {
-    my $self     = shift;
-    my $t        = shift;
-    my $preamble = shift;
+sub _draw_table {
+    my ( $self, $captions, $rows, $preamble ) = @_;
 
-    return                   if !$t->rows;
+    return unless @{$rows};
+
     $self->_debug($preamble) if $preamble;
-    $self->_debug( $t->draw );
+
+    my $table = Term::Table->new(
+        header         => $captions,
+        rows           => $rows,
+        max_width      => $self->term_width,
+        allow_overflow => 1,
+        pad            => 0,
+        sanitize       => 0,
+    );
+
+    $self->_debug( join "\n", $table->render );
 }
 
 1;
@@ -608,27 +589,27 @@ Sample output might look like this.
     GET http://www.nytimes.com/2014/04/24/technology/fcc-new-net-neutrality-rules.html
 
     GET params:
-    .-----+-------.
+    +-----+-------+
     | Key | Value |
     +-----+-------+
     | _r  | 1     |
     | hp  |       |
-    '-----+-------'
+    +-----+-------+
 
-    .-----------------+--------------------------------.
+    +-----------------+--------------------------------+
     | Request Header  | Value                          |
     +-----------------+--------------------------------+
     | Accept-Encoding | gzip                           |
     | Cookie2         | $Version="1"                   |
     | Referer         | http://www.nytimes.com?foo=bar |
     | User-Agent      | WWW-Mechanize/1.73             |
-    '-----------------+--------------------------------'
+    +-----------------+--------------------------------+
 
     ==> 200 OK
 
     Title: The New York Times - Breaking News, World News & Multimedia
 
-    .--------------------------+-------------------------------.
+    +--------------------------+-------------------------------+
     | Response Header          | Value                         |
     +--------------------------+-------------------------------+
     | Accept-Ranges            | bytes                         |
@@ -648,13 +629,13 @@ Sample output might look like this.
     | Via                      | 1.1 varnish                   |
     | X-Cache                  | HIT                           |
     | X-Varnish                | 1142859770 1142854917         |
-    '--------------------------+-------------------------------'
-
-    .--------------------------+-------------------------------.
-    | Text                                                     |
     +--------------------------+-------------------------------+
+
+    +----------------------------------------------------------+
+    | Text                                                     |
+    +----------------------------------------------------------+
     | F.C.C., in a Shift, Backs Fast Lanes for Web Traffic...  |
-    '--------------------------+-------------------------------'
+    +----------------------------------------------------------+
 
 
 =head1 DESCRIPTION
@@ -882,7 +863,5 @@ The test suite is not very robust either.  If you'd like to contribute to this
 module and you can't find an appropriate test, do add something to the example
 folder (either a new script or alter an existing one), so that I can see what
 your patch does.
-
-=for Pod::Coverage BUILD
 
 =cut

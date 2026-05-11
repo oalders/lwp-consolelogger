@@ -213,7 +213,7 @@ sub test_content_lwp {
         }
     }
 
-    # NOTE: $text passed here is a Text::SimpleTable string, not the bare
+    # NOTE: $text passed here is a Term::Table string, not the bare
     # content.  So your tests need to accommodate this.
     $test_sub->($text);
 }
@@ -261,7 +261,7 @@ sub test_content_mojo {
         }
     }
 
-    # NOTE: $text passed here is a Text::SimpleTable string, not the bare
+    # NOTE: $text passed here is a Term::Table string, not the bare
     # content.  So your tests need to accommodate this.
     $test_sub->($text);
 }
