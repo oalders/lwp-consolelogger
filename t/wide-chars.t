@@ -57,8 +57,10 @@ for my $msg (@table_msgs) {
     my $expected = Unicode::GCString->new( $lines[0] )->columns;
     for my $i ( 0 .. $#lines ) {
         my $w = Unicode::GCString->new( $lines[$i] )->columns;
-        is( $w, $expected,
-            "line $i display width $expected: '$lines[$i]'" );
+        is(
+            $w, $expected,
+            "line $i display width $expected: '$lines[$i]'"
+        );
     }
 }
 

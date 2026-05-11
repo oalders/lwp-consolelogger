@@ -8,22 +8,22 @@ use 5.006;
 our $VERSION = '1.000002';
 
 use Data::Printer { end_separator => 1, hash_separator => ' => ' };
-use DateTime                          ();
-use HTML::Restrict                    ();
-use HTTP::Body                        ();
-use HTTP::CookieMonster               ();
-use JSON::MaybeXS                     qw( decode_json );
-use List::AllUtils                    qw( any apply none );
-use Log::Dispatch                     ();
-use Parse::MIME                       qw( parse_mime_type );
-use Ref::Util                         qw( is_blessed_ref );
-use Term::Size::Any                   ();
-use Term::Table 0.028 ();
-use Try::Tiny                         qw( catch try );
-use Types::Common::Numeric            qw( PositiveInt );
-use Types::Standard                   qw( ArrayRef Bool CodeRef InstanceOf );
-use URI::QueryParam                   qw();
-use XML::Simple                       qw( XMLin );
+use DateTime               ();
+use HTML::Restrict         ();
+use HTTP::Body             ();
+use HTTP::CookieMonster    ();
+use JSON::MaybeXS          qw( decode_json );
+use List::AllUtils         qw( any apply none );
+use Log::Dispatch          ();
+use Parse::MIME            qw( parse_mime_type );
+use Ref::Util              qw( is_blessed_ref );
+use Term::Size::Any        ();
+use Term::Table 0.028      ();
+use Try::Tiny              qw( catch try );
+use Types::Common::Numeric qw( PositiveInt );
+use Types::Standard        qw( ArrayRef Bool CodeRef InstanceOf );
+use URI::QueryParam        qw();
+use XML::Simple            qw( XMLin );
 
 my $json_regex = qr{vnd.*\+json};
 
