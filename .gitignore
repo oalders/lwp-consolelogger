@@ -3,5 +3,4 @@
 *.sw*
 .build
 cpanfile.snapshot
-/docs/superpowers/
 local
