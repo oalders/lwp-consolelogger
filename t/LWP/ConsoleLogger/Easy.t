@@ -14,7 +14,7 @@ use Plack::Test                          ();
 use Plack::Test::Agent                   ();
 use Test::Warnings;
 use Test::Fatal qw( exception );
-use Test::Most import => [qw( diag done_testing is is_deeply ok skip )];
+use Test::More import => [qw( diag done_testing is is_deeply ok skip )];
 use Try::Tiny      qw( catch try );
 use WWW::Mechanize ();
 

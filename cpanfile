@@ -48,7 +48,6 @@ on 'test' => sub {
   requires "Test::Fatal" => "0";
   requires "Test::LWP::UserAgent" => "0";
   requires "Test::More" => "0";
-  requires "Test::Most" => "0";
   requires "Test::Needs" => "0";
   requires "Test::Warnings" => "0";
   requires "URI::file" => "0";
