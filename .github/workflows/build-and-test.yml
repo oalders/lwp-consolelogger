@@ -78,6 +78,24 @@ jobs:
         run: apt-get update && apt-get install -y libexpat1-dev
       - name: Install deps and test
         run: cpan-install-dist-deps && test-dist
+  lint:
+    name: Lint (precious)
+    runs-on: ubuntu-latest
+    container:
+      image: perldocker/perl-tester:5.42
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oalders/install-ubi-action@v1
+        with:
+          project: houseabsolute/precious
+          tag: v0.10.2
+      - uses: oalders/install-ubi-action@v1
+        with:
+          project: houseabsolute/omegasort
+          tag: v0.1.3
+      - name: Install App::perlvars
+        run: cpanm --notest App::perlvars
+      - run: precious lint --all
   # test-windows:
     # name: ${{ matrix.perl-version }} on windows-latest
     # needs: test-linux
