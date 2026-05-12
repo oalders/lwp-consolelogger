@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use LWP::ConsoleLogger::Everywhere ();    # reads $ENV{LWPCL_LOGFILE} at use time
+use LWP::ConsoleLogger::Everywhere (); # reads $ENV{LWPCL_LOGFILE} at use time
 use LWP::UserAgent                 ();
 use Path::Tiny                     qw( path );
 

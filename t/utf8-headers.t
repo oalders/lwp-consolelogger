@@ -1,11 +1,11 @@
 use strict;
 use warnings;
 
-use Encode      qw( encode_utf8 );
-use HTTP::Headers  ();
-use HTTP::Request  ();
-use HTTP::Response ();
-use Log::Dispatch  ();
+use Encode             qw( encode_utf8 );
+use HTTP::Headers      ();
+use HTTP::Request      ();
+use HTTP::Response     ();
+use Log::Dispatch      ();
 use LWP::ConsoleLogger ();
 use Test::More import => [qw( done_testing subtest like unlike )];
 use Test::Warnings;
@@ -15,7 +15,7 @@ use Test::Warnings;
     package Fake::UA;
     sub new        { bless {}, shift }
     sub cookie_jar { undef }
-    sub can        { my ( $s, $m ) = @_; $m eq 'title' ? 0 : $s->SUPER::can($m) }
+    sub can { my ( $s, $m ) = @_; $m eq 'title' ? 0 : $s->SUPER::can($m) }
 }
 
 sub make_logger {
@@ -35,7 +35,7 @@ sub make_logger {
 }
 
 sub make_response {
-    my %args = @_;
+    my %args    = @_;
     my $headers = HTTP::Headers->new(
         'Content-Type' => 'text/plain; charset=utf-8',
         Title          => $args{title},
@@ -56,15 +56,18 @@ subtest 'raw UTF-8 bytes in Title header render correctly (pretty)' => sub {
         dump_text    => 0,
         pretty       => 1,
     );
-    $cl->response_callback( make_response( title => $greek_bytes ),
-        Fake::UA->new );
+    $cl->response_callback(
+        make_response( title => $greek_bytes ),
+        Fake::UA->new
+    );
 
     my $all = join "\n", @captured;
     like( $all, qr/\Q$greek_chars\E/, 'Greek characters present in output' );
     unlike( $all, qr/Î±Î¹/, 'no mojibake in output' );
 };
 
-subtest 'raw UTF-8 bytes in Title header render correctly (pretty=>0)' => sub {
+subtest 'raw UTF-8 bytes in Title header render correctly (pretty=>0)' =>
+    sub {
     my @captured;
     my $cl = LWP::ConsoleLogger->new(
         logger       => make_logger( \@captured ),
@@ -72,14 +75,18 @@ subtest 'raw UTF-8 bytes in Title header render correctly (pretty=>0)' => sub {
         dump_content => 0,
         dump_text    => 0,
     );
-    $cl->response_callback( make_response( title => $greek_bytes ),
-        Fake::UA->new );
+    $cl->response_callback(
+        make_response( title => $greek_bytes ),
+        Fake::UA->new
+    );
 
     my $all = join "\n", @captured;
-    like( $all, qr/Title: \Q$greek_chars\E/,
-        'Greek characters present after Title: prefix' );
+    like(
+        $all, qr/Title: \Q$greek_chars\E/,
+        'Greek characters present after Title: prefix'
+    );
     unlike( $all, qr/Î±Î¹/, 'no mojibake' );
-};
+    };
 
 subtest 'multi-value header emits one line per value (non-pretty)' => sub {
     my @captured;
@@ -110,7 +117,8 @@ subtest 'multi-value header emits one line per value (non-pretty)' => sub {
     sub new        { bless { title => $_[1] }, $_[0] }
     sub cookie_jar { undef }
     sub title      { $_[0]->{title} }
-    sub can        {
+
+    sub can {
         my ( $s, $m ) = @_;
         return 1 if $m eq 'title';
         return $s->SUPER::can($m);
@@ -124,11 +132,16 @@ subtest 'ua title with raw UTF-8 bytes renders as decoded characters' => sub {
         dump_content => 0,
         dump_text    => 0,
     );
-    $cl->response_callback( make_response( title => 'plain' ),
-        Fake::UA::WithTitle->new($greek_bytes) );
+    $cl->response_callback(
+        make_response( title => 'plain' ),
+        Fake::UA::WithTitle->new($greek_bytes)
+    );
 
     my $all = join "\n", @captured;
-    like( $all, qr/Title: \Q$greek_chars\E/, 'Title line shows decoded chars' );
+    like(
+        $all, qr/Title: \Q$greek_chars\E/,
+        'Title line shows decoded chars'
+    );
     unlike( $all, qr/Title: Î/, 'Title is not mojibake' );
 };
 

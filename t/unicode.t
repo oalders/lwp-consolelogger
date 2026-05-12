@@ -1,8 +1,8 @@
 use strict;
 use warnings;
 
-use File::Temp        qw( tempfile );
-use LWP::ConsoleLogger ();
+use File::Temp               qw( tempfile );
+use LWP::ConsoleLogger       ();
 use LWP::ConsoleLogger::Easy qw( debug_ua );
 use LWP::UserAgent           ();
 use Log::Dispatch            ();
@@ -10,8 +10,8 @@ use Path::Tiny               qw( path );
 use Test::More import => [qw( done_testing is ok like subtest )];
 use Test::Warnings;
 
-my $url = 'file:///' . path('t/test-data/unicode.html')->absolute;
-my $smile = "\x{1F604}";    # 😄
+my $url   = 'file:///' . path('t/test-data/unicode.html')->absolute;
+my $smile = "\x{1F604}";                                               # 😄
 
 subtest 'body content with unicode renders correctly via Code logger' => sub {
     my @captured;
@@ -28,8 +28,8 @@ subtest 'body content with unicode renders correctly via Code logger' => sub {
         ],
     );
 
-    my $mech   = LWP::UserAgent->new;
-    my $cl     = debug_ua($mech);
+    my $mech = LWP::UserAgent->new;
+    my $cl   = debug_ua($mech);
     $cl->logger($logger);
 
     my $res = $mech->get($url);

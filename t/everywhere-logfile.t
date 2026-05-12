@@ -19,8 +19,10 @@ subtest 'LWPCL_LOGFILE writes UTF-8 without Wide-character warnings' => sub {
     is( $? >> 8, 0, 'child exited cleanly' )
         or diag "stderr: $stderr";
 
-    unlike( $stderr, qr/Wide character in print/,
-        'no "Wide character in print" warnings emitted' );
+    unlike(
+        $stderr, qr/Wide character in print/,
+        'no "Wide character in print" warnings emitted'
+    );
 
     my $bytes = path($logfile)->slurp_raw;
     like( $bytes, qr/\xF0\x9F\x98\x84/, '😄 UTF-8 bytes present in log file' );

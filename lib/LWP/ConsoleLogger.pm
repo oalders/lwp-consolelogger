@@ -208,7 +208,7 @@ sub _decode_header_value {
 
     my $decoded = eval { Encode::decode( 'UTF-8', $val, Encode::FB_CROAK ) };
     return $decoded if defined $decoded;
-    return Encode::decode( 'iso-8859-1', $val );    # never fails on byte strings
+    return Encode::decode( 'iso-8859-1', $val ); # never fails on byte strings
 }
 
 sub _log_headers {
@@ -225,8 +225,7 @@ sub _log_headers {
             }
             for my $val ( $headers->header($name) ) {
                 $val = q{} unless defined $val;
-                $out .= "$name: "
-                    . $self->_decode_header_value($val) . "\n";
+                $out .= "$name: " . $self->_decode_header_value($val) . "\n";
             }
         }
         $self->_debug($out);
