@@ -1,16 +1,27 @@
 use strict;
 use warnings;
 
-use Test::More import => [qw( done_testing is ok )];
-use Test::Needs 'Unicode::GCString';
-
 use LWP::ConsoleLogger::Easy qw( debug_ua );
 use LWP::UserAgent           ();
 use Log::Dispatch            ();
 use Log::Dispatch::Array     ();
 use Path::Tiny               qw( path );
+use Test::More import => [qw( done_testing is ok )];
+use Test::Needs 'Unicode::GCString';
+use Test::Warnings;
 
 require Unicode::GCString;
+
+# The captured table rows contain CJK glyphs and get interpolated into
+# is() test names below; without UTF-8 binmode on the TAP filehandles,
+# Test2::Formatter::TAP emits "Wide character in print" warnings.
+for my $fh (
+    Test::More->builder->output,
+    Test::More->builder->failure_output,
+    Test::More->builder->todo_output,
+) {
+    binmode $fh, ':encoding(UTF-8)';
+}
 
 my $ua = LWP::UserAgent->new;
 
@@ -25,7 +36,8 @@ my $logger = debug_ua($ua);
 
 my $messages = [];
 my $ld       = Log::Dispatch->new(
-    outputs => [ [ 'Screen', min_level => 'debug', newline => 1 ] ],
+    outputs =>
+        [ [ 'Screen', min_level => 'debug', newline => 1, utf8 => 1 ] ],
 );
 $ld->add(
     Log::Dispatch::Array->new(
