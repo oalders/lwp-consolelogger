@@ -20,7 +20,12 @@ my $dispatch_logger;
         my $filename = $ENV{$key};
         $dispatch_logger = Log::Dispatch->new(
             outputs => [
-                [ 'File', min_level => 'debug', filename => $filename ],
+                [
+                    'File',
+                    min_level => 'debug',
+                    filename  => $filename,
+                    binmode   => ':encoding(UTF-8)',
+                ],
             ],
         );
     }

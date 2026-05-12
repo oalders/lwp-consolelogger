@@ -9,6 +9,7 @@ our $VERSION = '1.000002';
 
 use Data::Printer { end_separator => 1, hash_separator => ' => ' };
 use DateTime                  ();
+use Encode                    ();
 use HTML::Restrict            ();
 use HTTP::Body                ();
 use HTTP::CookieMonster       ();
@@ -188,7 +189,8 @@ sub response_callback {
         $self->_debug( '==> ' . $res->status_line . "\n" );
     }
     if ( $self->dump_title && $ua->can('title') && $ua->title ) {
-        $self->_debug( 'Title: ' . $ua->title . "\n" );
+        $self->_debug(
+            'Title: ' . $self->_decode_header_value( $ua->title ) . "\n" );
     }
 
     $self->_log_headers( 'response', $res->headers );
@@ -199,13 +201,34 @@ sub response_callback {
     return;
 }
 
+sub _decode_header_value {
+    my ( $self, $val ) = @_;
+    return $val unless defined $val && length $val;
+    return $val if utf8::is_utf8($val);
+
+    my $decoded = eval { Encode::decode( 'UTF-8', $val, Encode::FB_CROAK ) };
+    return $decoded if defined $decoded;
+    return Encode::decode( 'iso-8859-1', $val ); # never fails on byte strings
+}
+
 sub _log_headers {
     my ( $self, $type, $headers ) = @_;
 
     return if !$self->dump_headers;
 
     unless ( $self->pretty ) {
-        $self->_debug( $headers->as_string );
+        my $out = q{};
+        foreach my $name ( $headers->header_field_names ) {
+            if ( any { $name eq $_ } @{ $self->headers_to_redact } ) {
+                $out .= "$name: [REDACTED]\n";
+                next;
+            }
+            for my $val ( $headers->header($name) ) {
+                $val = q{} unless defined $val;
+                $out .= "$name: " . $self->_decode_header_value($val) . "\n";
+            }
+        }
+        $self->_debug($out);
         return;
     }
 
@@ -214,7 +237,7 @@ sub _log_headers {
         my $val
             = ( any { $name eq $_ } @{ $self->headers_to_redact } )
             ? '[REDACTED]'
-            : $headers->header($name);
+            : $self->_decode_header_value( $headers->header($name) );
         push @rows, [ $name, $val ];
     }
 
@@ -295,6 +318,8 @@ sub _log_cookies {
                 if ($val) {
                     $val = DateTime->from_epoch( epoch => $val )
                         if $method eq 'expires';
+                    $val = $self->_decode_header_value($val)
+                        unless ref $val;    # leave DateTime objects alone
                     push @rows, [ $method, $val ];
                 }
             }
@@ -315,6 +340,8 @@ sub _log_cookies {
                 if ( $val && $key =~ m{expires|_time} ) {
                     $val = DateTime->from_epoch( epoch => $val );
                 }
+                $val = $self->_decode_header_value($val)
+                    if defined $val && !ref $val;
                 push @rows, [ $key, $val ];
             }
 
