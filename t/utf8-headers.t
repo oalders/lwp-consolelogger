@@ -81,4 +81,28 @@ subtest 'raw UTF-8 bytes in Title header render correctly (pretty=>0)' => sub {
     unlike( $all, qr/Î±Î¹/, 'no mojibake' );
 };
 
+subtest 'multi-value header emits one line per value (non-pretty)' => sub {
+    my @captured;
+    my $cl = LWP::ConsoleLogger->new(
+        logger       => make_logger( \@captured ),
+        pretty       => 0,
+        dump_content => 0,
+        dump_headers => 1,
+        dump_text    => 0,
+    );
+
+    my $headers = HTTP::Headers->new( 'Content-Type' => 'text/plain' );
+    $headers->push_header( 'Set-Cookie' => 'a=1' );
+    $headers->push_header( 'Set-Cookie' => 'b=2' );
+    my $res = HTTP::Response->new( 200, 'OK', $headers, 'body' );
+    $res->request( HTTP::Request->new( GET => 'http://example.com/' ) );
+
+    $cl->response_callback( $res, Fake::UA->new );
+
+    my $all = join "\n", @captured;
+    like( $all, qr/Set-Cookie: a=1\b/, 'first cookie on its own line' );
+    like( $all, qr/Set-Cookie: b=2\b/, 'second cookie on its own line' );
+    unlike( $all, qr/Set-Cookie: a=1, b=2/, 'values are not comma-joined' );
+};
+
 done_testing;

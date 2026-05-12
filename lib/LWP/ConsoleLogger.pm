@@ -218,12 +218,15 @@ sub _log_headers {
     unless ( $self->pretty ) {
         my $out = q{};
         foreach my $name ( sort $headers->header_field_names ) {
-            my $val
-                = ( any { $name eq $_ } @{ $self->headers_to_redact } )
-                ? '[REDACTED]'
-                : $self->_decode_header_value( $headers->header($name) );
-            $val = q{} unless defined $val;
-            $out .= "$name: $val\n";
+            if ( any { $name eq $_ } @{ $self->headers_to_redact } ) {
+                $out .= "$name: [REDACTED]\n";
+                next;
+            }
+            for my $val ( $headers->header($name) ) {
+                $val = q{} unless defined $val;
+                $out .= "$name: "
+                    . $self->_decode_header_value($val) . "\n";
+            }
         }
         $self->_debug($out);
         return;
