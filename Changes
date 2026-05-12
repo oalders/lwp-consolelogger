@@ -1,5 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
+{{$NEXT}}
+
 1.000002  2026-05-12 17:28:01Z
     - Replace Text::SimpleTable::AutoWidth (last released 2015) with
       Term::Table to fix box-border misalignment when output contains
