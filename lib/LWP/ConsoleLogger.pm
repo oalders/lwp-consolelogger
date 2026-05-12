@@ -216,7 +216,16 @@ sub _log_headers {
     return if !$self->dump_headers;
 
     unless ( $self->pretty ) {
-        $self->_debug( $headers->as_string );
+        my $out = q{};
+        foreach my $name ( sort $headers->header_field_names ) {
+            my $val
+                = ( any { $name eq $_ } @{ $self->headers_to_redact } )
+                ? '[REDACTED]'
+                : $self->_decode_header_value( $headers->header($name) );
+            $val = q{} unless defined $val;
+            $out .= "$name: $val\n";
+        }
+        $self->_debug($out);
         return;
     }
 

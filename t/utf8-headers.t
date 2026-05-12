@@ -64,4 +64,21 @@ subtest 'raw UTF-8 bytes in Title header render correctly (pretty)' => sub {
     unlike( $all, qr/Î±Î¹/, 'no mojibake in output' );
 };
 
+subtest 'raw UTF-8 bytes in Title header render correctly (pretty=>0)' => sub {
+    my @captured;
+    my $cl = LWP::ConsoleLogger->new(
+        logger       => make_logger( \@captured ),
+        pretty       => 0,
+        dump_content => 0,
+        dump_text    => 0,
+    );
+    $cl->response_callback( make_response( title => $greek_bytes ),
+        Fake::UA->new );
+
+    my $all = join "\n", @captured;
+    like( $all, qr/Title: \Q$greek_chars\E/,
+        'Greek characters present after Title: prefix' );
+    unlike( $all, qr/Î±Î¹/, 'no mojibake' );
+};
+
 done_testing;
