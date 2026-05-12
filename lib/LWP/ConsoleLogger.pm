@@ -225,7 +225,7 @@ sub _log_headers {
         my $val
             = ( any { $name eq $_ } @{ $self->headers_to_redact } )
             ? '[REDACTED]'
-            : $headers->header($name);
+            : $self->_decode_header_value( $headers->header($name) );
         push @rows, [ $name, $val ];
     }
 
