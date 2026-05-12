@@ -9,6 +9,7 @@ our $VERSION = '1.000002';
 
 use Data::Printer { end_separator => 1, hash_separator => ' => ' };
 use DateTime                  ();
+use Encode                    ();
 use HTML::Restrict            ();
 use HTTP::Body                ();
 use HTTP::CookieMonster       ();
@@ -197,6 +198,16 @@ sub response_callback {
     $self->_log_content($res);
     $self->_log_text($res);
     return;
+}
+
+sub _decode_header_value {
+    my ( $self, $val ) = @_;
+    return $val unless defined $val && length $val;
+    return $val if utf8::is_utf8($val);
+
+    my $decoded = eval { Encode::decode( 'UTF-8', $val, Encode::FB_CROAK ) };
+    return $decoded if defined $decoded;
+    return Encode::decode( 'iso-8859-1', $val );    # never fails on byte strings
 }
 
 sub _log_headers {
