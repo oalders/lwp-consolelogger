@@ -2,8 +2,9 @@ use strict;
 use warnings;
 
 use Encode       qw( encode_utf8 );
-use HTTP::Cookies   ();
-use HTTP::Headers   ();
+use HTTP::Cookies      ();
+use HTTP::CookieJar::LWP ();
+use HTTP::Headers      ();
 use HTTP::Request   ();
 use HTTP::Response  ();
 use Log::Dispatch   ();
@@ -65,6 +66,44 @@ subtest 'cookie value with raw UTF-8 bytes renders as decoded characters' => sub
     my $all = join "\n", @captured;
     like( $all, qr/\Q$greek_chars\E/, 'Greek characters present in cookie output' );
     unlike( $all, qr/Î±Î¹/, 'no mojibake in cookie output' );
+};
+
+subtest 'HTTP::CookieJar value with raw UTF-8 bytes renders as decoded characters' => sub {
+    my @captured;
+    my $logger = Log::Dispatch->new(
+        outputs => [
+            [
+                'Code',
+                min_level => 'debug',
+                code      => sub {
+                    my %args = @_;
+                    push @captured, $args{message};
+                },
+            ],
+        ],
+    );
+
+    my $jar = HTTP::CookieJar::LWP->new;
+    $jar->add( 'http://example.com/', "greek=$greek_bytes; Path=/; Max-Age=86400" );
+
+    my $cl = LWP::ConsoleLogger->new(
+        logger       => $logger,
+        dump_cookies => 1,
+        dump_content => 0,
+        dump_text    => 0,
+        dump_headers => 0,
+    );
+
+    my $req = HTTP::Request->new( GET => 'http://example.com/' );
+    my $res = HTTP::Response->new( 200, 'OK',
+        HTTP::Headers->new( 'Content-Type' => 'text/plain' ), 'body' );
+    $res->request($req);
+
+    $cl->response_callback( $res, Fake::UA->new($jar) );
+
+    my $all = join "\n", @captured;
+    like( $all, qr/\Q$greek_chars\E/, 'Greek characters present in CookieJar output' );
+    unlike( $all, qr/Î±Î¹/, 'no mojibake in CookieJar output' );
 };
 
 done_testing;
