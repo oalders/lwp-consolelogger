@@ -189,7 +189,8 @@ sub response_callback {
         $self->_debug( '==> ' . $res->status_line . "\n" );
     }
     if ( $self->dump_title && $ua->can('title') && $ua->title ) {
-        $self->_debug( 'Title: ' . $ua->title . "\n" );
+        $self->_debug(
+            'Title: ' . $self->_decode_header_value( $ua->title ) . "\n" );
     }
 
     $self->_log_headers( 'response', $res->headers );

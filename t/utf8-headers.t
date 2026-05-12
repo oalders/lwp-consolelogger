@@ -105,4 +105,31 @@ subtest 'multi-value header emits one line per value (non-pretty)' => sub {
     unlike( $all, qr/Set-Cookie: a=1, b=2/, 'values are not comma-joined' );
 };
 
+{
+    package Fake::UA::WithTitle;
+    sub new        { bless { title => $_[1] }, $_[0] }
+    sub cookie_jar { undef }
+    sub title      { $_[0]->{title} }
+    sub can        {
+        my ( $s, $m ) = @_;
+        return 1 if $m eq 'title';
+        return $s->SUPER::can($m);
+    }
+}
+
+subtest 'ua title with raw UTF-8 bytes renders as decoded characters' => sub {
+    my @captured;
+    my $cl = LWP::ConsoleLogger->new(
+        logger       => make_logger( \@captured ),
+        dump_content => 0,
+        dump_text    => 0,
+    );
+    $cl->response_callback( make_response( title => 'plain' ),
+        Fake::UA::WithTitle->new($greek_bytes) );
+
+    my $all = join "\n", @captured;
+    like( $all, qr/Title: \Q$greek_chars\E/, 'Title line shows decoded chars' );
+    unlike( $all, qr/Title: Î/, 'Title is not mojibake' );
+};
+
 done_testing;
