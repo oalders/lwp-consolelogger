@@ -11,6 +11,8 @@ Revision history for LWP-ConsoleLogger
     - Open the LWPCL_LOGFILE log file with a UTF-8 layer in
       LWP::ConsoleLogger::Everywhere to stop "Wide character in print"
       warnings (GH#38).
+    - Non-pretty header dumps now honor headers_to_redact, matching the
+      pretty-mode behavior.
 
 1.000001  2023-06-21 16:14:51Z
     - Enable selection of log filename from environment variable (GH#28) (Håkon

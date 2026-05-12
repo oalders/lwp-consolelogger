@@ -218,7 +218,7 @@ sub _log_headers {
 
     unless ( $self->pretty ) {
         my $out = q{};
-        foreach my $name ( sort $headers->header_field_names ) {
+        foreach my $name ( $headers->header_field_names ) {
             if ( any { $name eq $_ } @{ $self->headers_to_redact } ) {
                 $out .= "$name: [REDACTED]\n";
                 next;
