@@ -318,6 +318,8 @@ sub _log_cookies {
                 if ($val) {
                     $val = DateTime->from_epoch( epoch => $val )
                         if $method eq 'expires';
+                    $val = $self->_decode_header_value($val)
+                        unless ref $val;    # leave DateTime objects alone
                     push @rows, [ $method, $val ];
                 }
             }
@@ -338,6 +340,8 @@ sub _log_cookies {
                 if ( $val && $key =~ m{expires|_time} ) {
                     $val = DateTime->from_epoch( epoch => $val );
                 }
+                $val = $self->_decode_header_value($val)
+                    if defined $val && !ref $val;
                 push @rows, [ $key, $val ];
             }
 
