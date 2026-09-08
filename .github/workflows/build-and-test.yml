@@ -80,11 +80,14 @@ jobs:
         run: cpan-install-dist-deps && test-dist
   lint:
     name: Lint (precious)
+    needs: build-job
     runs-on: ubuntu-latest
     container:
       image: perldocker/perl-tester:5.42
     steps:
       - uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0 # full history so `precious lint --git-diff-from <base>` can resolve the merge base
       - uses: oalders/install-ubi-action@v0.0.6
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -93,7 +96,17 @@ jobs:
             houseabsolute/omegasort --tag v0.1.3
       - name: Install App::perlvars
         run: cpanm --notest App::perlvars
-      - run: precious lint --all
+      - name: precious lint
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            git fetch origin "$BASE_REF:refs/remotes/origin/$BASE_REF"
+            precious lint -q --git-diff-from "origin/$BASE_REF"
+          else
+            precious lint -q --all
+          fi
   # test-windows:
     # name: ${{ matrix.perl-version }} on windows-latest
     # needs: test-linux
