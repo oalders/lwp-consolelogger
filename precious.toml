@@ -15,7 +15,7 @@ exclude = [
     "t/zzz-*",
     "xt/**",
 ]
-cmd                     = ["perltidy", "--profile=$PRECIOUS_ROOT/perltidyrc"]
+cmd                     = ["perltidy", "--profile=$PRECIOUS_ROOT/.perltidyrc"]
 lint-flags              = ["--assert-tidy", "--no-standard-output", "--outfile=/dev/null"]
 tidy-flags              = ["--backup-and-modify-in-place", "--backup-file-extension=/"]
 ok-exit-codes           = 0
@@ -25,7 +25,7 @@ ignore-stderr           = "Begin Error Output Stream"
 [commands.perltidy-xt-pithub]
 type                    = "both"
 include                 = "xt/pithub.t"
-cmd                     = ["perltidy", "--profile=$PRECIOUS_ROOT/perltidyrc"]
+cmd                     = ["perltidy", "--profile=$PRECIOUS_ROOT/.perltidyrc"]
 lint-flags              = ["--assert-tidy", "--no-standard-output", "--outfile=/dev/null"]
 tidy-flags              = ["--backup-and-modify-in-place", "--backup-file-extension=/"]
 ok-exit-codes           = 0
@@ -35,7 +35,7 @@ ignore-stderr           = "Begin Error Output Stream"
 [commands.perlcritic]
 type                    = "lint"
 include                 = "xt/pithub.t"
-cmd                     = ["perlcritic", "--profile=$PRECIOUS_ROOT/perlcriticrc"]
+cmd                     = ["perlcritic", "--profile=$PRECIOUS_ROOT/.perlcriticrc"]
 ok-exit-codes           = 0
 lint-failure-exit-codes = 2
 
