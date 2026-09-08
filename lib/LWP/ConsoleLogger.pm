@@ -20,7 +20,7 @@ use Module::Load::Conditional qw( can_load );
 use Parse::MIME               qw( parse_mime_type );
 use Ref::Util                 qw( is_blessed_ref );
 use Term::Size::Any           ();
-use Term::Table 0.028         ();
+use Term::Table 0.013         ();
 use Try::Tiny                 qw( catch try );
 use Types::Common::Numeric    qw( PositiveInt );
 use Types::Standard           qw( ArrayRef Bool CodeRef InstanceOf );
