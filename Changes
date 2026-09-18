@@ -1,5 +1,7 @@
 Revision history for LWP-ConsoleLogger
 
+{{$NEXT}}
+
 1.000003  2026-09-18 14:14:21Z
     - Add HTTP::Tiny support. debug_ua() and
       LWP::ConsoleLogger::Everywhere now log HTTP::Tiny requests and

@@ -5,7 +5,7 @@ use MooX::StrictConstructor;
 
 use 5.006;
 
-our $VERSION = '1.000003';
+our $VERSION = '1.000004';
 
 use Data::Printer { end_separator => 1, hash_separator => ' => ' };
 use DateTime                  ();
