@@ -12,6 +12,7 @@ use HTTP::Request             ();
 use HTTP::Response            ();
 use LWP::ConsoleLogger        ();
 use Module::Load::Conditional qw( can_load );
+use Ref::Util                 qw( is_plain_arrayref is_ref );
 use Sub::Exporter -setup => { exports => ['debug_ua'] };
 use String::Trim qw( trim );
 use URI          ();
@@ -132,7 +133,7 @@ sub _instrument_http_tiny {
             my ( $method, $url, $args ) = @_;
 
             my $console_loggers
-                = ref($self) ? $http_tiny_loggers{$self} : undef;
+                = is_ref($self) ? $http_tiny_loggers{$self} : undef;
             return $self->$orig(@_) unless $console_loggers;
 
             # Logging must never break the caller: any die while translating
@@ -187,7 +188,7 @@ sub _copy_headers {
         my $val = $hashref->{$name};
         $headers->push_header(
             $name,
-            ( ref $val eq 'ARRAY' ) ? @{$val} : $val
+            is_plain_arrayref($val) ? @{$val} : $val
         );
     }
     return;
@@ -245,7 +246,7 @@ sub _http_tiny_request_object {
     my $content = $args->{content};
 
     # A coderef content is a streaming body we cannot capture.
-    $content = undef if ref $content;
+    $content = undef if is_ref($content);
 
     my $request = HTTP::Request->new( $method, $url, $headers, $content );
 
@@ -268,7 +269,7 @@ sub _http_tiny_request_object {
     }
 
     elsif ( ( $method eq 'POST' || $method eq 'PUT' )
-        && !ref $args->{content}
+        && !is_ref( $args->{content} )
         && !defined $request->header('Content-Length') ) {
 
         # HTTP::Tiny sends an explicit zero length for empty POST and PUT

@@ -6,6 +6,7 @@ use LWP::ConsoleLogger::Easy qw( debug_ua );
 use Log::Dispatch            ();
 use Log::Dispatch::Array     ();
 use Plack::Loader            ();
+use Ref::Util                qw( is_hashref );
 use Test::More import => [qw( done_testing is like ok unlike )];
 use Test::TCP;
 
@@ -237,7 +238,7 @@ test_tcp(
 
     my $res = $ua->get('file:///no/such');
     ok(
-        ref $res eq 'HASH',
+        is_hashref($res),
         'error request does not die and returns a hashref'
     );
     is( $res->{status}, 599, 'HTTP::Tiny returns a 599 error response' );
