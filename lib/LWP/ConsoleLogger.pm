@@ -18,7 +18,7 @@ use List::AllUtils            qw( any apply none );
 use Log::Dispatch             ();
 use Module::Load::Conditional qw( can_load );
 use Parse::MIME               qw( parse_mime_type );
-use Ref::Util                 qw( is_blessed_ref );
+use Ref::Util                 qw( is_arrayref is_blessed_ref is_ref );
 use Term::Size::Any           ();
 use Term::Table 0.013         ();
 use Try::Tiny                 qw( catch try );
@@ -285,8 +285,8 @@ sub _log_params {
         my @values
             = ( any { $name eq $_ } @{ $self->params_to_redact } )
             ? '[REDACTED]'
-            : ref $params{$name} ? @{ $params{$name} }
-            :                      $params{$name};
+            : is_arrayref( $params{$name} ) ? @{ $params{$name} }
+            :                                 $params{$name};
 
         push @rows, [ $name, $_ ] for sort @values;
     }
@@ -319,7 +319,7 @@ sub _log_cookies {
                     $val = DateTime->from_epoch( epoch => $val )
                         if $method eq 'expires';
                     $val = $self->_decode_header_value($val)
-                        unless ref $val;    # leave DateTime objects alone
+                        unless is_ref($val);    # leave DateTime objects alone
                     push @rows, [ $method, $val ];
                 }
             }
@@ -341,7 +341,7 @@ sub _log_cookies {
                     $val = DateTime->from_epoch( epoch => $val );
                 }
                 $val = $self->_decode_header_value($val)
-                    if defined $val && !ref $val;
+                    if defined $val && !is_ref($val);
                 push @rows, [ $key, $val ];
             }
 
