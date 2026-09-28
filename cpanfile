@@ -82,6 +82,7 @@ on 'configure' => sub {
 };
 
 on 'develop' => sub {
+  requires "App::perlimports" => "0";
   requires "App::perlvars" => "0";
   requires "Perl::Critic" => "1.132";
   requires "Perl::Tidy" => "20180220";
