@@ -558,7 +558,7 @@ sub _draw_table {
 
 __END__
 
-# ABSTRACT: LWP tracing and debugging
+# ABSTRACT: HTTP User-Agent tracing and debugging
 
 =pod
 

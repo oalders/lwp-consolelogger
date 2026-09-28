@@ -302,7 +302,7 @@ sub _http_tiny_response_object {
 
 __END__
 
-# ABSTRACT: Easy LWP tracing and debugging
+# ABSTRACT: Easy HTTP User-Agent tracing and debugging
 
 =pod
 

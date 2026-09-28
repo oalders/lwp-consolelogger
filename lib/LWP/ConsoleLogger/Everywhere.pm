@@ -85,7 +85,7 @@ sub set {
 
 __END__
 
-# ABSTRACT: LWP tracing everywhere
+# ABSTRACT: HTTP User-Agent tracing everywhere
 
 =pod
 
