@@ -2,12 +2,12 @@ use strict;
 use warnings;
 
 use File::Temp               qw( tempfile );
+use Log::Dispatch            ();
 use LWP::ConsoleLogger       ();
 use LWP::ConsoleLogger::Easy qw( debug_ua );
 use LWP::UserAgent           ();
-use Log::Dispatch            ();
 use Path::Tiny               qw( path );
-use Test::More import => [qw( done_testing is ok like subtest )];
+use Test::More import => [qw( is like subtest )];
 use Test::Warnings;
 
 my $url   = 'file:///' . path('t/test-data/unicode.html')->absolute;

@@ -3,7 +3,7 @@ use warnings;
 
 use Encode             qw( encode_utf8 );
 use LWP::ConsoleLogger ();
-use Test::More import => [qw( done_testing is ok subtest )];
+use Test::More import => [qw( is ok subtest )];
 use Test::Warnings;
 
 my $cl = LWP::ConsoleLogger->new;
