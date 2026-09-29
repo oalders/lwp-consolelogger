@@ -9,7 +9,7 @@ use LWP::ConsoleLogger ();
 use LWP::UserAgent     ();
 use Path::Tiny         qw( path );
 use Test::Fatal        qw( exception );
-use Test::More import => [qw( done_testing is note ok )];
+use Test::More import => [qw( done_testing is ok )];
 use TestLogger     qw( null_logger );
 use URI::file      ();
 use WWW::Mechanize ();
@@ -35,9 +35,7 @@ foreach my $mech (@mech) {
 
 $logger->content_pre_filter(
     sub {
-        my $content      = shift;
-        my $content_type = shift;
-        note "Content-Type: $content_type";
+        my $content = shift;
 
         if ( $content
             =~ m{<!-- \s header \s ends \s -->(.*)<!-- \s footer \s begins \s -->}gmxs
