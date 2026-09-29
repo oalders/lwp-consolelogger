@@ -1,16 +1,15 @@
 use strict;
 use warnings;
 
-use LWP::ConsoleLogger::Easy qw( debug_ua );
-use LWP::UserAgent           ();
 use Log::Dispatch            ();
 use Log::Dispatch::Array     ();
+use LWP::ConsoleLogger::Easy qw( debug_ua );
+use LWP::UserAgent           ();
 use Path::Tiny               qw( path );
-use Test::More import => [qw( done_testing is ok )];
+use Test::More import => [qw( is ok )];
 use Test::Needs 'Unicode::GCString';
 use Test::Warnings;
-
-require Unicode::GCString;
+use Unicode::GCString ();
 
 # The captured table rows contain CJK glyphs and get interpolated into
 # is() test names below; without UTF-8 binmode on the TAP filehandles,

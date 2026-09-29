@@ -4,17 +4,17 @@ use version;
 
 use Data::Printer;
 use HTML::FormatText::WithLinks          ();
-use LWP::ConsoleLogger::Easy             qw( debug_ua );
 use Log::Dispatch                        ();
 use Log::Dispatch::Array                 ();
+use LWP::ConsoleLogger::Easy             qw( debug_ua );
 use Module::Runtime                      qw( require_module );
 use Path::Tiny                           qw( path );
 use Plack::Handler::HTTP::Server::Simple ();
 use Plack::Test                          ();
 use Plack::Test::Agent                   ();
+use Test::Fatal                          qw( exception );
+use Test::More import => [qw( diag is is_deeply ok skip )];
 use Test::Warnings;
-use Test::Fatal qw( exception );
-use Test::More import => [qw( diag done_testing is is_deeply ok skip )];
 use Try::Tiny      qw( catch try );
 use WWW::Mechanize ();
 

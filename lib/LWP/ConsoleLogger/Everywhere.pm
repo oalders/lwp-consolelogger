@@ -4,12 +4,13 @@ use warnings;
 
 our $VERSION = '1.000004';
 
+no warnings 'once';
+
 use Class::Method::Modifiers ();
+use Log::Dispatch            ();
 use LWP::ConsoleLogger::Easy qw( debug_ua );
 use Module::Runtime          qw( require_module );
 use Try::Tiny                qw( try );
-use Log::Dispatch            ();
-no warnings 'once';
 
 my $loggers;
 my $dispatch_logger;

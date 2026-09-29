@@ -13,9 +13,9 @@ use HTTP::Response            ();
 use LWP::ConsoleLogger        ();
 use Module::Load::Conditional qw( can_load );
 use Ref::Util                 qw( is_plain_arrayref is_ref );
+use String::Trim              qw( trim );
 use Sub::Exporter -setup => { exports => ['debug_ua'] };
-use String::Trim qw( trim );
-use URI          ();
+use URI ();
 
 fieldhash my %http_tiny_loggers;
 my $http_tiny_wrapped;

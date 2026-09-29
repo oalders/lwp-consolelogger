@@ -1,7 +1,9 @@
 use strict;
 use warnings;
 
-use LWP::ConsoleLogger::Everywhere (); # reads $ENV{LWPCL_LOGFILE} at use time
+# Loaded for its import-time side effect (installs logging into every UA and
+# reads $ENV{LWPCL_LOGFILE}); imports nothing, so pin it past perlimports.
+use LWP::ConsoleLogger::Everywhere ();           ## no perlimports
 use LWP::UserAgent                 ();
 use Path::Tiny                     qw( path );
 

@@ -7,7 +7,7 @@ use HTTP::Request      ();
 use HTTP::Response     ();
 use Log::Dispatch      ();
 use LWP::ConsoleLogger ();
-use Test::More import => [qw( done_testing subtest like unlike )];
+use Test::More import => [qw( like subtest unlike )];
 use Test::Warnings;
 
 # Anonymous fake UA — has no title() and a no-op cookie_jar

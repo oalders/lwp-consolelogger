@@ -39,6 +39,23 @@ cmd                     = ["perlcritic", "--profile=$PRECIOUS_ROOT/.perlcriticrc
 ok-exit-codes           = 0
 lint-failure-exit-codes = 2
 
+[commands.perlimports]
+type                    = "both"
+include                 = ["**/*.{pl,pm,t,psgi}"]
+exclude                 = [
+    "examples/**",
+    "t/00-*",
+    "t/author-*",
+    "t/release-*",
+    "t/zzz-*",
+    "xt/**",
+]
+cmd                     = ["perlimports", "--sort"]
+lint-flags              = ["--lint"]
+tidy-flags              = ["-i"]
+ok-exit-codes           = 0
+lint-failure-exit-codes = 1
+
 [commands.perlvars]
 type                    = "lint"
 include                 = ["**/*.{pl,pm,t,psgi}"]

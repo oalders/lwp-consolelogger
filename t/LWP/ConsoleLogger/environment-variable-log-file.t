@@ -3,10 +3,8 @@ use warnings;
 use version;
 
 use Module::Runtime qw( require_module );
-use Test::More import => [qw( diag done_testing is ok skip )];
-use Try::Tiny  qw( catch try );
-use Path::Tiny qw( path tempdir );
-use File::Spec ();
+use Path::Tiny      qw( path tempdir );
+use Test::More import => [qw( diag done_testing ok )];
 my $tempdir     = tempdir();
 my $log_fn_path = $tempdir->child('foo.log');
 my $log_fn      = $log_fn_path->stringify;

@@ -8,10 +8,10 @@ use LWP::UserAgent  ();
 use Module::Runtime qw( require_module );
 use Path::Tiny      qw( path );
 use Plack::Loader   ();
-use Test::TCP;
+use Test::Fatal     qw( exception );
+use Test::More import => [qw( diag is like ok skip )];
+use Test::TCP qw( test_tcp );
 use Test::Warnings;
-use Test::Fatal qw( exception );
-use Test::More import => [qw( diag done_testing is like ok skip )];
 use Try::Tiny      qw( catch try );
 use WWW::Mechanize ();
 

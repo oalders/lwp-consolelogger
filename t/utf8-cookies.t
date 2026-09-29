@@ -2,14 +2,14 @@ use strict;
 use warnings;
 
 use Encode               qw( encode_utf8 );
-use HTTP::Cookies        ();
 use HTTP::CookieJar::LWP ();
+use HTTP::Cookies        ();
 use HTTP::Headers        ();
 use HTTP::Request        ();
 use HTTP::Response       ();
 use Log::Dispatch        ();
 use LWP::ConsoleLogger   ();
-use Test::More import => [qw( done_testing like unlike subtest )];
+use Test::More import => [qw( like subtest unlike )];
 use Test::Warnings;
 
 {

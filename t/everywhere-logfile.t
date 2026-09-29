@@ -4,7 +4,7 @@ use warnings;
 use File::Temp qw( tempfile );
 use IPC::Run3  qw( run3 );
 use Path::Tiny qw( path );
-use Test::More import => [qw( diag done_testing is like ok subtest unlike )];
+use Test::More import => [qw( diag is like subtest unlike )];
 use Test::Warnings;
 
 subtest 'LWPCL_LOGFILE writes UTF-8 without Wide-character warnings' => sub {

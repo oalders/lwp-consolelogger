@@ -2,13 +2,13 @@ use strict;
 use warnings;
 
 use HTTP::Tiny               ();
-use LWP::ConsoleLogger::Easy qw( debug_ua );
 use Log::Dispatch            ();
 use Log::Dispatch::Array     ();
+use LWP::ConsoleLogger::Easy qw( debug_ua );
 use Plack::Loader            ();
 use Ref::Util                qw( is_hashref );
 use Test::More import => [qw( done_testing is like ok unlike )];
-use Test::TCP;
+use Test::TCP qw( test_tcp );
 
 # Unit assertions (no network).
 {
