@@ -14,7 +14,7 @@ use HTML::Restrict            ();
 use HTTP::Body                ();
 use HTTP::CookieMonster       ();
 use JSON::MaybeXS             qw( decode_json );
-use List::AllUtils            qw( any apply none uniq );
+use List::AllUtils            qw( any apply none );
 use Log::Dispatch             ();
 use Module::Load::Conditional qw( can_load );
 use Parse::MIME               qw( parse_mime_type );
@@ -135,17 +135,27 @@ has text_pre_filter => (
     isa => CodeRef,
 );
 
+# Credential-bearing headers that are ALWAYS redacted, regardless of
+# headers_to_redact. LWP turns userinfo in a request URL (or in a configured
+# proxy) into one of these headers, so masking the URL alone would still leak
+# the credentials here (GH #65). Compared case-insensitively.
+my @ALWAYS_REDACT_HEADERS = ( 'authorization', 'proxy-authorization' );
+
 sub _build_headers_to_redact {
     my $self = shift;
+    return $ENV{LWPCL_REDACT_HEADERS}
+        ? [ split m{,}, $ENV{LWPCL_REDACT_HEADERS} ]
+        : [];
+}
 
-    # Authorization is redacted by default: LWP turns userinfo in a request
-    # URL into an Authorization: Basic header, so masking the URL alone would
-    # still leak the credentials through the header (GH #65). Field names are
-    # matched case-sensitively against HTTP::Headers' canonical casing.
-    my @redact = ('Authorization');
-    push @redact, split m{,}, $ENV{LWPCL_REDACT_HEADERS}
-        if $ENV{LWPCL_REDACT_HEADERS};
-    return [ uniq @redact ];
+# Header names are case-insensitive (RFC 9110), so match case-insensitively:
+# a user setting LWPCL_REDACT_HEADERS=x-api-key should still hit the canonical
+# X-Api-Key that HTTP::Headers stores.
+sub _redact_header {
+    my ( $self, $name ) = @_;
+    my $lc_name = lc $name;
+    return 1 if any { $lc_name eq $_ } @ALWAYS_REDACT_HEADERS;
+    return !!( any { $lc_name eq lc $_ } @{ $self->headers_to_redact } );
 }
 
 sub _build_params_to_redact {
@@ -231,7 +241,7 @@ sub _log_headers {
     unless ( $self->pretty ) {
         my $out = q{};
         foreach my $name ( $headers->header_field_names ) {
-            if ( any { $name eq $_ } @{ $self->headers_to_redact } ) {
+            if ( $self->_redact_header($name) ) {
                 $out .= "$name: [REDACTED]\n";
                 next;
             }
@@ -247,7 +257,7 @@ sub _log_headers {
     my @rows;
     foreach my $name ( sort $headers->header_field_names ) {
         my $val
-            = ( any { $name eq $_ } @{ $self->headers_to_redact } )
+            = $self->_redact_header($name)
             ? '[REDACTED]'
             : $self->_decode_header_value( $headers->header($name) );
         push @rows, [ $name, $val ];
@@ -728,12 +738,13 @@ here and discuss them in detail below.
 
 =item * C<< headers_to_redact => ['Authorization', 'Foo'] >>
 
-The C<Authorization> header is redacted by default so that HTTP Basic
-credentials (including those derived from C<userinfo> in a request URL) are
-never logged. Names supplied via the C<LWPCL_REDACT_HEADERS> environment
-variable are added to this default; passing an explicit C<headers_to_redact>
-to the constructor replaces it. Field names are matched case-sensitively
-against L<HTTP::Headers>' canonical casing.
+The C<Authorization> and C<Proxy-Authorization> headers are B<always>
+redacted so that HTTP Basic/Bearer credentials (including those LWP derives
+from C<userinfo> in a request URL or a configured proxy) are never logged;
+they cannot be un-redacted. Any names you add via C<headers_to_redact> or the
+C<LWPCL_REDACT_HEADERS> environment variable are redacted in addition to
+these. Matching is case-insensitive, so C<'x-api-key'> and C<'X-Api-Key'>
+both work.
 
 =item * C<< params_to_redact => ['token', 'password'] >>
 
