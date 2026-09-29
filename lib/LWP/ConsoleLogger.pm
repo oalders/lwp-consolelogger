@@ -14,7 +14,7 @@ use HTML::Restrict            ();
 use HTTP::Body                ();
 use HTTP::CookieMonster       ();
 use JSON::MaybeXS             qw( decode_json );
-use List::AllUtils            qw( any apply none );
+use List::AllUtils            qw( any apply none uniq );
 use Log::Dispatch             ();
 use Module::Load::Conditional qw( can_load );
 use Parse::MIME               qw( parse_mime_type );
@@ -137,9 +137,15 @@ has text_pre_filter => (
 
 sub _build_headers_to_redact {
     my $self = shift;
-    return $ENV{LWPCL_REDACT_HEADERS}
-        ? [ split m{,}, $ENV{LWPCL_REDACT_HEADERS} ]
-        : [];
+
+    # Authorization is redacted by default: LWP turns userinfo in a request
+    # URL into an Authorization: Basic header, so masking the URL alone would
+    # still leak the credentials through the header (GH #65). Field names are
+    # matched case-sensitively against HTTP::Headers' canonical casing.
+    my @redact = ('Authorization');
+    push @redact, split m{,}, $ENV{LWPCL_REDACT_HEADERS}
+        if $ENV{LWPCL_REDACT_HEADERS};
+    return [ uniq @redact ];
 }
 
 sub _build_params_to_redact {
@@ -155,10 +161,16 @@ sub request_callback {
     shift;
 
     if ( $self->dump_uri ) {
-        my $uri_without_query = $req->uri->clone;
-        $uri_without_query->query(undef);
+        my $uri_to_log = $req->uri->clone;
+        $uri_to_log->query(undef);
 
-        $self->_debug( $req->method . q{ } . $uri_without_query . "\n" );
+        # Never log HTTP Basic credentials embedded in the URL, e.g.
+        # https://john.doe:password@example.com/ (GH #65). userinfo() only
+        # exists for server-based schemes (http, https, ftp, ...), so guard
+        # for schemes such as file:// that lack it.
+        $uri_to_log->userinfo(undef) if $uri_to_log->can('userinfo');
+
+        $self->_debug( $req->method . q{ } . $uri_to_log . "\n" );
     }
 
     if ( $req->method eq 'GET' ) {
@@ -714,7 +726,14 @@ here and discuss them in detail below.
 
 =item * C<< content_pre_filter => sub { ... } >>
 
-=item * C<< headers_to_redact => ['Authentication', 'Foo'] >>
+=item * C<< headers_to_redact => ['Authorization', 'Foo'] >>
+
+The C<Authorization> header is redacted by default so that HTTP Basic
+credentials (including those derived from C<userinfo> in a request URL) are
+never logged. Names supplied via the C<LWPCL_REDACT_HEADERS> environment
+variable are added to this default; passing an explicit C<headers_to_redact>
+to the constructor replaces it. Field names are matched case-sensitively
+against L<HTTP::Headers>' canonical casing.
 
 =item * C<< params_to_redact => ['token', 'password'] >>
 
