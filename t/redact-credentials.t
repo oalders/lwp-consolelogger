@@ -33,7 +33,7 @@ sub make_logger {
     );
 }
 
-subtest 'userinfo credentials are dropped from the logged URI' => sub {
+subtest 'userinfo credentials are masked in the logged URI' => sub {
     my @captured;
     my $cl = LWP::ConsoleLogger->new(
         logger       => make_logger( \@captured ),
@@ -48,7 +48,10 @@ subtest 'userinfo credentials are dropped from the logged URI' => sub {
     $cl->request_callback( $req, Fake::UA->new );
 
     my $all = join "\n", @captured;
-    like( $all, qr{https://example\.com/path}, 'host and path still logged' );
+    like(
+        $all, qr{https://\[REDACTED\]\@example\.com/path},
+        'credentials masked but URI (and the fact creds were sent) preserved'
+    );
     unlike( $all, qr/s3cr3t/,    'password is not logged' );
     unlike( $all, qr/john\.doe/, 'username is not logged' );
     unlike( $all, qr/token=abc/, 'query string is still stripped' );

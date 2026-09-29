@@ -174,13 +174,24 @@ sub request_callback {
         my $uri_to_log = $req->uri->clone;
         $uri_to_log->query(undef);
 
-        # Never log HTTP Basic credentials embedded in the URL, e.g.
-        # https://john.doe:password@example.com/ (GH #65). userinfo() only
-        # exists for server-based schemes (http, https, ftp, ...), so guard
-        # for schemes such as file:// that lack it.
-        $uri_to_log->userinfo(undef) if $uri_to_log->can('userinfo');
+        # Mask any HTTP Basic credentials embedded in the URL, e.g.
+        # https://john.doe:password@example.com/ (GH #65). Replace them with
+        # a visible [REDACTED] marker rather than dropping them, so a
+        # debugging log still shows that credentials were supplied. userinfo()
+        # only exists for server-based schemes (http, https, ftp, ...), so
+        # guard for schemes such as file:// that lack it.
+        my $has_userinfo
+            = $uri_to_log->can('userinfo') && defined $uri_to_log->userinfo;
+        $uri_to_log->userinfo(undef) if $has_userinfo;
 
-        $self->_debug( $req->method . q{ } . $uri_to_log . "\n" );
+        my $uri_string = "$uri_to_log";
+
+        # URI would percent-encode the brackets if set via userinfo(), so
+        # splice the marker in after the scheme instead.
+        $uri_string =~ s{\A(\w[\w.+-]*://)}{$1\[REDACTED\]\@}
+            if $has_userinfo;
+
+        $self->_debug( $req->method . q{ } . $uri_string . "\n" );
     }
 
     if ( $req->method eq 'GET' ) {
