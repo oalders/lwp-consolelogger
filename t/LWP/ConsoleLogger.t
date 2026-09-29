@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use lib 't/lib';
 
 use HTTP::CookieJar::LWP ();
 
@@ -8,7 +9,8 @@ use LWP::ConsoleLogger ();
 use LWP::UserAgent     ();
 use Path::Tiny         qw( path );
 use Test::Fatal        qw( exception );
-use Test::More import => [qw( diag done_testing is ok )];
+use Test::More import => [qw( done_testing is note ok )];
+use TestLogger     qw( null_logger );
 use URI::file      ();
 use WWW::Mechanize ();
 
@@ -21,6 +23,7 @@ my $logger = LWP::ConsoleLogger->new(
     dump_content => 1,
     dump_cookies => 1,
     dump_text    => 1,
+    logger       => null_logger(),
 );
 ok( $logger, 'logger compiles' );
 
@@ -34,7 +37,7 @@ $logger->content_pre_filter(
     sub {
         my $content      = shift;
         my $content_type = shift;
-        diag "Content-Type: $content_type";
+        note "Content-Type: $content_type";
 
         if ( $content
             =~ m{<!-- \s header \s ends \s -->(.*)<!-- \s footer \s begins \s -->}gmxs

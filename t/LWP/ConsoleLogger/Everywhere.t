@@ -103,7 +103,6 @@ foreach my $ua (
             'Different package: GETing with ' . ref($ua) . ' lives'
         );
     };
-    diag $stderr;
     ok $stderr, '... and there was a dump';
 }
 

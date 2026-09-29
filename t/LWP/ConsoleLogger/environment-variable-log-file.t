@@ -16,6 +16,6 @@ my $mech   = WWW::Mechanize->new;
 my $result = $mech->get($url);
 ok( -f $log_fn, 'logfile exists' );
 my $data = $log_fn_path->slurp();
-diag("logfile data: '$data'");
-ok( $data =~ /^GET file:/, 'logfile content ok' );
+ok( $data =~ /^GET file:/, 'logfile content ok' )
+    or diag("logfile data: '$data'");
 done_testing();

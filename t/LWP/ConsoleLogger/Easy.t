@@ -211,6 +211,7 @@ sub test_content_mojo {
 
     require_module('Mojolicious');
     my $app = Mojolicious->new;
+    $app->log->level('fatal');    # silence Mojo's own request tracing
     Mojo::UserAgent::Server->app($app);
     $app->routes->get('/')->to(
         cb => sub {

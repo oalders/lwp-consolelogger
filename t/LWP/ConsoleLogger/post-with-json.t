@@ -8,7 +8,7 @@ use LWP::UserAgent                       ();
 use Plack::Handler::HTTP::Server::Simple ();
 use Plack::Test::Agent                   ();
 use Test::LWP::UserAgent                 ();
-use Test::More import => [qw( diag done_testing ok subtest )];
+use Test::More import => [qw( done_testing note ok subtest )];
 use TestLogger qw( null_logger );
 
 my $ua = LWP::UserAgent->new( cookie_jar => {} );
@@ -59,7 +59,7 @@ subtest 'use HTTP::Request' => sub {
     );
 
     my $response = $test_ua->request($req);
-    diag $response->as_string;
+    note $response->as_string;
     ok( $response, 'request sent' );
 };
 
