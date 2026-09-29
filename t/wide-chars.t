@@ -1,14 +1,14 @@
 use strict;
 use warnings;
+use lib 't/lib';
 
-use Log::Dispatch            ();
-use Log::Dispatch::Array     ();
 use LWP::ConsoleLogger::Easy qw( debug_ua );
 use LWP::UserAgent           ();
 use Path::Tiny               qw( path );
 use Test::More import => [qw( is ok )];
 use Test::Needs 'Unicode::GCString';
 use Test::Warnings;
+use TestLogger        qw( capturing_logger );
 use Unicode::GCString ();
 
 # The captured table rows contain CJK glyphs and get interpolated into
@@ -33,18 +33,7 @@ $ua->default_header( 'X-Wide-Test' => "\x{4E2D}\x{6587}" );
 
 my $logger = debug_ua($ua);
 
-my $messages = [];
-my $ld       = Log::Dispatch->new(
-    outputs =>
-        [ [ 'Screen', min_level => 'debug', newline => 1, utf8 => 1 ] ],
-);
-$ld->add(
-    Log::Dispatch::Array->new(
-        name      => 'capture',
-        min_level => 'debug',
-        array     => $messages,
-    ),
-);
+my ( $ld, $messages ) = capturing_logger();
 $logger->logger($ld);
 
 $ua->get( 'file://' . path('t/test-data/wide-cjk.html')->absolute );

@@ -1,11 +1,13 @@
 use strict;
 use warnings;
+use lib 't/lib';
 
 use LWP::ConsoleLogger::Easy             qw( debug_ua );
 use LWP::UserAgent                       ();
 use Plack::Handler::HTTP::Server::Simple ();
 use Plack::Test::Agent                   ();
 use Test::More import => [qw( done_testing ok )];
+use TestLogger qw( null_logger );
 
 # test pretty printing disabled
 # check POST body parsing of JSON
@@ -19,6 +21,7 @@ use Test::More import => [qw( done_testing ok )];
 
     my $ua             = LWP::UserAgent->new( cookie_jar => {} );
     my $console_logger = debug_ua($ua);
+    $console_logger->logger( null_logger() );
     $console_logger->pretty(0);
 
     my $server_agent = Plack::Test::Agent->new(

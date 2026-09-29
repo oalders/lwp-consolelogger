@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use lib 't/lib';
 
 use HTTP::Request                        ();
 use LWP::ConsoleLogger::Easy             qw( debug_ua );
@@ -7,13 +8,14 @@ use LWP::UserAgent                       ();
 use Plack::Handler::HTTP::Server::Simple ();
 use Plack::Test::Agent                   ();
 use Test::LWP::UserAgent                 ();
-use Test::More import => [qw( diag done_testing ok subtest )];
+use Test::More import => [qw( done_testing ok subtest )];
+use TestLogger qw( null_logger );
 
 my $ua = LWP::UserAgent->new( cookie_jar => {} );
-debug_ua($ua);
+debug_ua($ua)->logger( null_logger() );
 
 my $test_ua = Test::LWP::UserAgent->new;
-debug_ua($test_ua);
+debug_ua($test_ua)->logger( null_logger() );
 
 $test_ua->map_response(
     qr{example.com/success},
@@ -57,7 +59,6 @@ subtest 'use HTTP::Request' => sub {
     );
 
     my $response = $test_ua->request($req);
-    diag $response->as_string;
     ok( $response, 'request sent' );
 };
 
