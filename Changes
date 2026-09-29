@@ -1,6 +1,12 @@
 Revision history for LWP-ConsoleLogger
 
 {{$NEXT}}
+    - Stop logging credentials. userinfo embedded in a request URL (e.g.
+      https://user:password@example.com/) is now masked to
+      https://[REDACTED]@example.com/ in the logged URI, and the
+      Authorization and Proxy-Authorization headers are always redacted.
+      Additional headers can still be redacted via headers_to_redact /
+      LWPCL_REDACT_HEADERS, now matched case-insensitively (GH#65)
 
 1.000003  2026-09-18 14:14:21Z
     - Add HTTP::Tiny support. debug_ua() and
