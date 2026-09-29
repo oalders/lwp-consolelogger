@@ -186,10 +186,15 @@ sub _copy_headers {
 
     foreach my $name ( keys %{$hashref} ) {
         my $val = $hashref->{$name};
-        $headers->push_header(
-            $name,
-            is_plain_arrayref($val) ? @{$val} : $val
-        );
+
+        # HTTP::Tiny represents a repeated header (e.g. multiple Set-Cookie
+        # rows) as an arrayref of values. push_header treats 3+ arguments as
+        # alternating field => value pairs, so passing the flattened list as
+        # push_header($name, @values) would misread the second value as a
+        # field name ("Illegal field name ..."). Push each value under the
+        # same name individually to preserve every row.
+        $headers->push_header( $name, $_ )
+            for ( is_plain_arrayref($val) ? @{$val} : $val );
     }
     return;
 }
