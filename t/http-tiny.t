@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use lib 't/lib';
 
 use HTTP::Tiny               ();
 use Log::Dispatch            ();
@@ -8,11 +9,13 @@ use LWP::ConsoleLogger::Easy qw( debug_ua );
 use Plack::Loader            ();
 use Ref::Util                qw( is_hashref );
 use Test::More import => [qw( done_testing is like ok unlike )];
-use Test::TCP qw( test_tcp );
+use Test::TCP  qw( test_tcp );
+use TestLogger qw( null_logger );
 
 # Unit assertions (no network).
 {
     my $logger = debug_ua( HTTP::Tiny->new );
+    $logger->logger( null_logger() );
     ok(
         $logger->isa('LWP::ConsoleLogger'),
         'debug_ua returns a configured LWP::ConsoleLogger'
@@ -20,6 +23,7 @@ use Test::TCP qw( test_tcp );
     ok( $logger->dump_content, 'dump_content defaults on' );
 
     my $silent = debug_ua( HTTP::Tiny->new, 0 );
+    $silent->logger( null_logger() );
     ok( !$silent->dump_content, 'verbosity 0 turns dump_content off' );
     ok( !$silent->dump_headers, 'verbosity 0 turns dump_headers off' );
 }

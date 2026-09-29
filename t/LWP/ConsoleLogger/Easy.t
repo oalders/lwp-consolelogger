@@ -1,11 +1,10 @@
 use strict;
 use warnings;
+use lib 't/lib';
 use version;
 
 use Data::Printer;
 use HTML::FormatText::WithLinks          ();
-use Log::Dispatch                        ();
-use Log::Dispatch::Array                 ();
 use LWP::ConsoleLogger::Easy             qw( debug_ua );
 use Module::Runtime                      qw( require_module );
 use Path::Tiny                           qw( path );
@@ -15,6 +14,7 @@ use Plack::Test::Agent                   ();
 use Test::Fatal                          qw( exception );
 use Test::More import => [qw( diag is is_deeply ok skip )];
 use Test::Warnings;
+use TestLogger     qw( capturing_logger null_logger );
 use Try::Tiny      qw( catch try );
 use WWW::Mechanize ();
 
@@ -46,6 +46,7 @@ my $foo = 'file://' . path('t/test-data/foo.html')->absolute;
 
 foreach my $mech (@user_agents) {
     my $logger = debug_ua($mech);
+    $logger->logger( null_logger() );
     ok( $logger->dump_content, 'defaults to highest log level' );
     is(
         exception {
@@ -119,17 +120,9 @@ EOF
 
 # Check text_pre_filter
 {
-    my $ua             = LWP::UserAgent->new( cookie_jar => {} );
-    my $easy           = debug_ua($ua);
-    my $logging_output = [];
-
-    $easy->logger->add(
-        Log::Dispatch::Array->new(
-            name      => 'test',
-            min_level => 'debug',
-            array     => $logging_output
-        )
-    );
+    my $ua   = LWP::UserAgent->new( cookie_jar => {} );
+    my $easy = debug_ua($ua);
+    $easy->logger( null_logger() );
 
     $easy->text_pre_filter(
         sub {
@@ -176,21 +169,9 @@ sub test_content_lwp {
     my $content_type = shift;
     my $test_sub     = shift;
 
-    my $ua             = LWP::UserAgent->new( cookie_jar => {} );
-    my $logger         = debug_ua($ua);
-    my $logging_output = [];
-
-    my $ld = Log::Dispatch->new(
-        outputs => [ [ 'Screen', min_level => 'debug', newline => 1, ] ] );
-
-    $ld->add(
-        Log::Dispatch::Array->new(
-            name      => 'test',
-            min_level => 'debug',
-            array     => $logging_output
-        )
-    );
-
+    my $ua     = LWP::UserAgent->new( cookie_jar => {} );
+    my $logger = debug_ua($ua);
+    my ( $ld, $logging_output ) = capturing_logger();
     $logger->logger($ld);
 
     my $app = sub {
@@ -223,21 +204,9 @@ sub test_content_mojo {
     my $content_type = shift;
     my $test_sub     = shift;
 
-    my $ua             = Mojo::UserAgent->new;
-    my $logger         = debug_ua($ua);
-    my $logging_output = [];
-
-    my $ld = Log::Dispatch->new(
-        outputs => [ [ 'Screen', min_level => 'debug', newline => 1, ] ] );
-
-    $ld->add(
-        Log::Dispatch::Array->new(
-            name      => 'test',
-            min_level => 'debug',
-            array     => $logging_output
-        )
-    );
-
+    my $ua     = Mojo::UserAgent->new;
+    my $logger = debug_ua($ua);
+    my ( $ld, $logging_output ) = capturing_logger();
     $logger->logger($ld);
 
     require_module('Mojolicious');

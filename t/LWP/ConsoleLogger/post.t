@@ -1,11 +1,13 @@
 use strict;
 use warnings;
+use lib 't/lib';
 
 use LWP::ConsoleLogger::Easy             qw( debug_ua );
 use LWP::UserAgent                       ();
 use Plack::Handler::HTTP::Server::Simple ();
 use Plack::Test::Agent                   ();
 use Test::More import => [qw( done_testing ok )];
+use TestLogger qw( null_logger );
 
 # check POST body parsing
 {
@@ -13,7 +15,7 @@ use Test::More import => [qw( done_testing ok )];
         = sub { return [ 200, [ 'Content-Type' => 'text/html' ], ['boo'] ] };
 
     my $ua = LWP::UserAgent->new( cookie_jar => {} );
-    debug_ua($ua);
+    debug_ua($ua)->logger( null_logger() );
     my $server_agent = Plack::Test::Agent->new(
         app    => $app,
         server => Plack::Handler::HTTP::Server::Simple::,
