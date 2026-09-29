@@ -751,8 +751,8 @@ here and discuss them in detail below.
 
 The C<Authorization> and C<Proxy-Authorization> headers are B<always>
 redacted so that HTTP Basic/Bearer credentials (including those LWP derives
-from C<userinfo> in a request URL or a configured proxy) are never logged;
-they cannot be un-redacted. Any names you add via C<headers_to_redact> or the
+from C<userinfo> in a request URL or a configured proxy) are never logged,
+and this cannot be disabled. Any names you add via C<headers_to_redact> or the
 C<LWPCL_REDACT_HEADERS> environment variable are redacted in addition to
 these. Matching is case-insensitive, so C<'x-api-key'> and C<'X-Api-Key'>
 both work.
