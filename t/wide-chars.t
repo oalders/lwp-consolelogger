@@ -9,7 +9,6 @@ use Path::Tiny               qw( path );
 use Test::More import => [qw( is ok )];
 use Test::Needs 'Unicode::GCString';
 use Test::Warnings;
-
 use Unicode::GCString ();
 
 # The captured table rows contain CJK glyphs and get interpolated into
