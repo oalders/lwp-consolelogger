@@ -2,6 +2,7 @@ use strict;
 use warnings;
 use lib 't/lib';
 
+use HTTP::Request            ();
 use HTTP::Tiny               ();
 use Log::Dispatch            ();
 use Log::Dispatch::Array     ();
@@ -77,6 +78,63 @@ use TestLogger qw( null_logger );
     ok(
         !defined $get->header('Content-Length'),
         'empty GET has no Content-Length'
+    );
+}
+
+# Response-object translation: HTTP::Tiny represents a repeated header (such
+# as multiple Set-Cookie rows) as an arrayref of values. Copying that into an
+# HTTP::Headers object must not misread a value as a field name. Regression
+# test for "Illegal field name" (GH #66).
+{
+    my $req = HTTP::Request->new( 'GET', 'http://example.com/' );
+    my $res = LWP::ConsoleLogger::Easy::_http_tiny_response_object(
+        {
+            status  => 200,
+            reason  => 'OK',
+            content => q{},
+            headers => {
+                'content-type' => 'text/html',
+                'set-cookie'   => [
+                    'AWSALBCORS=abc; Expires=Tue, 29 Sep 2026 08:56:46 GMT; Path=/; SameSite=None; Secure',
+                    'session=xyz; Path=/; HttpOnly',
+                ],
+            },
+        },
+        $req,
+    );
+
+    my @cookies = $res->header('Set-Cookie');
+    is( scalar(@cookies), 2, 'both Set-Cookie values are preserved' );
+    like(
+        $cookies[0], qr{AWSALBCORS=abc},
+        'first Set-Cookie value is intact'
+    );
+    like(
+        $cookies[1], qr{session=xyz},
+        'second Set-Cookie value is intact'
+    );
+
+    ok(
+        !defined $res->header('session=xyz; Path=/; HttpOnly'),
+        'a repeated header value is not misread as a field name'
+    );
+}
+
+# A scalar (single-value) header still round-trips unchanged.
+{
+    my $req = HTTP::Request->new( 'GET', 'http://example.com/' );
+    my $res = LWP::ConsoleLogger::Easy::_http_tiny_response_object(
+        {
+            status  => 200,
+            reason  => 'OK',
+            content => q{},
+            headers => { 'set-cookie' => 'only=one; Path=/' },
+        },
+        $req,
+    );
+    is(
+        $res->header('Set-Cookie'), 'only=one; Path=/',
+        'a single Set-Cookie value round-trips unchanged'
     );
 }
 
