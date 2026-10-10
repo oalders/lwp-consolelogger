@@ -135,11 +135,27 @@ has text_pre_filter => (
     isa => CodeRef,
 );
 
+# Credential-bearing headers that are ALWAYS redacted, regardless of
+# headers_to_redact. LWP turns userinfo in a request URL (or in a configured
+# proxy) into one of these headers, so masking the URL alone would still leak
+# the credentials here (GH #65). Compared case-insensitively.
+my @ALWAYS_REDACT_HEADERS = ( 'authorization', 'proxy-authorization' );
+
 sub _build_headers_to_redact {
     my $self = shift;
     return $ENV{LWPCL_REDACT_HEADERS}
         ? [ split m{,}, $ENV{LWPCL_REDACT_HEADERS} ]
         : [];
+}
+
+# Header names are case-insensitive (RFC 9110), so match case-insensitively:
+# a user setting LWPCL_REDACT_HEADERS=x-api-key should still hit the canonical
+# X-Api-Key that HTTP::Headers stores.
+sub _redact_header {
+    my ( $self, $name ) = @_;
+    my $lc_name = lc $name;
+    return 1 if any { $lc_name eq $_ } @ALWAYS_REDACT_HEADERS;
+    return !!( any { $lc_name eq lc $_ } @{ $self->headers_to_redact } );
 }
 
 sub _build_params_to_redact {
@@ -155,10 +171,27 @@ sub request_callback {
     shift;
 
     if ( $self->dump_uri ) {
-        my $uri_without_query = $req->uri->clone;
-        $uri_without_query->query(undef);
+        my $uri_to_log = $req->uri->clone;
+        $uri_to_log->query(undef);
 
-        $self->_debug( $req->method . q{ } . $uri_without_query . "\n" );
+        # Mask any HTTP Basic credentials embedded in the URL, e.g.
+        # https://john.doe:password@example.com/ (GH #65). Replace them with
+        # a visible [REDACTED] marker rather than dropping them, so a
+        # debugging log still shows that credentials were supplied. userinfo()
+        # only exists for server-based schemes (http, https, ftp, ...), so
+        # guard for schemes such as file:// that lack it.
+        my $has_userinfo
+            = $uri_to_log->can('userinfo') && defined $uri_to_log->userinfo;
+        $uri_to_log->userinfo(undef) if $has_userinfo;
+
+        my $uri_string = "$uri_to_log";
+
+        # URI would percent-encode the brackets if set via userinfo(), so
+        # splice the marker in after the scheme instead.
+        $uri_string =~ s{\A(\w[\w.+-]*://)}{$1\[REDACTED\]\@}
+            if $has_userinfo;
+
+        $self->_debug( $req->method . q{ } . $uri_string . "\n" );
     }
 
     if ( $req->method eq 'GET' ) {
@@ -219,7 +252,7 @@ sub _log_headers {
     unless ( $self->pretty ) {
         my $out = q{};
         foreach my $name ( $headers->header_field_names ) {
-            if ( any { $name eq $_ } @{ $self->headers_to_redact } ) {
+            if ( $self->_redact_header($name) ) {
                 $out .= "$name: [REDACTED]\n";
                 next;
             }
@@ -235,7 +268,7 @@ sub _log_headers {
     my @rows;
     foreach my $name ( sort $headers->header_field_names ) {
         my $val
-            = ( any { $name eq $_ } @{ $self->headers_to_redact } )
+            = $self->_redact_header($name)
             ? '[REDACTED]'
             : $self->_decode_header_value( $headers->header($name) );
         push @rows, [ $name, $val ];
@@ -714,7 +747,15 @@ here and discuss them in detail below.
 
 =item * C<< content_pre_filter => sub { ... } >>
 
-=item * C<< headers_to_redact => ['Authentication', 'Foo'] >>
+=item * C<< headers_to_redact => ['Authorization', 'Foo'] >>
+
+The C<Authorization> and C<Proxy-Authorization> headers are B<always>
+redacted so that HTTP Basic/Bearer credentials (including those LWP derives
+from C<userinfo> in a request URL or a configured proxy) are never logged,
+and this cannot be disabled. Any names you add via C<headers_to_redact> or the
+C<LWPCL_REDACT_HEADERS> environment variable are redacted in addition to
+these. Matching is case-insensitive, so C<'x-api-key'> and C<'X-Api-Key'>
+both work.
 
 =item * C<< params_to_redact => ['token', 'password'] >>
 
