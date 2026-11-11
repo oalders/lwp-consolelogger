@@ -19,7 +19,7 @@ use Log::Dispatch             ();
 use Module::Load::Conditional qw( can_load );
 use Parse::MIME               qw( parse_mime_type );
 use Ref::Util                 qw( is_arrayref is_blessed_ref is_ref );
-use Term::Size::Any           ();
+use Term::Size::Any           qw( chars );
 use Term::Table 0.013         ();
 use Try::Tiny                 qw( catch try );
 use Types::Common::Numeric    qw( PositiveInt );
